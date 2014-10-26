@@ -8,8 +8,9 @@ Clients
 """
 
 import datetime
-import xml.etree.ElementTree as etree
+import xml.etree.ElementTree as ET
 from bunch import Bunch
+from .http import Url
 
 
 class Client(Bunch):
@@ -87,7 +88,7 @@ class Client(Bunch):
         for item in etree_element:
 
             # Get data
-            isinstance(item, etree.Element)
+            isinstance(item, ET.Element)
             tag = item.tag
             type = item.attrib.get("type")
             text = item.text
@@ -102,6 +103,8 @@ class Client(Bunch):
                 elif type == "float":
                     setattr(client, tag, float(text))
                 else:
+                    if isinstance(text, str):
+                        text = text.decode("utf-8")
                     setattr(client, tag, text)
 
             # <plan>L</plan>
@@ -139,7 +142,7 @@ class Client(Bunch):
         """
 
         # Parse XML
-        root = etree.fromstring(xml_string)
+        root = ET.fromstring(xml_string)
 
         # Finished
         return cls.from_etree(conn, root)
@@ -165,7 +168,7 @@ class Client(Bunch):
         return client
 
 
-class Clients(object):
+class Clients(list):
 
 
     def __init__(self, conn):
@@ -175,13 +178,13 @@ class Clients(object):
         :param conn: Connection-Object
         """
 
+        list.__init__(self)
+
         self.conn = conn
 
 
-    @classmethod
-    def from_search(
-        cls,
-        conn,
+    def search(
+        self,
         name = None,
         client_number = None,
         email = None,
@@ -190,10 +193,14 @@ class Clients(object):
         country_code = None,
         note = None,
         invoice_id = None,
-        tags = None
+        tags = None,
+        _no_delete = False,
+        _page = 1
     ):
         """
-        Returns Client-object
+        Fills the list with Client-objects
+
+        If no search criteria given --> all clients will returned (REALLY ALL!).
 
         :param name: Company name
         :param client_number: Client number
@@ -207,24 +214,62 @@ class Clients(object):
         :param tags: Comma seperated list of tags
         """
 
-        # Path
-        path = "/api/clients"
+        # Empty the list
+        if not _no_delete:
+            while True:
+                try:
+                    self.pop()
+                except IndexError:
+                    break
 
-        # Suchparameter
+        # Search parameters
+        url = Url(path = "/api/clients")
+        url.query["page"] = _page
         if name:
-            path += "?name={name}".format(name = name)
-        # ...
+            url.query["name"] = name
+        if client_number:
+            url.query["client_number"] = client_number
+        if email:
+            url.query["email"] = email
+        if first_name:
+            url.query["first_name"] = first_name
+        if last_name:
+            url.query["last_name"] = last_name
+        if country_code:
+            url.query["country_code"] = country_code
+        if note:
+            url.query["note"] = note
+        if invoice_id:
+            url.query["invoice_id"] = invoice_id
+        if tags:
+            url.query["tags"] = tags
 
+        # Request
+        request = self.conn.request(method = "GET", url = str(url))
 
+        # Iterate over all clients
+        clients_etree = ET.fromstring(request.data)
 
+        per_page = int(clients_etree.attrib.get("per_page", "0"))
+        total = int(clients_etree.attrib.get("total", "0"))
+        page = int(clients_etree.attrib.get("page", "1"))
 
-        # # Request
-        # request = conn.request(method = "GET", url = path)
-        #
-        # # Create new client-object from XML
-        # client = cls.from_xml(conn, request.data)
-        # client.content_language = request.headers.get("content-language", None)
-        #
-        # # Finished
-        # return client
+        for client_etree in clients_etree:
+            self.append(Client.from_etree(self.conn, client_etree))
+
+        if total > (page * per_page):
+            self.search(
+                name = name,
+                client_number = client_number,
+                email = email,
+                first_name = first_name,
+                last_name = last_name,
+                country_code = country_code,
+                note = note,
+                invoice_id = invoice_id,
+                tags = tags,
+                _no_delete = True,
+                _page = _page + 1
+            )
+
 

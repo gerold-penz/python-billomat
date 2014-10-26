@@ -19,8 +19,9 @@ conn = pybillomat.Connection(
     billomat_app_secret = "4bb31d33c91c4977555e35c84680f7c9"
 )
 
-client = pybillomat.Client.get(conn, id = "myself")
 
-print client
-print client.id
-print client["id"]
+clients = pybillomat.Clients(conn = conn)
+clients.search(name = u"R&W")
+
+print clients
+

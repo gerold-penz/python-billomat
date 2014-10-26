@@ -19,6 +19,10 @@ Version 0.1.1
 
 - *http.Url* helper-class added
 
+- Clients-search finished
+
+- Now, all clients can requested (really all).
+
 
 =============
 Version 0.0.2
