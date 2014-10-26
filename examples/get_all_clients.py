@@ -13,10 +13,9 @@ sys.path.insert(0, APPDIR)
 import pybillomat
 
 conn = pybillomat.Connection(
-    billomat_id = "xxx",
-    billomat_api_key = "xxx"
+    billomat_id = "<BillomatId>",
+    billomat_api_key = "<BillomatApiKey",
 )
-
 
 clients = pybillomat.Clients(conn = conn)
 clients.search(name = u"R&W")
