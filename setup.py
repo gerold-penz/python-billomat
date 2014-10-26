@@ -51,6 +51,6 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: System :: Networking",
     ],
-    install_requires = ["bunch"],
+    install_requires = ["bunch", "urllib3"],
 )
 
