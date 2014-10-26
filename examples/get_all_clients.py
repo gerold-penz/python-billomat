@@ -18,7 +18,8 @@ conn = pybillomat.Connection(
 )
 
 clients = pybillomat.Clients(conn = conn)
-clients.search(name = u"R&W")
+clients.search()
 
-print clients
+for client in clients:
+    print client.name
 
