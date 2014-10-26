@@ -2,6 +2,9 @@
 # coding: utf-8
 """
 Clients
+
+- English API-Description: http://www.billomat.com/en/api/clients
+- Deutsche API-Beschreibung: http://www.billomat.com/de/api/kunden
 """
 
 import datetime
@@ -11,58 +14,65 @@ from bunch import Bunch
 
 class Client(Bunch):
 
-    content_language = None
-    id = None  # Integer
-    created = None  # Datetime
-    archived = None  # Boolean
-    client_number = None
-    number = None  # Integer
-    number_pre = None
-    name = None
-    salutation = None
-    first_name = None
-    last_name = None
-    street = None
-    zip = None
-    city = None
-    state = None
-    country_code = None
-    phone = None
-    fax = None
-    mobile = None
-    email = None
-    www = None
-    tax_number = None
-    vat_number = None
-    bank_account_owner = None
-    bank_number = None
-    bank_name = None
-    bank_account_number = None
-    bank_swift = None
-    bank_iban = None
-    sepa_mandate = None
-    sepa_mandate_date = None
-    tax_rule = None
-    net_gross = None
-    default_payment_types = None
-    discount_rate_type = None
-    discount_rate = None
-    discount_days_type = None
-    discount_days = None
-    due_days_type = None
-    due_days = None
-    reminder_due_days_type = None
-    reminder_due_days = None
-    offer_validity_days_type = None
-    offer_validity_days = None
-    currency_code = None
-    price_group = None
-    note = None
-    revenue_gross = None  # Float
-    revenue_net = None  # Float"
-
-
     def __init__(self, conn):
+        """
+        Client
+
+        :param conn: Connection-Object
+        """
+
+        Bunch.__init__(self)
+
+        self.content_language = None
+        self.id = None  # Integer
+        self.created = None  # Datetime
+        self.archived = None  # Boolean
+        self.client_number = None
+        self.number = None  # Integer
+        self.number_pre = None
+        self.name = None
+        self.salutation = None
+        self.first_name = None
+        self.last_name = None
+        self.street = None
+        self.zip = None
+        self.city = None
+        self.state = None
+        self.country_code = None
+        self.phone = None
+        self.fax = None
+        self.mobile = None
+        self.email = None
+        self.www = None
+        self.tax_number = None
+        self.vat_number = None
+        self.bank_account_owner = None
+        self.bank_number = None
+        self.bank_name = None
+        self.bank_account_number = None
+        self.bank_swift = None
+        self.bank_iban = None
+        self.sepa_mandate = None
+        self.sepa_mandate_date = None
+        self.tax_rule = None
+        self.net_gross = None
+        self.default_payment_types = None
+        self.discount_rate_type = None
+        self.discount_rate = None
+        self.discount_days_type = None
+        self.discount_days = None
+        self.due_days_type = None
+        self.due_days = None
+        self.reminder_due_days_type = None
+        self.reminder_due_days = None
+        self.offer_validity_days_type = None
+        self.offer_validity_days = None
+        self.currency_code = None
+        self.price_group = None
+        self.note = None
+        self.revenue_gross = None  # Float
+        self.revenue_net = None  # Float"
+
         self.conn = conn
 
 
@@ -89,6 +99,8 @@ class Client(Bunch):
                     # <created type="datetime">2011-10-04T17:40:00+02:00</created>
                     dt = datetime.datetime.strptime(text[:19], "%Y-%m-%dT%H:%M:%S")
                     setattr(client, tag, dt)
+                elif type == "float":
+                    setattr(client, tag, float(text))
                 else:
                     setattr(client, tag, text)
 
@@ -156,10 +168,13 @@ class Client(Bunch):
 class Clients(object):
 
 
-    def __init__(
-        self,
-        conn
-    ):
+    def __init__(self, conn):
+        """
+        Clients
+
+        :param conn: Connection-Object
+        """
+
         self.conn = conn
 
 

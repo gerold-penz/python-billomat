@@ -17,6 +17,8 @@ Version 0.1.1
 
 - Clients-module added.
 
+- *http.Url* helper-class added
+
 
 =============
 Version 0.0.2

@@ -4,5 +4,5 @@
 Python-Billomat - Billomat API Client Library
 """
 
-from .connection import Connection
+from .http import Connection
 from .clients import Client, Clients

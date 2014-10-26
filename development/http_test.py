@@ -22,3 +22,5 @@ conn = pybillomat.Connection(
 client = pybillomat.Client.get(conn, id = "myself")
 
 print client
+print client.id
+print client["id"]
