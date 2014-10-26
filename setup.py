@@ -46,9 +46,10 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 2",
+        "Topic :: Internet :: WWW/HTTP",
+        "Topic :: Office/Business :: Financial",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: System :: Networking",
-        "Topic :: Internet :: WWW/HTTP",
     ],
     install_requires = ["bunch"],
 )
