@@ -27,7 +27,7 @@ setup(
     ),
     long_description = open("README.rst").read(),
     keywords = (
-        "Billomat, JSON, XML, Client, Data Interchange"
+        "Billomat, XML, Client, Data Interchange"
     ),
     author = "Gerold Penz",
     author_email = "gerold@halvar.at",
