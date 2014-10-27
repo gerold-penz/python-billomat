@@ -6,3 +6,4 @@ Python-Billomat - Billomat API Client Library
 
 from http import Connection
 from clients import Client, Clients
+from invoices import Invoice, Invoices

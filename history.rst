@@ -6,6 +6,21 @@ by Gerold Penz 2014
 
 
 =============
+Version 0.1.2
+=============
+
+2014-10-27
+
+- Invoices-module added.
+
+- Errors-module added.
+
+- The new parameter *allow_empty_filter* prevents fetching all records.
+
+- It's now possible to fetch single pages
+
+
+=============
 Version 0.1.1
 =============
 

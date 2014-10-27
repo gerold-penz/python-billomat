@@ -20,8 +20,23 @@ conn = pybillomat.Connection(
     billomat_app_secret = _personal.gerolds_billomat_app_secret
 )
 
-clients = pybillomat.Clients(conn = conn)
-clients.search(name = u"R&W")
+# clients = pybillomat.Clients(conn = conn)
+# clients.search(name = u"R&W")
+#
+# print clients
 
-print clients
+
+# invoice = pybillomat.Invoice.get(conn, id = 960864)
+# print invoice
+
+
+invoices = pybillomat.Invoices(conn)
+
+invoices.search(client_id = 171328, fetch_all = True)
+
+# invoices.search(status = "DRAFT")
+
+print invoices
+print len(invoices)
+
 

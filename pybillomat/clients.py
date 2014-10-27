@@ -10,7 +10,8 @@ Clients
 import datetime
 import xml.etree.ElementTree as ET
 from bunch import Bunch
-from .http import Url
+from http import Url
+from errors import EmptyFilterError
 
 
 class Client(Bunch):
@@ -24,7 +25,9 @@ class Client(Bunch):
 
         Bunch.__init__(self)
 
+        self.conn = conn
         self.content_language = None
+
         self.id = None  # Integer
         self.created = None  # Datetime
         self.archived = None  # Boolean
@@ -73,8 +76,6 @@ class Client(Bunch):
         self.note = None
         self.revenue_gross = None  # Float
         self.revenue_net = None  # Float"
-
-        self.conn = conn
 
 
     @classmethod
@@ -181,10 +182,14 @@ class Clients(list):
         list.__init__(self)
 
         self.conn = conn
+        self.per_page = None
+        self.total = None
+        self.page = None
 
 
     def search(
         self,
+        # Search parameters
         name = None,
         client_number = None,
         email = None,
@@ -194,8 +199,11 @@ class Clients(list):
         note = None,
         invoice_id = None,
         tags = None,
-        _no_delete = False,
-        _page = 1
+
+        fetch_all = False,
+        allow_empty_filter = False,
+        keep_old_items = False,
+        page = 1
     ):
         """
         Fills the list with Client-objects
@@ -212,10 +220,28 @@ class Clients(list):
         :param invoice_id: ID of an invoice of this client,
             multiple values seperated with comma
         :param tags: Comma seperated list of tags
-        """
 
+        :param allow_empty_filter: If `True`, every filter-parameter may be empty.
+            So, all clients will returned. !!! EVERY INVOICE !!!
+        """
+        
+        # Check empty filter
+        if not allow_empty_filter:
+            if not any([
+                name,
+                client_number,
+                email,
+                first_name,
+                last_name,
+                country_code,
+                note,
+                invoice_id,
+                tags,
+            ]):
+                raise EmptyFilterError()
+        
         # Empty the list
-        if not _no_delete:
+        if not keep_old_items:
             while True:
                 try:
                     self.pop()
@@ -224,7 +250,7 @@ class Clients(list):
 
         # Search parameters
         url = Url(path = "/api/clients")
-        url.query["page"] = _page
+        url.query["page"] = page
         if name:
             url.query["name"] = name
         if client_number:
@@ -250,15 +276,17 @@ class Clients(list):
         # Iterate over all clients
         clients_etree = ET.fromstring(request.data)
 
-        per_page = int(clients_etree.attrib.get("per_page", "0"))
-        total = int(clients_etree.attrib.get("total", "0"))
-        page = int(clients_etree.attrib.get("page", "1"))
+        self.per_page = int(clients_etree.attrib.get("per_page", "0"))
+        self.total = int(clients_etree.attrib.get("total", "0"))
+        self.page = int(clients_etree.attrib.get("page", "1"))
 
         for client_etree in clients_etree:
             self.append(Client.from_etree(self.conn, client_etree))
 
-        if total > (page * per_page):
+        # Fetch all
+        if fetch_all and self.total > (self.page * self.per_page):
             self.search(
+                # Search parameters
                 name = name,
                 client_number = client_number,
                 email = email,
@@ -268,8 +296,11 @@ class Clients(list):
                 note = note,
                 invoice_id = invoice_id,
                 tags = tags,
-                _no_delete = True,
-                _page = _page + 1
+
+                fetch_all = fetch_all,
+                allow_empty_filter = allow_empty_filter,
+                keep_old_items = True,
+                page = page + 1
             )
 
 
