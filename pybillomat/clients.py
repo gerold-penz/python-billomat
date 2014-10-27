@@ -159,7 +159,7 @@ class Client(Bunch):
         path = "/api/clients/{id}".format(id = id)
 
         # Request
-        request = conn.request(method = "GET", url = path)
+        request = conn.get(path = path)
 
         # Create new client-object from XML
         client = cls.from_xml(conn, request.data)
@@ -174,7 +174,7 @@ class Clients(list):
 
     def __init__(self, conn):
         """
-        Clients
+        Clients-List
 
         :param conn: Connection-Object
         """
@@ -203,7 +203,8 @@ class Clients(list):
         fetch_all = False,
         allow_empty_filter = False,
         keep_old_items = False,
-        page = 1
+        page = 1,
+        per_page = None
     ):
         """
         Fills the list with Client-objects
@@ -248,9 +249,13 @@ class Clients(list):
                 except IndexError:
                     break
 
-        # Search parameters
+        # Url and system-parameters
         url = Url(path = "/api/clients")
         url.query["page"] = page
+        if per_page:
+            url.query["per_page"] = per_page
+
+        # Search parameters
         if name:
             url.query["name"] = name
         if client_number:
@@ -271,7 +276,7 @@ class Clients(list):
             url.query["tags"] = tags
 
         # Request
-        request = self.conn.request(method = "GET", url = str(url))
+        request = self.conn.get(path = str(url))
 
         # Iterate over all clients
         clients_etree = ET.fromstring(request.data)
@@ -300,7 +305,8 @@ class Clients(list):
                 fetch_all = fetch_all,
                 allow_empty_filter = allow_empty_filter,
                 keep_old_items = True,
-                page = page + 1
+                page = page + 1,
+                per_page = per_page
             )
 
 

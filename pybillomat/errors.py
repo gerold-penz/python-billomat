@@ -12,3 +12,14 @@ class BillomatError(RuntimeError):
 class EmptyFilterError(BillomatError):
     pass
 
+
+class NoIdError(BillomatError):
+    pass
+
+
+class InvoiceNotFoundError(BillomatError):
+    pass
+
+
+class ClientNotFoundError(BillomatError):
+    pass

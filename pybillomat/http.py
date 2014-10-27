@@ -7,9 +7,13 @@ Connection
 import urllib
 import urllib3
 import urlparse
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
 
 
-class Connection(urllib3.HTTPSConnectionPool):
+class Connection(object):
 
     def __init__(
         self,
@@ -25,24 +29,80 @@ class Connection(urllib3.HTTPSConnectionPool):
         )
 
         # Headers
-        headers = {
+        self.headers = {
             "X-BillomatApiKey": billomat_api_key,
-            "Accept-Encoding": "gzip",
             "Content-Type": "application/xml",
         }
         if billomat_app_id:
-            headers["X-AppId"] = billomat_app_id
+            self.headers["X-AppId"] = billomat_app_id
         if billomat_app_secret:
-            headers["X-AppSecret"] = billomat_app_secret
+            self.headers["X-AppSecret"] = billomat_app_secret
 
         # Initialize ConnectionPool
         scheme, host, port = urllib3.get_host(url)
-        urllib3.HTTPSConnectionPool.__init__(
-            self,
-            host = host,
-            port = port,
+        self.conn = urllib3.HTTPSConnectionPool(
+            host = host, port = port
+        )
+
+
+    def get(self, path):
+        """
+        GET-Request (allowes gzipped response)
+
+        :returns: response
+        """
+
+        headers = self.headers.copy()
+        headers["Accept-Encoding"] = "gzip"
+
+        return self.conn.request(method = "GET", url = path, headers = headers)
+
+
+    def _request_with_body(self, method, path, body):
+        """
+        POST/PUT/DELETE-Request (no gzipped response)
+
+        :returns: response
+        """
+
+        headers = self.headers
+
+        return self.conn.urlopen(
+            method = method,
+            url = path,
+            body = body,
             headers = headers
         )
+
+
+    def post(self, path, body):
+        """
+        POST-Request (no gzipped response)
+
+        :returns: response
+        """
+
+        return self._request_with_body(method = "POST", path = path, body = body)
+
+
+    def put(self, path, body):
+        """
+        PUT-Request (no gzipped response)
+
+        :returns: response
+        """
+
+        return self._request_with_body(method = "PUT", path = path, body = body)
+
+
+    def delete(self, path, body):
+        """
+        DELETE-Request (no gzipped response)
+
+        :returns: response
+        """
+
+        return self._request_with_body(method = "DELETE", path = path, body = body)
 
 
 class Url(object):
@@ -196,5 +256,3 @@ class Url(object):
 
 
     __repr__ = __str__
-
-

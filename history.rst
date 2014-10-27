@@ -6,6 +6,21 @@ by Gerold Penz 2014
 
 
 =============
+Version 0.1.3
+=============
+
+2014-10-27
+
+- Http-module extended with methods for *get*, *post*, *put* and *delete*
+
+- Draft-Invoices can now completed
+
+- Errors-module extended
+
+- Structure of invoices reassembled
+
+
+=============
 Version 0.1.2
 =============
 

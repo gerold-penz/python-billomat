@@ -12,6 +12,7 @@ import _personal_billomat_data as _personal
 
 
 import pybillomat
+import pybillomat.http
 
 conn = pybillomat.Connection(
     billomat_id = _personal.gerolds_billomat_id,
@@ -20,23 +21,15 @@ conn = pybillomat.Connection(
     billomat_app_secret = _personal.gerolds_billomat_app_secret
 )
 
-# clients = pybillomat.Clients(conn = conn)
-# clients.search(name = u"R&W")
+# invoices = pybillomat.Invoices(conn)
+# invoices.search(client_id = 422909, status = "OPEN")
+# print len(invoices)
 #
-# print clients
+# invoices[0].complete()
 
+invoice = pybillomat.Invoice(conn = conn, id = 981936)
+invoice.load()
+print invoice
 
-# invoice = pybillomat.Invoice.get(conn, id = 960864)
-# print invoice
-
-
-invoices = pybillomat.Invoices(conn)
-
-invoices.search(client_id = 171328, fetch_all = True)
-
-# invoices.search(status = "DRAFT")
-
-print invoices
-print len(invoices)
-
-
+# invoice = pybillomat.Invoice(conn, id = 982256)
+# invoice.complete()

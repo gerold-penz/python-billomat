@@ -11,12 +11,12 @@ import datetime
 import xml.etree.ElementTree as ET
 from bunch import Bunch
 from http import Url
-from errors import EmptyFilterError
+import errors
 
 
 class Invoice(Bunch):
 
-    def __init__(self, conn):
+    def __init__(self, conn, id = None, invoice_etree = None):
         """
         Invoice
 
@@ -28,7 +28,7 @@ class Invoice(Bunch):
         self.conn = conn
         self.content_language = None
 
-        self.id = None  # integer
+        self.id = id  # integer
         self.client_id = None  # integer
         self.contact_id = None  # integer
         self.created = None  # datetime
@@ -67,14 +67,14 @@ class Invoice(Bunch):
         self.taxes = None  # array
         self.payment_types = None
 
+        if not invoice_etree is None:
+            self.load_from_etree(invoice_etree)
 
-    @classmethod
-    def from_etree(cls, conn, etree_element):
-        """
-        Returns Client-object from ElementTree-Element
-        """
 
-        client = cls(conn = conn)
+    def load_from_etree(self, etree_element):
+        """
+        Loads data from Element-Tree
+        """
 
         for item in etree_element:
 
@@ -86,64 +86,95 @@ class Invoice(Bunch):
 
             if not text is None:
                 if type == "integer":
-                    setattr(client, tag, int(text))
+                    setattr(self, tag, int(text))
                 elif type == "datetime":
                     # <created type="datetime">2011-10-04T17:40:00+02:00</created>
                     dt = datetime.datetime.strptime(text[:19], "%Y-%m-%dT%H:%M:%S")
-                    setattr(client, tag, dt)
+                    setattr(self, tag, dt)
                 elif type == "date":
                     # <date type="date">2009-10-14</date>
                     d = datetime.date(*[int(item)for item in text.strip().split("-")])
-                    setattr(client, tag, d)
+                    setattr(self, tag, d)
                 elif type == "float":
-                    setattr(client, tag, float(text))
+                    setattr(self, tag, float(text))
                 else:
                     if isinstance(text, str):
                         text = text.decode("utf-8")
-                    setattr(client, tag, text)
-
-        # Finished
-        return client
+                    setattr(self, tag, text)
 
 
-    @classmethod
-    def from_xml(cls, conn, xml_string):
+    def load_from_xml(self, xml_string):
         """
-        Returns new Invoice-object from XML-string
+        Loads data from XML-String
         """
 
         # Parse XML
         root = ET.fromstring(xml_string)
 
-        # Finished
-        return cls.from_etree(conn, root)
+        # Load
+        self.load_from_etree(root)
 
 
-    @classmethod
-    def get(cls, conn, id = None):
+    def load(self, id = None):
         """
-        Returns Invoice-object
+        Loads the invoice-data from server
+        """
+
+        # Parameters
+        if id:
+            self.id = id
+        if not self.id:
+            raise errors.NoIdError()
+
+        # Path
+        path = "/api/invoices/{id}".format(id = self.id)
+
+        # Fetch data
+        response = self.conn.get(path = path)
+        if not response.status == 200:
+            raise errors.InvoiceNotFoundError(unicode(self.id))
+
+        # Fill in data from XML
+        self.load_from_xml(response.data)
+        self.content_language = response.headers.get("content-language", None)
+
+
+    def complete(self, template_id = None):
+        """
+        Closes a statement in the draft status (DRAFT) from.
+        The status of open (OPEN) or overdue (Overdue) is set and
+        a PDF is generated and stored in the file system.
         """
 
         # Path
-        path = "/api/invoices/{id}".format(id = id)
+        path = "/api/invoices/{id}/complete".format(id = self.id)
 
-        # Request
-        request = conn.request(method = "GET", url = path)
+        # XML
+        complete_tag = ET.Element("complete")
+        if template_id:
+            template_id_tag = ET.Element("template_id")
+            template_id_tag.text = str(template_id)
+            complete_tag.append(template_id_tag)
+        xml = ET.tostring(complete_tag)
 
-        # Create new Invoice-object from XML
-        invoice = cls.from_xml(conn, request.data)
-        invoice.content_language = request.headers.get("content-language", None)
+        # Send PUT-request
+        response = self.conn.put(path = path, body = xml)
 
-        # Finished
-        return invoice
+        if response.status != 200:
+            # Parse response
+            error_text_list = []
+            for error in ET.fromstring(response.data):
+                error_text_list.append(error.text)
+
+            # Raise Error
+            raise errors.BillomatError("\n".join(error_text_list))
 
 
 class Invoices(list):
 
     def __init__(self, conn):
         """
-        Invoices
+        Invoices-List
 
         :param conn: Connection-Object
         """
@@ -224,7 +255,7 @@ class Invoices(list):
                 tags,
                 article_id,
             ]):
-                raise EmptyFilterError()
+                raise errors.EmptyFilterError()
 
         # Empty the list
         if not keep_old_items:
@@ -266,11 +297,11 @@ class Invoices(list):
         if article_id:
             url.query["article_id"] = article_id
 
-        # Request
-        request = self.conn.request(method = "GET", url = str(url))
+        # Fetch data
+        response = self.conn.get(path = str(url))
 
         # Parse XML
-        invoices_etree = ET.fromstring(request.data)
+        invoices_etree = ET.fromstring(response.data)
 
         self.per_page = int(invoices_etree.attrib.get("per_page", "0"))
         self.total = int(invoices_etree.attrib.get("total", "0"))
@@ -278,7 +309,7 @@ class Invoices(list):
 
         # Iterate over all invoices
         for invoice_etree in invoices_etree:
-            self.append(Invoice.from_etree(self.conn, invoice_etree))
+            self.append(Invoice(conn = self.conn, invoice_etree = invoice_etree))
 
         # Fetch all
         if fetch_all and self.total > (self.page * self.per_page):
