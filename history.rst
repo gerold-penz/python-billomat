@@ -6,6 +6,16 @@ by Gerold Penz 2014
 
 
 =============
+Version 0.1.5
+=============
+
+2014-10-28
+
+- *ClientsIterator* is a new class which allows to iterate over all clients. The
+  clients will load gradually.
+
+
+=============
 Version 0.1.4
 =============
 

@@ -184,6 +184,7 @@ class Clients(list):
         self.per_page = None
         self.total = None
         self.page = None
+        self.pages = None
 
 
     def search(
@@ -206,7 +207,7 @@ class Clients(list):
         per_page = None
     ):
         """
-        Fills the list with Client-objects
+        Fills the (internal) list with Client-objects
 
         If no search criteria given --> all clients will returned (REALLY ALL!).
 
@@ -283,6 +284,7 @@ class Clients(list):
         self.per_page = int(clients_etree.attrib.get("per_page", "0"))
         self.total = int(clients_etree.attrib.get("total", "0"))
         self.page = int(clients_etree.attrib.get("page", "1"))
+        self.pages = (self.total // self.per_page) + int(bool(self.total % self.per_page))
 
         # Iterate over all clients
         for client_etree in clients_etree:
@@ -308,5 +310,135 @@ class Clients(list):
                 page = page + 1,
                 per_page = per_page
             )
+
+
+
+class ClientsIterator(object):
+    """
+    Iterates over all found clients
+    """
+
+    def __init__(self, conn, per_page = 30):
+        """
+        ClientsIterator
+        """
+
+        self.conn = conn
+        self.clients = Clients(self.conn)
+        self.per_page = per_page
+        self.search_params = Bunch(
+            name = None,
+            client_number = None,
+            email = None,
+            first_name = None,
+            last_name = None,
+            country_code = None,
+            note = None,
+            invoice_id = None,
+            tags = None,
+        )
+
+
+    def search(
+        self,
+        name = None,
+        client_number = None,
+        email = None,
+        first_name = None,
+        last_name = None,
+        country_code = None,
+        note = None,
+        invoice_id = None,
+        tags = None,
+    ):
+        """
+        Search
+        """
+
+        # Params
+        self.search_params.name = name
+        self.search_params.client_number = client_number
+        self.search_params.email = email
+        self.search_params.first_name = first_name
+        self.search_params.last_name = last_name
+        self.search_params.country_code = country_code
+        self.search_params.note = note
+        self.search_params.invoice_id = invoice_id
+        self.search_params.tags = tags
+
+        # Search and get first page as result
+        self.clients.search(
+            name = self.search_params.name,
+            client_number = self.search_params.client_number,
+            email = self.search_params.email,
+            first_name = self.search_params.first_name,
+            last_name = self.search_params.last_name,
+            country_code = self.search_params.country_code,
+            note = self.search_params.note,
+            invoice_id = self.search_params.invoice_id,
+            tags = self.search_params.tags,
+            fetch_all = False,
+            allow_empty_filter = True,
+            keep_old_items = False,
+            page = 1,
+            per_page = self.per_page
+        )
+
+
+    def __len__(self):
+        return self.clients.total or 0
+
+
+    def __iter__(self):
+
+        for page in range(1, self.clients.pages + 1):
+            if not self.clients.page == page:
+                self.clients.search(
+                    name = self.search_params.name,
+                    client_number = self.search_params.client_number,
+                    email = self.search_params.email,
+                    first_name = self.search_params.first_name,
+                    last_name = self.search_params.last_name,
+                    country_code = self.search_params.country_code,
+                    note = self.search_params.note,
+                    invoice_id = self.search_params.invoice_id,
+                    tags = self.search_params.tags,
+                    fetch_all = False,
+                    allow_empty_filter = True,
+                    keep_old_items = False,
+                    page = page,
+                    per_page = self.per_page
+                )
+            for client in self.clients:
+                yield client
+
+
+    def __getitem__(self, key):
+        """
+
+
+        Internal Note for development:
+
+        Called to implement evaluation of self[key]. For sequence types,
+        the accepted keys should be integers and slice objects.
+        Note that the special interpretation of negative indexes (if the class
+        wishes to emulate a sequence type) is up to the __getitem__()
+        method. If key is of an inappropriate type, TypeError may be raised;
+        if of a value outside the set of indexes for the sequence (after any
+        special interpretation of negative values), IndexError should be raised.
+        For mapping types, if key is missing (not in the container),
+        KeyError should be raised.
+
+        Note: for loops expect that an IndexError will be raised for illegal
+        indexes to allow proper detection of the end of the sequence.
+
+        """
+
+        # ToDo: not finished yet
+
+
+
+
+
 
 

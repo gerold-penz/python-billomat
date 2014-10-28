@@ -17,15 +17,16 @@ conn = pybillomat.Connection(
     billomat_api_key = "<BillomatApiKey",
 )
 
-# CAUTION! This example fetches ALL (really ALL) clients
+client = pybillomat.Client(conn = conn)
+client.load(id = 422909)
+print client
+# --> Client(
+#     id=422909,
+#     client_number=u'K10141005',
+#     created=datetime.datetime(2014, 10, 27, 11, 24, 49),
+#     name=u'TESTFIRMA',
+#     first_name=u'TESTVORNAME',
+#     last_name=u'TESTNACHNAME',
+#     ...
+# )
 
-clients = pybillomat.Clients(conn = conn)
-clients.search(fetch_all = True, allow_empty_filter = True)
-
-for client in clients:
-    assert isinstance(client, pybillomat.Client)
-    print client.id
-    print client.name
-# --> TESTFIRMA
-# TESTFIRMA 2
-# ...

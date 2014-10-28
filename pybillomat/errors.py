@@ -23,3 +23,12 @@ class InvoiceNotFoundError(BillomatError):
 
 class ClientNotFoundError(BillomatError):
     pass
+
+
+class NoClientLoaded(BillomatError):
+    pass
+
+
+class NoInvoiceLoaded(BillomatError):
+    pass
+

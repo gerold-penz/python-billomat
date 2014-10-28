@@ -185,6 +185,7 @@ class Invoices(list):
         self.per_page = None
         self.total = None
         self.page = None
+        self.pages = None
 
 
     def search(
@@ -306,6 +307,7 @@ class Invoices(list):
         self.per_page = int(invoices_etree.attrib.get("per_page", "0"))
         self.total = int(invoices_etree.attrib.get("total", "0"))
         self.page = int(invoices_etree.attrib.get("page", "1"))
+        self.pages = (self.total // self.per_page) + int(bool(self.total % self.per_page))
 
         # Iterate over all invoices
         for invoice_etree in invoices_etree:

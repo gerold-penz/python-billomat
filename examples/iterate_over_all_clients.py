@@ -7,29 +7,22 @@ import sys
 THISDIR = os.path.dirname(os.path.abspath(__file__))
 APPDIR = os.path.abspath(os.path.join(THISDIR, os.path.pardir))
 sys.path.insert(0, APPDIR)
-import _personal_billomat_data as _personal
 # END --- required only for testing, remove in real world code --- END
 
-
 import pybillomat
-import pybillomat.http
 
 conn = pybillomat.Connection(
-    billomat_id = _personal.gerolds_billomat_id,
-    billomat_api_key = _personal.gerolds_billomat_api_key,
-    billomat_app_id = _personal.gerolds_billomat_app_id,
-    billomat_app_secret = _personal.gerolds_billomat_app_secret
+    billomat_id = "<BillomatId>",
+    billomat_api_key = "<BillomatApiKey",
 )
 
+# This example iterates over ALL clients. It loads the clients gradually. In
+# pages of 30 clients.
 
-
-clients = pybillomat.ClientsIterator(conn = conn)
-print len(clients)
-
+clients = pybillomat.ClientsIterator(conn = conn, per_page = 30)
 clients.search()
-print len(clients)
 
-for client in clients[:40]:
+for client in clients:
     assert isinstance(client, pybillomat.Client)
     print client.name
 
