@@ -9,14 +9,14 @@ Clients
 
 import datetime
 import xml.etree.ElementTree as ET
+import errors
 from bunch import Bunch
 from http import Url
-from errors import EmptyFilterError
 
 
 class Client(Bunch):
 
-    def __init__(self, conn):
+    def __init__(self, conn, id = None, client_etree = None):
         """
         Client
 
@@ -77,14 +77,14 @@ class Client(Bunch):
         self.revenue_gross = None  # Float
         self.revenue_net = None  # Float"
 
+        if not client_etree is None:
+            self.load_from_etree(client_etree)
 
-    @classmethod
-    def from_etree(cls, conn, etree_element):
-        """
-        Returns Client-object from ElementTree-Element
-        """
 
-        client = cls(conn = conn)
+    def load_from_etree(self, etree_element):
+        """
+        Loads data from Element-Tree
+        """
 
         for item in etree_element:
 
@@ -96,17 +96,17 @@ class Client(Bunch):
 
             if not text is None:
                 if type == "integer":
-                    setattr(client, tag, int(text))
+                    setattr(self, tag, int(text))
                 elif type == "datetime":
                     # <created type="datetime">2011-10-04T17:40:00+02:00</created>
                     dt = datetime.datetime.strptime(text[:19], "%Y-%m-%dT%H:%M:%S")
-                    setattr(client, tag, dt)
+                    setattr(self, tag, dt)
                 elif type == "float":
-                    setattr(client, tag, float(text))
+                    setattr(self, tag, float(text))
                 else:
                     if isinstance(text, str):
                         text = text.decode("utf-8")
-                    setattr(client, tag, text)
+                    setattr(self, tag, text)
 
             # <plan>L</plan>
             # <quotas>
@@ -132,41 +132,40 @@ class Client(Bunch):
                 # </quota>
             # </quotas>
 
-        # Finished
-        return client
 
-
-    @classmethod
-    def from_xml(cls, conn, xml_string):
+    def load_from_xml(self, xml_string):
         """
-        Returns new Client-object from XML-string
+        Loads data from XML-String
         """
 
         # Parse XML
         root = ET.fromstring(xml_string)
 
-        # Finished
-        return cls.from_etree(conn, root)
+        # Load
+        self.load_from_etree(root)
 
 
-    @classmethod
-    def get(cls, conn, id = None):
+    def load(self, id = None):
         """
-        Returns Client-object
+        Loads the client-data from server
         """
 
+        # Parameters
+        if id:
+            self.id = id
+        if not self.id:
+            raise errors.NoIdError()
         # Path
         path = "/api/clients/{id}".format(id = id)
 
-        # Request
-        request = conn.get(path = path)
+        # Fetch data
+        response = self.conn.get(path = path)
+        if not response.status == 200:
+            raise errors.ClientNotFoundError(unicode(self.id))
 
-        # Create new client-object from XML
-        client = cls.from_xml(conn, request.data)
-        client.content_language = request.headers.get("content-language", None)
-
-        # Finished
-        return client
+        # Fill in data from XML
+        self.load_from_xml(response.data)
+        self.content_language = response.headers.get("content-language", None)
 
 
 class Clients(list):
@@ -223,7 +222,7 @@ class Clients(list):
         :param tags: Comma seperated list of tags
 
         :param allow_empty_filter: If `True`, every filter-parameter may be empty.
-            So, all clients will returned. !!! EVERY INVOICE !!!
+            All clients will returned. !!! EVERY CLIENT !!!
         """
         
         # Check empty filter
@@ -239,8 +238,8 @@ class Clients(list):
                 invoice_id,
                 tags,
             ]):
-                raise EmptyFilterError()
-        
+                raise errors.EmptyFilterError()
+
         # Empty the list
         if not keep_old_items:
             while True:
@@ -275,18 +274,19 @@ class Clients(list):
         if tags:
             url.query["tags"] = tags
 
-        # Request
-        request = self.conn.get(path = str(url))
+        # Fetch data
+        response = self.conn.get(path = str(url))
 
-        # Iterate over all clients
-        clients_etree = ET.fromstring(request.data)
+        # Parse XML
+        clients_etree = ET.fromstring(response.data)
 
         self.per_page = int(clients_etree.attrib.get("per_page", "0"))
         self.total = int(clients_etree.attrib.get("total", "0"))
         self.page = int(clients_etree.attrib.get("page", "1"))
 
+        # Iterate over all clients
         for client_etree in clients_etree:
-            self.append(Client.from_etree(self.conn, client_etree))
+            self.append(Client(conn = self.conn, client_etree = client_etree))
 
         # Fetch all
         if fetch_all and self.total > (self.page * self.per_page):

@@ -21,15 +21,19 @@ conn = pybillomat.Connection(
     billomat_app_secret = _personal.gerolds_billomat_app_secret
 )
 
+client = pybillomat.Client(conn = conn)
+client.load_data(id = 422909)
+print client
+
 # invoices = pybillomat.Invoices(conn)
 # invoices.search(client_id = 422909, status = "OPEN")
 # print len(invoices)
 #
 # invoices[0].complete()
 
-invoice = pybillomat.Invoice(conn = conn, id = 981936)
-invoice.load()
-print invoice
+# invoice = pybillomat.Invoice(conn = conn, id = 981936)
+# invoice.load()
+# print invoice
 
 # invoice = pybillomat.Invoice(conn, id = 982256)
 # invoice.complete()

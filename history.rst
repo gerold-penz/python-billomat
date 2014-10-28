@@ -6,6 +6,15 @@ by Gerold Penz 2014
 
 
 =============
+Version 0.1.4
+=============
+
+2014-10-28
+
+- Structure of *clients* reassembled
+
+
+=============
 Version 0.1.3
 =============
 
@@ -17,7 +26,7 @@ Version 0.1.3
 
 - Errors-module extended
 
-- Structure of invoices reassembled
+- Structure of *invoices* reassembled
 
 
 =============
