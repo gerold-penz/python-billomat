@@ -27,7 +27,7 @@ setup(
     ),
     long_description = open("README.rst").read(),
     keywords = (
-        "Billomat, XML, Client, Data Interchange"
+        "Billomat, Client, Data Interchange, Google App Engine, REST Api"
     ),
     author = "Gerold Penz",
     author_email = "gerold@halvar.at",
