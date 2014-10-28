@@ -312,7 +312,6 @@ class Clients(list):
             )
 
 
-
 class ClientsIterator(object):
     """
     Iterates over all found clients

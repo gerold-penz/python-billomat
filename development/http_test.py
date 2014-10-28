@@ -22,3 +22,23 @@ conn = pybillomat.Connection(
 )
 
 
+#
+# Iterate over all DRAFT-Invoices and complete it
+#
+invoices_iterator = pybillomat.InvoicesIterator(conn = conn)
+
+# Search DRAFT-Invoices
+invoices_iterator.search(status = "DRAFT")
+print "Found :", len(invoices_iterator)
+
+# Complete all DRAFT-Invoices
+for invoice in invoices_iterator:
+    assert isinstance(invoice, pybillomat.Invoice)
+    invoice.complete()
+
+# Search remaining DRAFT-Invoices
+invoices_iterator.search(status = "DRAFT")
+print "Found:", len(invoices_iterator)
+
+
+

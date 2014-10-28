@@ -16,6 +16,8 @@ Version 0.1.5
 
 - *__getitem__* implemented: Now it is possible to iterate over slices of clients.
 
+- Examples added
+
 
 =============
 Version 0.1.4
