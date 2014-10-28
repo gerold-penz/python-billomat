@@ -4,13 +4,19 @@
 Connection
 """
 
+import os
 import urllib
-import urllib3
+
+if "APPENGINE_RUNTIME" in os.environ:
+    # Google App Engine
+    from google.appengine.api import urlfetch
+    import zlib
+    urllib3 = None
+else:
+    # Urllib3
+    import urllib3
+    urlfetch = None
 import urlparse
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
 
 
 class Connection(object):
@@ -24,7 +30,7 @@ class Connection(object):
     ):
 
         # Base URL
-        url = "https://{billomat_id}.billomat.net/".format(
+        self.url = "https://{billomat_id}.billomat.net/".format(
             billomat_id = billomat_id
         )
 
@@ -38,11 +44,17 @@ class Connection(object):
         if billomat_app_secret:
             self.headers["X-AppSecret"] = billomat_app_secret
 
-        # Initialize ConnectionPool
-        scheme, host, port = urllib3.get_host(url)
-        self.conn = urllib3.HTTPSConnectionPool(
-            host = host, port = port
-        )
+        # Bind Urlfetch for Google App Engine
+        self.urlfetch = urlfetch
+
+        # Initialize Urllib3-ConnectionPool
+        if urllib3:
+            scheme, host, port = urllib3.get_host(self.url)
+            self.conn = urllib3.HTTPSConnectionPool(
+                host = host, port = port
+            )
+        else:
+            self.conn = None
 
 
     def get(self, path):
@@ -55,7 +67,26 @@ class Connection(object):
         headers = self.headers.copy()
         headers["Accept-Encoding"] = "gzip"
 
-        return self.conn.request(method = "GET", url = path, headers = headers)
+        if self.conn:
+            # Urllib3
+            response = self.conn.request(method = "GET", url = path, headers = headers)
+            return response
+        else:
+            # Google App Engine
+            response = self.urlfetch.fetch(
+                url = urllib.basejoin(self.url, path),
+                method = "GET", headers = headers
+            )
+            response.status = response.status_code
+            response.data = response.content
+
+            # Decompress
+            if "gzip" in response.headers.get("content-encoding", ""):
+                response.data = zlib.decompressobj(16 + zlib.MAX_WBITS) \
+                    .decompress(response.content)
+
+            # Finished
+            return response
 
 
     def _request_with_body(self, method, path, body):
@@ -67,12 +98,25 @@ class Connection(object):
 
         headers = self.headers
 
-        return self.conn.urlopen(
-            method = method,
-            url = path,
-            body = body,
-            headers = headers
-        )
+        if self.conn:
+            # Urllib3
+            return self.conn.urlopen(
+                method = method,
+                url = path,
+                body = body,
+                headers = headers
+            )
+        else:
+            # Google App Engine
+            response = self.urlfetch.fetch(
+                url = urllib.basejoin(self.url, path),
+                payload = body,
+                method = method,
+                headers = headers
+            )
+            response.status = response.status_code
+            response.data = response.content
+            return response
 
 
     def post(self, path, body):

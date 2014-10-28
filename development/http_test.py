@@ -12,7 +12,7 @@ import _personal_billomat_data as _personal
 
 
 import pybillomat
-import pybillomat.http
+
 
 conn = pybillomat.Connection(
     billomat_id = _personal.gerolds_billomat_id,
@@ -22,3 +22,6 @@ conn = pybillomat.Connection(
 )
 
 
+clients = pybillomat.Clients(conn = conn)
+clients.search(name = "TEST")
+print len(clients)
