@@ -366,7 +366,12 @@ class ClientsIterator(object):
         self.search_params.invoice_id = invoice_id
         self.search_params.tags = tags
 
-        # Search and get first page as result
+        # Search and prepare first page as result
+        self.load_page(1)
+
+
+    def load_page(self, page):
+
         self.clients.search(
             name = self.search_params.name,
             client_number = self.search_params.client_number,
@@ -380,65 +385,69 @@ class ClientsIterator(object):
             fetch_all = False,
             allow_empty_filter = True,
             keep_old_items = False,
-            page = 1,
+            page = page,
             per_page = self.per_page
         )
 
 
+
     def __len__(self):
+        """
+        Returns the count of found clients
+        """
+
         return self.clients.total or 0
 
 
     def __iter__(self):
+        """
+        Iterate over all found items
+        """
 
         for page in range(1, self.clients.pages + 1):
             if not self.clients.page == page:
-                self.clients.search(
-                    name = self.search_params.name,
-                    client_number = self.search_params.client_number,
-                    email = self.search_params.email,
-                    first_name = self.search_params.first_name,
-                    last_name = self.search_params.last_name,
-                    country_code = self.search_params.country_code,
-                    note = self.search_params.note,
-                    invoice_id = self.search_params.invoice_id,
-                    tags = self.search_params.tags,
-                    fetch_all = False,
-                    allow_empty_filter = True,
-                    keep_old_items = False,
-                    page = page,
-                    per_page = self.per_page
-                )
+                self.load_page(page = page)
             for client in self.clients:
                 yield client
 
 
     def __getitem__(self, key):
         """
-
-
-        Internal Note for development:
-
-        Called to implement evaluation of self[key]. For sequence types,
-        the accepted keys should be integers and slice objects.
-        Note that the special interpretation of negative indexes (if the class
-        wishes to emulate a sequence type) is up to the __getitem__()
-        method. If key is of an inappropriate type, TypeError may be raised;
-        if of a value outside the set of indexes for the sequence (after any
-        special interpretation of negative values), IndexError should be raised.
-        For mapping types, if key is missing (not in the container),
-        KeyError should be raised.
-
-        Note: for loops expect that an IndexError will be raised for illegal
-        indexes to allow proper detection of the end of the sequence.
-
+        Returns the requested client from the pool of found clients
         """
 
-        # ToDo: not finished yet
+        # List-Ids
+        all_list_ids = range(len(self))
+        requested_list_ids = all_list_ids[key]
+        is_list = isinstance(requested_list_ids, list)
+        if not is_list:
+            requested_list_ids = [requested_list_ids]
 
+        result = []
 
+        for list_id in requested_list_ids:
 
+            # In welcher Seite befindet sich die gewünschte ID?
+            for page_nr in range(1, self.clients.pages + 1):
+                max_list_id = (page_nr * self.clients.per_page) - 1
+                if list_id <= max_list_id:
+                    page = page_nr
+                    break
+            else:
+                raise AssertionError()
 
+            # Load page if neccessary
+            if not self.clients.page == page:
+                self.load_page(page = page)
+
+            # Add equested client-object to result
+            list_id_in_page = list_id - ((page - 1) * self.clients.per_page)
+            result.append(self.clients[list_id_in_page])
+
+        if is_list:
+            return result
+        else:
+            return result[0]
 
 
 

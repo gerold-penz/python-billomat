@@ -22,15 +22,3 @@ conn = pybillomat.Connection(
 )
 
 
-
-clients = pybillomat.ClientsIterator(conn = conn)
-print len(clients)
-
-clients.search()
-print len(clients)
-
-for client in clients[:40]:
-    assert isinstance(client, pybillomat.Client)
-    print client.name
-
-print len(clients)

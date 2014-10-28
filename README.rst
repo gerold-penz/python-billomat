@@ -28,11 +28,12 @@ Installation
 Examples
 ========
 
---------------
-Get one client
---------------
+-------
+Clients
+-------
 
 .. code:: python
+
 
     import pybillomat
 
@@ -41,46 +42,38 @@ Get one client
         billomat_api_key = "<BillomatApiKey",
     )
 
+
+    # Load one client
     client = pybillomat.Client(conn = conn)
     client.load(id = 422909)
     print client
-    # --> Client(
-    #     id=422909,
-    #     client_number=u'K10141005',
-    #     created=datetime.datetime(2014, 10, 27, 11, 24, 49),
-    #     name=u'TESTFIRMA',
-    #     first_name=u'TESTVORNAME',
-    #     last_name=u'TESTNACHNAME',
-    #     ...
-    # )
+    # --> Client(id=422909, name=u'TESTFIRMA', ...)
 
 
-------------------------
-Iterate over all clients
-------------------------
-
-.. code:: python
-
-
-    import pybillomat
-
-    conn = pybillomat.Connection(
-        billomat_id = "<BillomatId>",
-        billomat_api_key = "<BillomatApiKey",
-    )
-
-
-    # This example iterates over ALL clients. It loads the clients gradually.
-    # In pages of 30 clients.
-
-    clients = pybillomat.ClientsIterator(conn = conn, per_page = 30)
-    clients.search()
-
+    # Load all clients into memory
+    # WARNING! This example loads ALL (really ALL) clients into memory
+    clients = pybillomat.Clients(conn = conn)
+    clients.search(fetch_all = True, allow_empty_filter = True)
     for client in clients:
         assert isinstance(client, pybillomat.Client)
         print client.name
 
-    print len(clients)
+
+    # This example iterates over ALL clients. It loads the clients gradually. In
+    # pages of 30 clients.
+    clients_iterator = pybillomat.ClientsIterator(conn = conn, per_page = 30)
+    clients_iterator.search()
+    for client in clients_iterator:
+        assert isinstance(client, pybillomat.Client)
+        print client.name
+
+
+    # Iterate over the first 10 clients (5 per page)
+    clients_iterator = pybillomat.ClientsIterator(conn = conn, per_page = 5)
+    clients_iterator.search()
+    for client in clients_iterator[:10]:
+        assert isinstance(client, pybillomat.Client)
+        print client.name
 
 
 ========

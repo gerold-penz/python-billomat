@@ -14,6 +14,8 @@ Version 0.1.5
 - *ClientsIterator* is a new class which allows to iterate over all clients. The
   clients will load gradually.
 
+- *__getitem__* implemented: Now it is possible to iterate over slices of clients.
+
 
 =============
 Version 0.1.4
