@@ -6,6 +6,15 @@ by Gerold Penz 2014
 
 
 =============
+Version 0.2.1
+=============
+
+2014-10-29
+
+- 60 seconds deadline for Google App Engine Requests
+
+
+=============
 Version 0.2.0
 =============
 

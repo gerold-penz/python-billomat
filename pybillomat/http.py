@@ -75,7 +75,8 @@ class Connection(object):
             # Google App Engine
             response = self.urlfetch.fetch(
                 url = urllib.basejoin(self.url, path),
-                method = "GET", headers = headers
+                method = "GET", headers = headers,
+                deadline = 60
             )
             response.status = response.status_code
             response.data = response.content
@@ -112,7 +113,8 @@ class Connection(object):
                 url = urllib.basejoin(self.url, path),
                 payload = body,
                 method = method,
-                headers = headers
+                headers = headers,
+                deadline = 60
             )
             response.status = response.status_code
             response.data = response.content
