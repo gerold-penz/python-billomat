@@ -170,6 +170,109 @@ class Invoice(Bunch):
             raise errors.BillomatError("\n".join(error_text_list))
 
 
+    def send(
+        self,
+        from_address = None,
+        to_address = None,
+        cc_address = None,
+        bcc_address = None,
+        subject = None,
+        body = None,
+        filename = None,
+        # attachments = None
+    ):
+        """
+        Sends the invoice per e-mail to the customer
+
+        :param from_address: (originally: from) Sender
+        :param to_address: (originally: recepients)
+        :param cc_address: (originally: recepients)
+        :param bcc_address: (originally: recepients)
+        :param subject: Subject of the e-mail (may include placeholders)
+        :param body: Text of the e-mail (may include placeholders)
+        :param filename: Name of the PDF file (without .pdf)
+        # :param attachments: List with Dictionaries::
+        #
+        #     [
+        #         {
+        #             "filename": "<Filename>",
+        #             "mimetype": "<MimeType>",
+        #             "base64file": "<Base64EncodedFile>"
+        #         },
+        #         ...
+        #     ]
+        """
+
+        # Path
+        path = "/api/invoices/{id}/email".format(id = self.id)
+
+        # XML
+        email_tag = ET.Element("email")
+
+        # From
+        if from_address:
+            from_tag = ET.Element("from")
+            from_tag.text = from_address
+            email_tag.append(from_tag)
+
+        # Recipients
+        if to_address or cc_address or bcc_address:
+            recipients_tag = ET.Element("recipients")
+            email_tag.append(recipients_tag)
+
+            # To
+            if to_address:
+                to_tag = ET.Element("to")
+                to_tag.text = to_address
+                recipients_tag.append(to_tag)
+
+            # Cc
+            if cc_address:
+                cc_tag = ET.Element("cc")
+                cc_tag.text = cc_address
+                recipients_tag.append(cc_tag)
+
+            # Bcc
+            if bcc_address:
+                bcc_tag = ET.Element("bcc")
+                bcc_tag.text = bcc_address
+                recipients_tag.append(bcc_tag)
+
+        # Subject
+        if subject:
+            subject_tag = ET.Element("subject")
+            subject_tag.text = subject
+            email_tag.append(subject_tag)
+
+        # Body
+        if body:
+            body_tag = ET.Element("body")
+            body_tag.text = body
+            email_tag.append(body_tag)
+
+        # Filename
+        if filename:
+            filename_tag = ET.Element("filename")
+            filename_tag.text = filename
+            filename_tag.append(filename_tag)
+
+        # ToDo: Attachments
+
+        xml = ET.tostring(email_tag)
+
+        # Send POST-request
+        response = self.conn.post(path = path, body = xml)
+
+        if response.status != 200:
+            # Parse response
+            error_text_list = []
+            for error in ET.fromstring(response.data):
+                error_text_list.append(error.text)
+
+            # Raise Error
+            raise errors.BillomatError("\n".join(error_text_list))
+
+
 class Invoices(list):
 
     def __init__(self, conn):

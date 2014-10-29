@@ -28,7 +28,7 @@ class Client(Bunch):
         self.conn = conn
         self.content_language = None
 
-        self.id = None  # Integer
+        self.id = id  # Integer
         self.created = None  # Datetime
         self.archived = None  # Boolean
         self.client_number = None
@@ -155,13 +155,14 @@ class Client(Bunch):
             self.id = id
         if not self.id:
             raise errors.NoIdError()
+
         # Path
-        path = "/api/clients/{id}".format(id = id)
+        path = "/api/clients/{id}".format(id = self.id)
 
         # Fetch data
         response = self.conn.get(path = path)
-        if not response.status == 200:
-            raise errors.ClientNotFoundError(unicode(self.id))
+        if response.status != 200:
+            raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
 
         # Fill in data from XML
         self.load_from_xml(response.data)

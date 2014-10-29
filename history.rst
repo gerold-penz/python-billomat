@@ -13,6 +13,8 @@ Version 0.2.1
 
 - 60 seconds deadline for Google App Engine Requests
 
+- Sending of invoice-e-mails
+
 
 =============
 Version 0.2.0

@@ -22,6 +22,13 @@ conn = pybillomat.Connection(
 )
 
 
-clients = pybillomat.Clients(conn = conn)
-clients.search(name = "TEST")
-print len(clients)
+invoice = pybillomat.Invoice(conn = conn, id = 985031)
+invoice.load()
+
+client = pybillomat.Client(conn, id = invoice.client_id)
+client.load()
+
+invoice.send(to_address = client.email)
+print invoice
+
+#invoice.send()
