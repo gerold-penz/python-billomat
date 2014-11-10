@@ -24,11 +24,4 @@ conn = pybillomat.Connection(
 
 invoice = pybillomat.Invoice(conn = conn, id = 985031)
 invoice.load()
-
-client = pybillomat.Client(conn, id = invoice.client_id)
-client.load()
-
-invoice.send(to_address = client.email)
-print invoice
-
-#invoice.send()
+invoice.complete()

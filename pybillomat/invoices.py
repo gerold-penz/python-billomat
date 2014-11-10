@@ -273,6 +273,38 @@ class Invoice(Bunch):
             raise errors.BillomatError("\n".join(error_text_list))
 
 
+    # def get_tags(self):
+    #     """
+    #     Gibt eine Liste mit Schlagworten der Rechnung zurück
+    #     """
+    #
+    #     # Parameters
+    #     if not self.id:
+    #         raise errors.NoIdError()
+    #
+    #     # Path
+    #     path = "/api/invoice-tags?invoice_id={id}".format(id = self.id)
+    #
+    #     # Fetch data
+    #     response = self.conn.get(path = path)
+    #     if not response.status == 200:
+    #         raise errors.InvoiceNotFoundError(unicode(self.id))
+    #
+    #     # XML parsen
+    #     root = ET.fromstring(response.data)
+    #
+    #     # Rückgabeliste befüllen
+    #     retlist = []
+    #     for item in root:
+    #         isinstance(item, ET.Element)
+    #         text = item.text
+    #         if not text is None:
+    #             retlist.append(text)
+    #
+    #     # Fertig
+    #     return retlist
+
+
 class Invoices(list):
 
     def __init__(self, conn):
