@@ -6,6 +6,15 @@ by Gerold Penz 2014
 
 
 =============
+Version 0.2.2
+=============
+
+2014-11-10
+
+- Invoices: Default value for *per_page* is 100
+
+
+=============
 Version 0.2.1
 =============
 
