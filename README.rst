@@ -76,6 +76,58 @@ Clients
         print client.name
 
 
+    # Create new client
+    client = pybillomat.Client.create(
+        conn = conn,
+        archived = None,
+        number_pre = None,
+        number = None,
+        number_length = None,
+        name = u"TEST-CUSTOMER with Umlauts ÖÄÜ",
+        street = None,
+        zip = u"6020",
+        city = u"Innsbruck",
+        state = None,
+        country_code = u"AT",
+        first_name = u"TEST-FIRSTNAME",
+        last_name = u"TEST-LASTNAME",
+        salutation = None,
+        phone = None,
+        fax = None,
+        mobile = None,
+        email = None,
+        www = u"http://halvar.at/",
+        tax_number = None,
+        vat_number = None,
+        bank_account_number = None,
+        bank_account_owner = None,
+        bank_number = None,
+        bank_name = None,
+        bank_swift = None,
+        bank_iban = None,
+        sepa_mandate = None,
+        sepa_mandate_date = None,
+        tax_rule = None,
+        net_gross = None,
+        default_payment_types = None,
+        note = None,
+        discount_rate_type = None,
+        discount_rate = None,
+        discount_days_type = None,
+        discount_days = None,
+        due_days_type = None,
+        due_days = None,
+        reminder_due_days_type = None,
+        reminder_due_days = None,
+        offer_validity_days_type = None,
+        offer_validity_days = None,
+        currency_code = None,
+        price_group = None
+    )
+    assert isinstance(client, pybillomat.Client)
+    print client.name, unicode(client.id)
+
+
 --------
 Invoices
 --------

@@ -21,26 +21,27 @@ conn = pybillomat.Connection(
     billomat_app_secret = _personal.gerolds_billomat_app_secret
 )
 
+# Create new client
 client = pybillomat.Client.create(
     conn = conn,
     archived = None,
     number_pre = None,
     number = None,
     number_length = None,
-    name = "TESTKUNDE 4",
+    name = u"TEST-CUSTOMER with Umlauts ÖÄÜ",
     street = None,
-    zip = "6406",
-    city = u"Oberhofen im Inntal",
+    zip = u"6020",
+    city = u"Innsbruck",
     state = None,
-    country_code = "AT",
-    first_name = u"Gerold ÖÄÜ",
-    last_name = None,
+    country_code = u"AT",
+    first_name = u"TEST-FIRSTNAME",
+    last_name = u"TEST-LASTNAME",
     salutation = None,
     phone = None,
     fax = None,
     mobile = None,
     email = None,
-    www = None,
+    www = u"http://halvar.at/",
     tax_number = None,
     vat_number = None,
     bank_account_number = None,
@@ -68,5 +69,5 @@ client = pybillomat.Client.create(
     currency_code = None,
     price_group = None
 )
-
-print client
+assert isinstance(client, pybillomat.Client)
+print client.name, unicode(client.id)
