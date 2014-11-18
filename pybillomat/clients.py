@@ -169,6 +169,356 @@ class Client(Bunch):
         self.content_language = response.headers.get("content-language", None)
 
 
+    @classmethod
+    def create(
+        cls,
+        conn,
+        archived = None,
+        number_pre = None,
+        number = None,
+        number_length = None,
+        name = None,
+        street = None,
+        zip = None,
+        city = None,
+        state = None,
+        country_code = None,
+        first_name = None,
+        last_name = None,
+        salutation = None,
+        phone = None,
+        fax = None,
+        mobile = None,
+        email = None,
+        www = None,
+        tax_number = None,
+        vat_number = None,
+        bank_account_number = None,
+        bank_account_owner = None,
+        bank_number = None,
+        bank_name = None,
+        bank_swift = None,
+        bank_iban = None,
+        sepa_mandate = None,
+        sepa_mandate_date = None,
+        tax_rule = None,
+        net_gross = None,
+        default_payment_types = None,
+        note = None,
+        discount_rate_type = None,
+        discount_rate = None,
+        discount_days_type = None,
+        discount_days = None,
+        due_days_type = None,
+        due_days = None,
+        reminder_due_days_type = None,
+        reminder_due_days = None,
+        offer_validity_days_type = None,
+        offer_validity_days = None,
+        currency_code = None,
+        price_group = None
+    ):
+        """
+        Creates one client
+
+        :param conn: Connection-Object
+        :param archived: State of archival storage.
+            True = archived, False = active
+            Default value: False
+        :param number_pre: Prefix
+            Default value: Value from settings
+        :param number: sequential number
+            Default value: next free number
+        :param number_length: Minimum length of the customer number
+            (to be filled with leading zeros)
+            Default value: Value from settings
+        :param name: Company name
+        :param street: Street
+        :param zip: Zip code
+        :param city: City
+        :param state: State, county, district, region
+        :param country_code: Country, Country code as ISO 3166 Alpha-2
+            Default value: Value from your own company
+        :param first_name: First name
+        :param last_name: Last name
+        :param salutation: Salutation
+        :param phone: Phone
+        :param fax: Fax
+        :param mobile: Mobile number
+        :param email: Email, valid Email address
+        :param www: Website, URL (w/o http)
+        :param tax_number: Tax number
+        :param vat_number: VAT number, valid VAT number
+        :param bank_account_number: Bank account number
+        :param bank_account_owner: Bank account owner
+        :param bank_number: Bank identifier code
+        :param bank_name: Bank name
+        :param bank_swift: SWIFT/BIC
+        :param bank_iban: IBAN
+        :param sepa_mandate: Mandate reference of a SEPA Direct Debit mandate
+        :param sepa_mandate_date: Date of issue of the SEPA Direct Debit mandate
+        :param tax_rule: Tax Rule
+            Possible values: TAX, NO_TAX, COUNTRY
+            Default value: "COUNTRY"
+        :param default_payment_types: Payment Type(s)
+            (eg. CASH, BANK_TRANSFER, PAYPAL, ...).
+            More than one payment type could be given as a comma separated list.
+            Theses payment types will be logically OR-connected.
+            You can find a overview of all payment types at API documentation of
+            payments. If no value is passed, the customer will be offered
+            the payment types specified at the account settings.
+        :param net_gross: Price basis (net, gross, according to account settings)
+            Possible values: NET, GROSS, SETTINGS
+            Default value: "SETTINGS"
+        :param note: Note
+        :param discount_rate_type: Type of the default value for discount rate
+            Possible values: SETTINGS, ABSOLUTE, RELATIVE
+            Default value: "SETTINGS"
+        :param discount_rate: Discount rate
+        :param discount_days_type: Type of the default value for discount interval
+            Possible values: SETTINGS, ABSOLUTE, RELATIVE
+            Default value: "SETTINGS"
+        :param discount_days: Discount period in days
+        :param due_days_type: Type of the default value for maturity
+            Possible values: SETTINGS, ABSOLUTE, RELATIVE
+            Default value: "SETTINGS"
+        :param due_days: Maturity in days from invoice date
+        :param reminder_due_days_type: Type of the default value for reminder
+            maturity
+            Possible values: SETTINGS, ABSOLUTE, RELATIVE
+            Default value: "SETTINGS"
+        :param reminder_due_days: Reminder maturity
+        :param offer_validity_days_type: Type of the default value for
+            validity of estimates
+            Possible values: SETTINGS, ABSOLUTE, RELATIVE
+            Default value: "SETTINGS"
+        :param offer_validity_days: Validity of estimates
+        :param currency_code: The currency for this client. ISO currency code.
+            If this field is empty, the account currency is used.
+        :param price_group: Artciles can have several prices.
+            The pricegroup defines which price applies to the client.
+        """
+
+        # XML
+        client_tag = ET.Element("client")
+        if not archived is None:
+            archived_tag = ET.Element("archived")
+            archived_tag.text = "1" if archived else "0"
+            client_tag.append(archived_tag)
+        if not number_pre is None:
+            number_pre_tag = ET.Element("number_pre")
+            number_pre_tag.text = unicode(number_pre)
+            client_tag.append(number_pre_tag)
+        if not number is None:
+            number_tag = ET.Element("number")
+            number_tag.text = unicode(int(number))
+            client_tag.append(number_tag)
+        if not number_length is None:
+            number_length_tag = ET.Element("number_length")
+            number_length_tag.text = unicode(int(number_length))
+            client_tag.append(number_length_tag)
+        if not name is None:
+            name_tag = ET.Element("name")
+            name_tag.text = unicode(name)
+            client_tag.append(name_tag)
+        if not street is None:
+            street_tag = ET.Element("street")
+            street_tag.text = unicode(street)
+            client_tag.append(street_tag)
+        if not zip is None:
+            zip_tag = ET.Element("zip")
+            zip_tag.text = unicode(zip)
+            client_tag.append(zip_tag)
+        if not city is None:
+            city_tag = ET.Element("city")
+            city_tag.text = unicode(city)
+            client_tag.append(city_tag)
+        if not state is None:
+            state_tag = ET.Element("state")
+            state_tag.text = unicode(state)
+            client_tag.append(state_tag)
+        if not country_code is None:
+            country_code_tag = ET.Element("country_code")
+            country_code_tag.text = unicode(country_code)
+            client_tag.append(country_code_tag)
+        if not first_name is None:
+            first_name_tag = ET.Element("first_name")
+            first_name_tag.text = unicode(first_name)
+            client_tag.append(first_name_tag)
+        if not last_name is None:
+            last_name_tag = ET.Element("last_name")
+            last_name_tag.text = unicode(last_name)
+            client_tag.append(last_name_tag)
+        if not salutation is None:
+            salutation_tag = ET.Element("salutation")
+            salutation_tag.text = unicode(salutation)
+            client_tag.append(salutation_tag)
+        if not phone is None:
+            phone_tag = ET.Element("phone")
+            phone_tag.text = unicode(phone)
+            client_tag.append(phone_tag)
+        if not fax is None:
+            fax_tag = ET.Element("fax")
+            fax_tag.text = unicode(fax)
+            client_tag.append(fax_tag)
+        if not mobile is None:
+            mobile_tag = ET.Element("mobile")
+            mobile_tag.text = unicode(mobile)
+            client_tag.append(mobile_tag)
+        if not email is None:
+            email_tag = ET.Element("email")
+            email_tag.text = unicode(email)
+            client_tag.append(email_tag)
+        if not www is None:
+            www_tag = ET.Element("www")
+            www_tag.text = unicode(www)
+            client_tag.append(www_tag)
+        if not tax_number is None:
+            tax_number_tag = ET.Element("tax_number")
+            tax_number_tag.text = unicode(tax_number)
+            client_tag.append(tax_number_tag)
+        if not vat_number is None:
+            vat_number_tag = ET.Element("vat_number")
+            vat_number_tag.text = unicode(vat_number)
+            client_tag.append(vat_number_tag)
+        if not bank_account_number is None:
+            bank_account_number_tag = ET.Element("bank_account_number")
+            bank_account_number_tag.text = unicode(bank_account_number)
+            client_tag.append(bank_account_number_tag)
+        if not bank_account_owner is None:
+            bank_account_owner_tag = ET.Element("bank_account_owner")
+            bank_account_owner_tag.text = unicode(bank_account_owner)
+            client_tag.append(bank_account_owner_tag)
+        if not bank_number is None:
+            bank_number_tag = ET.Element("bank_number")
+            bank_number_tag.text = unicode(bank_number)
+            client_tag.append(bank_number_tag)
+        if not bank_name is None:
+            bank_name_tag = ET.Element("bank_name")
+            bank_name_tag.text = unicode(bank_name)
+            client_tag.append(bank_name_tag)
+        if not bank_swift is None:
+            bank_swift_tag = ET.Element("bank_swift")
+            bank_swift_tag.text = unicode(bank_swift)
+            client_tag.append(bank_swift_tag)
+        if not bank_iban is None:
+            bank_iban_tag = ET.Element("bank_iban")
+            bank_iban_tag.text = unicode(bank_iban)
+            client_tag.append(bank_iban_tag)
+        if not sepa_mandate is None:
+            sepa_mandate_tag = ET.Element("sepa_mandate")
+            sepa_mandate_tag.text = unicode(sepa_mandate)
+            client_tag.append(sepa_mandate_tag)
+        if not sepa_mandate_date is None:
+            assert isinstance(sepa_mandate_date, datetime.date)
+            sepa_mandate_date_tag = ET.Element("sepa_mandate_date")
+            sepa_mandate_date_tag.text = sepa_mandate_date.isoformat()
+            client_tag.append(sepa_mandate_date_tag)
+        if not tax_rule is None:
+            assert unicode(tax_rule).upper() in ["TAX", "NO_TAX", "COUNTRY"] 
+            tax_rule_tag = ET.Element("tax_rule")
+            tax_rule_tag.text = unicode(tax_rule).upper()
+            client_tag.append(tax_rule_tag)
+        if not default_payment_types is None:
+            if isinstance(default_payment_types, (list, tuple)):
+                default_payment_types = ", ".join([
+                    item.upper() for item in default_payment_types
+                ])
+            default_payment_types_tag = ET.Element("default_payment_types")
+            default_payment_types_tag.text = unicode(default_payment_types)
+            client_tag.append(default_payment_types_tag)
+        if not net_gross is None:
+            assert unicode(net_gross).upper() in ["NET", "GROSS", "SETTINGS"]
+            net_gross_tag = ET.Element("net_gross")
+            net_gross_tag.text = unicode(net_gross).upper()
+            client_tag.append(net_gross_tag)
+        if not note is None:
+            note_tag = ET.Element("note")
+            note_tag.text = unicode(note)
+            client_tag.append(note_tag)
+        if not discount_rate_type is None:
+            assert unicode(discount_rate_type).upper() in [
+                "ABSOLUTE", "RELATIVE", "SETTINGS"
+            ]
+            discount_rate_type_tag = ET.Element("discount_rate_type")
+            discount_rate_type_tag.text = unicode(discount_rate_type).upper()
+            client_tag.append(discount_rate_type_tag)
+        if not discount_rate is None:
+            discount_rate_tag = ET.Element("discount_rate")
+            discount_rate_tag.text = unicode(float(discount_rate))
+            client_tag.append(discount_rate_tag)
+        if not discount_days_type is None:
+            assert unicode(discount_days_type).upper() in [
+                "ABSOLUTE", "RELATIVE", "SETTINGS"
+            ]
+            discount_days_type_tag = ET.Element("discount_days_type")
+            discount_days_type_tag.text = unicode(discount_days_type).upper()
+            client_tag.append(discount_days_type_tag)
+        if not discount_days is None:
+            discount_days_tag = ET.Element("discount_days")
+            discount_days_tag.text = unicode(float(discount_days))
+            client_tag.append(discount_days_tag)
+        if not due_days_type is None:
+            assert unicode(due_days_type).upper() in [
+                "ABSOLUTE", "RELATIVE", "SETTINGS"
+            ]
+            due_days_type_tag = ET.Element("due_days_type")
+            due_days_type_tag.text = unicode(due_days_type).upper()
+            client_tag.append(due_days_type_tag)
+        if not due_days is None:
+            due_days_tag = ET.Element("due_days")
+            due_days_tag.text = int(due_days)
+            client_tag.append(due_days_tag)
+        if not reminder_due_days_type is None:
+            assert unicode(reminder_due_days_type).upper() in [
+                "ABSOLUTE", "RELATIVE", "SETTINGS"
+            ]
+            reminder_due_days_type_tag = ET.Element("reminder_due_days_type")
+            reminder_due_days_type_tag.text = unicode(reminder_due_days_type).upper()
+            client_tag.append(reminder_due_days_type_tag)
+        if not reminder_due_days is None:
+            reminder_due_days_tag = ET.Element("reminder_due_days")
+            reminder_due_days_tag.text = unicode(int(reminder_due_days))
+            client_tag.append(reminder_due_days_tag)
+        if not offer_validity_days_type is None:
+            assert unicode(offer_validity_days_type).upper() in [
+                "ABSOLUTE", "RELATIVE", "SETTINGS"
+            ]
+            offer_validity_days_type_tag = ET.Element("offer_validity_days_type")
+            offer_validity_days_type_tag.text = unicode(offer_validity_days_type)
+            client_tag.append(offer_validity_days_type_tag)
+        if not offer_validity_days is None:
+            offer_validity_days_tag = ET.Element("offer_validity_days")
+            offer_validity_days_tag.text = unicode(int(offer_validity_days))
+            client_tag.append(offer_validity_days_tag)
+        if not currency_code is None:
+            currency_code_tag = ET.Element("currency_code")
+            currency_code_tag.text = unicode(currency_code)
+            client_tag.append(currency_code_tag)
+        if not price_group is None:
+            price_group_tag = ET.Element("price_group")
+            price_group_tag.text = unicode(int(price_group))
+            client_tag.append(price_group_tag)
+
+        xml = ET.tostring(client_tag)
+
+        # Path
+        path = "/api/clients"
+
+        # Send POST-request
+        response = conn.post(path = path, body = xml)
+        if response.status != 200:
+            raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
+
+        # Create Client-Object
+        client = cls(conn = conn)
+        client.content_language = response.headers.get("content-language", None)
+        client.load_from_xml(response.data)
+
+        # Finished
+        return client
+
+
 class Clients(list):
 
 
@@ -388,7 +738,6 @@ class ClientsIterator(object):
             page = page,
             per_page = self.per_page
         )
-
 
 
     def __len__(self):

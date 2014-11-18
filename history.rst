@@ -6,6 +6,15 @@ by Gerold Penz 2014
 
 
 =============
+Version 0.2.3
+=============
+
+2014-11-18
+
+- The new class-method *clients.Client.create()* creates one new client.
+
+
+=============
 Version 0.2.2
 =============
 
