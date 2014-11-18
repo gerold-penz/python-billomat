@@ -507,7 +507,7 @@ class Client(Bunch):
 
         # Send POST-request
         response = conn.post(path = path, body = xml)
-        if response.status != 200:
+        if response.status != 201:  # Created
             raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
 
         # Create Client-Object
