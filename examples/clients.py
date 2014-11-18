@@ -44,7 +44,7 @@ for client in clients_iterator[:10]:
     print client.name
 
 
-# Create new client
+# Create new client (with all possible parameters)
 client = pybillomat.Client.create(
     conn = conn,
     archived = None,
@@ -94,3 +94,19 @@ client = pybillomat.Client.create(
 )
 assert isinstance(client, pybillomat.Client)
 print client.name, unicode(client.id)
+
+
+# Create new client (shorter version)
+client = pybillomat.Client.create(
+    conn = conn,
+    name = u"TEST-CUSTOMER 2 with Umlauts ÖÄÜ",
+    zip = u"6020",
+    city = u"Innsbruck",
+    country_code = u"AT",
+    first_name = u"TEST-FIRSTNAME",
+    last_name = u"TEST-LASTNAME",
+    www = u"http://halvar.at/"
+)
+assert isinstance(client, pybillomat.Client)
+print client.name, unicode(client.id)
+
