@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 """
-Clients-Properties
+Client-Properties
 
 - English API-Description: http://www.billomat.com/en/api/clients/properties
 - Deutsche API-Beschreibung: http://www.billomat.com/de/api/kunden/attribute
@@ -14,11 +14,11 @@ from bunch import Bunch
 from http import Url
 
 
-class ClientsProperty(Bunch):
+class ClientProperty(Bunch):
 
     def __init__(self, conn, id = None, property_etree = None):
         """
-        ClientsProperty
+        ClientPropertyValue
 
         :param conn: Connection-Object
         """
@@ -95,11 +95,11 @@ class ClientsProperty(Bunch):
         self.load_from_xml(response.data)
 
 
-class ClientsProperties(list):
+class ClientProperties(list):
 
     def __init__(self, conn):
         """
-        ClientsProperties-List
+        ClientProperty-List
 
         :param conn: Connection-Object
         """
@@ -118,6 +118,7 @@ class ClientsProperties(list):
         # Search parameters
         client_id = None,
         client_property_id = None,
+        order_by = None,
 
         fetch_all = False,
         allow_empty_filter = False,
@@ -126,12 +127,17 @@ class ClientsProperties(list):
         per_page = None
     ):
         """
-        Fills the (internal) list with ClientsProperty-objects
+        Fills the (internal) list with ClientPropertyValue-objects
 
         If no search criteria given --> all properties will returned (REALLY ALL!).
 
         :param client_id: Client ID
         :param client_property_id: Client-Property-ID
+        :param order_by: Sortings consist of the name of the field and
+            sort order: ASC for ascending resp. DESC for descending order.
+            If no order is specified, ascending order (ASC) is used.
+            Nested sort orders are possible. Please separate the sort orders by
+            comma.
 
         :param allow_empty_filter: If `True`, every filter-parameter may be empty.
             All clients will returned. !!! EVERY CLIENT !!!
@@ -158,6 +164,8 @@ class ClientsProperties(list):
         url.query["page"] = page
         if per_page:
             url.query["per_page"] = per_page
+        if order_by:
+            url.query["order_by"] = order_by
 
         # Search parameters
         if client_id:
@@ -199,7 +207,9 @@ class ClientsProperties(list):
 
         # Iterate over all clients
         for property_etree in properties_etree:
-            self.append(ClientsProperty(conn = self.conn, property_etree = property_etree))
+            self.append(
+                ClientProperty(conn = self.conn, property_etree = property_etree)
+            )
 
         # Fetch all
         if fetch_all and self.total > (self.page * self.per_page):
@@ -216,22 +226,23 @@ class ClientsProperties(list):
             )
 
 
-class ClientsPropertiesIterator(object):
+class ClientPropertiesIterator(object):
     """
     Iterates over all found properties
     """
 
     def __init__(self, conn, per_page = 100):
         """
-        ClientsPropertiesIterator
+        ClientPropertiesIterator
         """
 
         self.conn = conn
-        self.clients_properties = ClientsProperties(self.conn)
+        self.client_properties = ClientProperties(self.conn)
         self.per_page = per_page
         self.search_params = Bunch(
             client_id = None,
             client_property_id = None,
+            order_by = None,
         )
 
 
@@ -239,6 +250,7 @@ class ClientsPropertiesIterator(object):
         self,
         client_id = None,
         client_property_id = None,
+        order_by = None
     ):
         """
         Search
@@ -247,6 +259,7 @@ class ClientsPropertiesIterator(object):
         # Params
         self.search_params.client_id = client_id
         self.search_params.client_property_id = client_property_id
+        self.search_params.order_by = order_by
 
         # Search and prepare first page as result
         self.load_page(1)
@@ -254,9 +267,10 @@ class ClientsPropertiesIterator(object):
 
     def load_page(self, page):
 
-        self.clients_properties.search(
+        self.client_properties.search(
             client_id = self.search_params.client_id,
             client_property_id = self.search_params.client_property_id,
+            order_by = self.search_params.order_by,
 
             fetch_all = False,
             allow_empty_filter = True,
@@ -271,7 +285,7 @@ class ClientsPropertiesIterator(object):
         Returns the count of found properties
         """
 
-        return self.clients_properties.total or 0
+        return self.client_properties.total or 0
 
 
     def __iter__(self):
@@ -279,13 +293,13 @@ class ClientsPropertiesIterator(object):
         Iterate over all found items
         """
 
-        if not self.clients_properties.pages:
+        if not self.client_properties.pages:
             return
 
-        for page in range(1, self.clients_properties.pages + 1):
-            if not self.clients_properties.page == page:
+        for page in range(1, self.client_properties.pages + 1):
+            if not self.client_properties.page == page:
                 self.load_page(page = page)
-            for client in self.clients_properties:
+            for client in self.client_properties:
                 yield client
 
 
@@ -307,8 +321,8 @@ class ClientsPropertiesIterator(object):
         for list_id in requested_list_ids:
 
             # In welcher Seite befindet sich die gewünschte ID?
-            for page_nr in range(1, self.clients_properties.pages + 1):
-                max_list_id = (page_nr * self.clients_properties.per_page) - 1
+            for page_nr in range(1, self.client_properties.pages + 1):
+                max_list_id = (page_nr * self.client_properties.per_page) - 1
                 if list_id <= max_list_id:
                     page = page_nr
                     break
@@ -316,12 +330,12 @@ class ClientsPropertiesIterator(object):
                 raise AssertionError()
 
             # Load page if neccessary
-            if not self.clients_properties.page == page:
+            if not self.client_properties.page == page:
                 self.load_page(page = page)
 
             # Add equested client-object to result
-            list_id_in_page = list_id - ((page - 1) * self.clients_properties.per_page)
-            result.append(self.clients_properties[list_id_in_page])
+            list_id_in_page = list_id - ((page - 1) * self.client_properties.per_page)
+            result.append(self.client_properties[list_id_in_page])
 
         if is_list:
             return result

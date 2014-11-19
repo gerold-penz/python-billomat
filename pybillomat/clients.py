@@ -549,6 +549,7 @@ class Clients(list):
         note = None,
         invoice_id = None,
         tags = None,
+        order_by = None,
 
         fetch_all = False,
         allow_empty_filter = False,
@@ -571,6 +572,11 @@ class Clients(list):
         :param invoice_id: ID of an invoice of this client,
             multiple values seperated with comma
         :param tags: Comma seperated list of tags
+        :param order_by: Sortings consist of the name of the field and
+            sort order: ASC for ascending resp. DESC for descending order.
+            If no order is specified, ascending order (ASC) is used.
+            Nested sort orders are possible. Please separate the sort orders by
+            comma.
 
         :param allow_empty_filter: If `True`, every filter-parameter may be empty.
             All clients will returned. !!! EVERY CLIENT !!!
@@ -604,6 +610,8 @@ class Clients(list):
         url.query["page"] = page
         if per_page:
             url.query["per_page"] = per_page
+        if order_by:
+            url.query["order_by"] = order_by
 
         # Search parameters
         if name:
@@ -685,6 +693,7 @@ class ClientsIterator(object):
             note = None,
             invoice_id = None,
             tags = None,
+            order_by = None,
         )
 
 
@@ -699,6 +708,7 @@ class ClientsIterator(object):
         note = None,
         invoice_id = None,
         tags = None,
+        order_by = None
     ):
         """
         Search
@@ -714,6 +724,7 @@ class ClientsIterator(object):
         self.search_params.note = note
         self.search_params.invoice_id = invoice_id
         self.search_params.tags = tags
+        self.search_params.order_by = order_by
 
         # Search and prepare first page as result
         self.load_page(1)
@@ -731,6 +742,8 @@ class ClientsIterator(object):
             note = self.search_params.note,
             invoice_id = self.search_params.invoice_id,
             tags = self.search_params.tags,
+            order_by = self.search_params.order_by,
+
             fetch_all = False,
             allow_empty_filter = True,
             keep_old_items = False,

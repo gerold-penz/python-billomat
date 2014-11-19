@@ -7,16 +7,13 @@ Python-Billomat - Billomat API Client Library
 from http import Connection
 from clients import (
     Client,
-    Clients,
     ClientsIterator
 )
 from invoices import (
     Invoice,
-    Invoices,
     InvoicesIterator
 )
-from clients_properties import (
-    ClientsProperty,
-    ClientsProperties,
-    ClientsPropertiesIterator
+from client_properties import (
+    ClientProperty,
+    ClientPropertiesIterator
 )

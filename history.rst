@@ -21,6 +21,10 @@ Version 0.2.4
 
   - ClientsPropertiesIterator-Class finished
 
+- All searches: New parameter *order_by*
+
+- Better examples
+
 
 =============
 Version 0.2.3

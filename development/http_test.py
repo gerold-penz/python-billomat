@@ -22,11 +22,12 @@ conn = pybillomat.Connection(
 )
 
 
-# Iterate over the properties of one client.
-# It loads the properties gradually. In pages of 100 properties.
-clients_properties_iterator = pybillomat.ClientsPropertiesIterator(conn = conn)
-clients_properties_iterator.search(client_id = 81257)
-for clients_property in clients_properties_iterator:
-    assert isinstance(clients_property, pybillomat.ClientsProperty)
-    print clients_property
+#
+
+# Iterate over the last 10 invoices
+invoices_iterator = pybillomat.InvoicesIterator(conn = conn, per_page = 10)
+invoices_iterator.search(order_by = "id DESC")
+for invoice in invoices_iterator[:10]:
+    assert isinstance(invoice, pybillomat.Invoice)
+    print invoice.invoice_number, invoice.status
 

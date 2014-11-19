@@ -18,17 +18,8 @@ print client
 # --> Client(id=422909, name=u'TESTFIRMA', ...)
 
 
-# Load all clients into memory
-# WARNING! This example loads ALL (really ALL) clients into memory
-clients = pybillomat.Clients(conn = conn)
-clients.search(fetch_all = True, allow_empty_filter = True)
-for client in clients:
-    assert isinstance(client, pybillomat.Client)
-    print client.name
-
-
-# This example iterates over ALL clients. It loads the clients gradually. In
-# pages of 30 clients.
+# Iterate over ALL clients.
+# It loads the clients gradually. In pages of 30 clients.
 clients_iterator = pybillomat.ClientsIterator(conn = conn)
 clients_iterator.search()
 for client in clients_iterator:
@@ -39,6 +30,14 @@ for client in clients_iterator:
 # Iterate over the first 10 clients
 clients_iterator = pybillomat.ClientsIterator(conn = conn, per_page = 10)
 clients_iterator.search()
+for client in clients_iterator[:10]:
+    assert isinstance(client, pybillomat.Client)
+    print client.name
+
+
+# Iterate over the last 10 clients
+clients_iterator = pybillomat.ClientsIterator(conn = conn, per_page = 10)
+clients_iterator.search(order_by = u"id DESC")
 for client in clients_iterator[:10]:
     assert isinstance(client, pybillomat.Client)
     print client.name

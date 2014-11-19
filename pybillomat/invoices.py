@@ -338,6 +338,7 @@ class Invoices(list):
         note = None,
         tags = None,
         article_id = None,
+        order_by = None,
 
         fetch_all = False,
         allow_empty_filter = False,
@@ -370,6 +371,11 @@ class Invoices(list):
         :param note: Free text search in explanatory notes
         :param tags: Comma seperated list of tags
         :param article_id: ID of an article
+        :param order_by: Sortings consist of the name of the field and
+            sort order: ASC for ascending resp. DESC for descending order.
+            If no order is specified, ascending order (ASC) is used.
+            Nested sort orders are possible. Please separate the sort orders by
+            comma.
 
         :param allow_empty_filter: If `True`, every filter-parameter may be empty.
             So, all invoices will returned. !!! EVERY INVOICE !!!
@@ -406,6 +412,8 @@ class Invoices(list):
         url.query["page"] = page
         if per_page:
             url.query["per_page"] = per_page
+        if order_by:
+            url.query["order_by"] = order_by
 
         # Search parameters
         if client_id:
@@ -499,6 +507,7 @@ class InvoicesIterator(object):
             note = None,
             tags = None,
             article_id = None,
+            order_by = None,
         )
 
 
@@ -516,6 +525,7 @@ class InvoicesIterator(object):
         note = None,
         tags = None,
         article_id = None,
+        order_by = None
     ):
         """
         Search
@@ -534,6 +544,7 @@ class InvoicesIterator(object):
         self.search_params.note = note
         self.search_params.tags = tags
         self.search_params.article_id = article_id
+        self.search_params.order_by = order_by
 
         # Search and prepare first page as result
         self.load_page(1)
@@ -554,6 +565,8 @@ class InvoicesIterator(object):
             note = self.search_params.note,
             tags = self.search_params.tags,
             article_id = self.search_params.article_id,
+            order_by = self.search_params.order_by,
+
             fetch_all = False,
             allow_empty_filter = True,
             keep_old_items = False,
