@@ -6,6 +6,19 @@ by Gerold Penz 2014
 
 
 =============
+Version 0.2.4
+=============
+
+2014-11-19
+
+
+ToDo: Client-Property-Values
+
+
+
+
+
+=============
 Version 0.2.3
 =============
 

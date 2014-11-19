@@ -521,7 +521,6 @@ class Client(Bunch):
 
 class Clients(list):
 
-
     def __init__(self, conn):
         """
         Clients-List

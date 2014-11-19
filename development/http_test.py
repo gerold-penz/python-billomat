@@ -21,53 +21,10 @@ conn = pybillomat.Connection(
     billomat_app_secret = _personal.gerolds_billomat_app_secret
 )
 
-# Create new client
-client = pybillomat.Client.create(
-    conn = conn,
-    archived = None,
-    number_pre = None,
-    number = None,
-    number_length = None,
-    name = u"TEST-CUSTOMER with Umlauts ÖÄÜ",
-    street = None,
-    zip = u"6020",
-    city = u"Innsbruck",
-    state = None,
-    country_code = u"AT",
-    first_name = u"TEST-FIRSTNAME",
-    last_name = u"TEST-LASTNAME",
-    salutation = None,
-    phone = None,
-    fax = None,
-    mobile = None,
-    email = None,
-    www = u"http://halvar.at/",
-    tax_number = None,
-    vat_number = None,
-    bank_account_number = None,
-    bank_account_owner = None,
-    bank_number = None,
-    bank_name = None,
-    bank_swift = None,
-    bank_iban = None,
-    sepa_mandate = None,
-    sepa_mandate_date = None,
-    tax_rule = None,
-    net_gross = None,
-    default_payment_types = None,
-    note = None,
-    discount_rate_type = None,
-    discount_rate = None,
-    discount_days_type = None,
-    discount_days = None,
-    due_days_type = None,
-    due_days = None,
-    reminder_due_days_type = None,
-    reminder_due_days = None,
-    offer_validity_days_type = None,
-    offer_validity_days = None,
-    currency_code = None,
-    price_group = None
-)
-assert isinstance(client, pybillomat.Client)
-print client.name, unicode(client.id)
+clients_properties = pybillomat.ClientsProperties(conn = conn)
+clients_properties.search(client_id = 1, fetch_all = True, allow_empty_filter = True)
+
+print len(clients_properties)
+for clients_property in clients_properties:
+    assert isinstance(clients_property, pybillomat.ClientsProperty)
+    print clients_property
