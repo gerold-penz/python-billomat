@@ -7,7 +7,7 @@ Clients-Properties
 - Deutsche API-Beschreibung: http://www.billomat.com/de/api/kunden/attribute
 """
 
-import datetime
+import urllib3
 import xml.etree.ElementTree as ET
 import errors
 from bunch import Bunch
@@ -168,16 +168,7 @@ class ClientsProperties(list):
         # Fetch data
         response = self.conn.get(path = str(url))
         if response.status != 200:
-
-
-            print
-            print response.status
-            print
-            print response.data
-            print
-
-
-            # Check if "Unothorized"-Error
+            # Check if "Unothorized" --> raise NoClientFoundError
             errors_etree = ET.fromstring(response.data)
             for error_etree in errors_etree:
                 text = error_etree.text
@@ -185,9 +176,18 @@ class ClientsProperties(list):
                     raise errors.ClientNotFoundError(
                         u"client_id: {client_id}".format(client_id = client_id)
                     )
-
             # Other Error
             raise errors.BillomatError(response.data)
+
+        # No response (workaround for inconsistent gziped answer; DecodeError)
+        try:
+            if len(response.data) == 0:
+                return
+        except urllib3.exceptions.DecodeError:
+            if response.headers.get("content-type", "").lower() != "application/xml":
+                return
+            else:
+                raise
 
         # Parse XML
         properties_etree = ET.fromstring(response.data)
@@ -216,140 +216,117 @@ class ClientsProperties(list):
             )
 
 
-# class ClientsIterator(object):
-#     """
-#     Iterates over all found clients
-#     """
-#
-#     def __init__(self, conn, per_page = 30):
-#         """
-#         ClientsIterator
-#         """
-#
-#         self.conn = conn
-#         self.clients = Clients(self.conn)
-#         self.per_page = per_page
-#         self.search_params = Bunch(
-#             name = None,
-#             client_number = None,
-#             email = None,
-#             first_name = None,
-#             last_name = None,
-#             country_code = None,
-#             note = None,
-#             invoice_id = None,
-#             tags = None,
-#         )
-#
-#
-#     def search(
-#         self,
-#         name = None,
-#         client_number = None,
-#         email = None,
-#         first_name = None,
-#         last_name = None,
-#         country_code = None,
-#         note = None,
-#         invoice_id = None,
-#         tags = None,
-#     ):
-#         """
-#         Search
-#         """
-#
-#         # Params
-#         self.search_params.name = name
-#         self.search_params.client_number = client_number
-#         self.search_params.email = email
-#         self.search_params.first_name = first_name
-#         self.search_params.last_name = last_name
-#         self.search_params.country_code = country_code
-#         self.search_params.note = note
-#         self.search_params.invoice_id = invoice_id
-#         self.search_params.tags = tags
-#
-#         # Search and prepare first page as result
-#         self.load_page(1)
-#
-#
-#     def load_page(self, page):
-#
-#         self.clients.search(
-#             name = self.search_params.name,
-#             client_number = self.search_params.client_number,
-#             email = self.search_params.email,
-#             first_name = self.search_params.first_name,
-#             last_name = self.search_params.last_name,
-#             country_code = self.search_params.country_code,
-#             note = self.search_params.note,
-#             invoice_id = self.search_params.invoice_id,
-#             tags = self.search_params.tags,
-#             fetch_all = False,
-#             allow_empty_filter = True,
-#             keep_old_items = False,
-#             page = page,
-#             per_page = self.per_page
-#         )
-#
-#
-#     def __len__(self):
-#         """
-#         Returns the count of found clients
-#         """
-#
-#         return self.clients.total or 0
-#
-#
-#     def __iter__(self):
-#         """
-#         Iterate over all found items
-#         """
-#
-#         for page in range(1, self.clients.pages + 1):
-#             if not self.clients.page == page:
-#                 self.load_page(page = page)
-#             for client in self.clients:
-#                 yield client
-#
-#
-#     def __getitem__(self, key):
-#         """
-#         Returns the requested client from the pool of found clients
-#         """
-#
-#         # List-Ids
-#         all_list_ids = range(len(self))
-#         requested_list_ids = all_list_ids[key]
-#         is_list = isinstance(requested_list_ids, list)
-#         if not is_list:
-#             requested_list_ids = [requested_list_ids]
-#
-#         result = []
-#
-#         for list_id in requested_list_ids:
-#
-#             # In welcher Seite befindet sich die gewünschte ID?
-#             for page_nr in range(1, self.clients.pages + 1):
-#                 max_list_id = (page_nr * self.clients.per_page) - 1
-#                 if list_id <= max_list_id:
-#                     page = page_nr
-#                     break
-#             else:
-#                 raise AssertionError()
-#
-#             # Load page if neccessary
-#             if not self.clients.page == page:
-#                 self.load_page(page = page)
-#
-#             # Add equested client-object to result
-#             list_id_in_page = list_id - ((page - 1) * self.clients.per_page)
-#             result.append(self.clients[list_id_in_page])
-#
-#         if is_list:
-#             return result
-#         else:
-#             return result[0]
-#
-#
-#
+class ClientsPropertiesIterator(object):
+    """
+    Iterates over all found properties
+    """
+
+    def __init__(self, conn, per_page = 100):
+        """
+        ClientsPropertiesIterator
+        """
+
+        self.conn = conn
+        self.clients_properties = ClientsProperties(self.conn)
+        self.per_page = per_page
+        self.search_params = Bunch(
+            client_id = None,
+            client_property_id = None,
+        )
+
+
+    def search(
+        self,
+        client_id = None,
+        client_property_id = None,
+    ):
+        """
+        Search
+        """
+
+        # Params
+        self.search_params.client_id = client_id
+        self.search_params.client_property_id = client_property_id
+
+        # Search and prepare first page as result
+        self.load_page(1)
+
+
+    def load_page(self, page):
+
+        self.clients_properties.search(
+            client_id = self.search_params.client_id,
+            client_property_id = self.search_params.client_property_id,
+
+            fetch_all = False,
+            allow_empty_filter = True,
+            keep_old_items = False,
+            page = page,
+            per_page = self.per_page
+        )
+
+
+    def __len__(self):
+        """
+        Returns the count of found properties
+        """
+
+        return self.clients_properties.total or 0
+
+
+    def __iter__(self):
+        """
+        Iterate over all found items
+        """
+
+        if not self.clients_properties.pages:
+            return
+
+        for page in range(1, self.clients_properties.pages + 1):
+            if not self.clients_properties.page == page:
+                self.load_page(page = page)
+            for client in self.clients_properties:
+                yield client
+
+
+    def __getitem__(self, key):
+        """
+        Returns the requested property from the pool of found properties
+        """
+
+        # List-Ids
+        all_list_ids = range(len(self))
+        requested_list_ids = all_list_ids[key]
+        is_list = isinstance(requested_list_ids, list)
+        if not is_list:
+            requested_list_ids = [requested_list_ids]
+        assert isinstance(requested_list_ids, list)
+
+        result = []
+
+        for list_id in requested_list_ids:
+
+            # In welcher Seite befindet sich die gewünschte ID?
+            for page_nr in range(1, self.clients_properties.pages + 1):
+                max_list_id = (page_nr * self.clients_properties.per_page) - 1
+                if list_id <= max_list_id:
+                    page = page_nr
+                    break
+            else:
+                raise AssertionError()
+
+            # Load page if neccessary
+            if not self.clients_properties.page == page:
+                self.load_page(page = page)
+
+            # Add equested client-object to result
+            list_id_in_page = list_id - ((page - 1) * self.clients_properties.per_page)
+            result.append(self.clients_properties[list_id_in_page])
+
+        if is_list:
+            return result
+        else:
+            return result[0]
+
+
+

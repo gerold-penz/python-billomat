@@ -18,8 +18,8 @@ print invoice
 # --> Invoice(address=u'TESTADRESSE', status=u'PAID', ...)
 
 
-# Iterate over the last 10 invoices (5 per page)
-invoices_iterator = pybillomat.InvoicesIterator(conn = conn, per_page = 5)
+# Iterate over the last 10 invoices
+invoices_iterator = pybillomat.InvoicesIterator(conn = conn, per_page = 10)
 invoices_iterator.search()
 for invoice in invoices_iterator[-10:]:
     assert isinstance(invoice, pybillomat.Invoice)

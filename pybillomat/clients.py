@@ -752,6 +752,9 @@ class ClientsIterator(object):
         Iterate over all found items
         """
 
+        if not self.clients.pages:
+            return
+
         for page in range(1, self.clients.pages + 1):
             if not self.clients.page == page:
                 self.load_page(page = page)
@@ -770,6 +773,7 @@ class ClientsIterator(object):
         is_list = isinstance(requested_list_ids, list)
         if not is_list:
             requested_list_ids = [requested_list_ids]
+        assert isinstance(requested_list_ids, list)
 
         result = []
 

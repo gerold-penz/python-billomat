@@ -19,6 +19,8 @@ Version 0.2.4
   - If the requested client is not accessable (Unothorized), the
     ClientNotFoundError will raised.
 
+  - ClientsPropertiesIterator-Class finished
+
 
 =============
 Version 0.2.3

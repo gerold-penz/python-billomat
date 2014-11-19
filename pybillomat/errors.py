@@ -17,11 +17,15 @@ class NoIdError(BillomatError):
     pass
 
 
-class InvoiceNotFoundError(BillomatError):
+class NotFoundError(BillomatError):
     pass
 
 
-class ClientNotFoundError(BillomatError):
+class InvoiceNotFoundError(NotFoundError):
+    pass
+
+
+class ClientNotFoundError(NotFoundError):
     pass
 
 

@@ -575,6 +575,9 @@ class InvoicesIterator(object):
         Iterate over all found items
         """
 
+        if not self.invoices.pages:
+            return
+
         for page in range(1, self.invoices.pages + 1):
             if not self.invoices.page == page:
                 self.load_page(page = page)
@@ -593,6 +596,7 @@ class InvoicesIterator(object):
         is_list = isinstance(requested_list_ids, list)
         if not is_list:
             requested_list_ids = [requested_list_ids]
+        assert isinstance(requested_list_ids, list)
 
         result = []
 

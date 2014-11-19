@@ -21,10 +21,12 @@ conn = pybillomat.Connection(
     billomat_app_secret = _personal.gerolds_billomat_app_secret
 )
 
-clients_properties = pybillomat.ClientsProperties(conn = conn)
-clients_properties.search(client_id = 1, fetch_all = True, allow_empty_filter = True)
 
-print len(clients_properties)
-for clients_property in clients_properties:
+# Iterate over the properties of one client.
+# It loads the properties gradually. In pages of 100 properties.
+clients_properties_iterator = pybillomat.ClientsPropertiesIterator(conn = conn)
+clients_properties_iterator.search(client_id = 81257)
+for clients_property in clients_properties_iterator:
     assert isinstance(clients_property, pybillomat.ClientsProperty)
     print clients_property
+
