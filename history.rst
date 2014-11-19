@@ -11,8 +11,13 @@ Version 0.2.4
 
 2014-11-19
 
-- Client-Property-Values: ClientsProperty- and ClientsProperties-Classes allow
-  to get one clients-property or search for clients-properties.
+- Client-Property-Values
+
+  - ClientsProperty- and ClientsProperties-Classes allow
+    to get one clients-property or search for clients-properties.
+
+  - If the requested client is not accessable (Unothorized), the
+    ClientNotFoundError will raised.
 
 
 =============
