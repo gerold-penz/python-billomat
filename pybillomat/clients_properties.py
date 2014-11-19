@@ -168,19 +168,26 @@ class ClientsProperties(list):
         # Fetch data
         response = self.conn.get(path = str(url))
         if response.status != 200:
+
+
+            print
+            print response.status
+            print
+            print response.data
+            print
+
+
+            # Check if "Unothorized"-Error
+            errors_etree = ET.fromstring(response.data)
+            for error_etree in errors_etree:
+                text = error_etree.text
+                if text.lower() == "unauthorized":
+                    raise errors.ClientNotFoundError(
+                        u"client_id: {client_id}".format(client_id = client_id)
+                    )
+
+            # Other Error
             raise errors.BillomatError(response.data)
-
-
-
-
-        # print
-        # print response.status
-        # print
-        # print response.data
-        # print
-
-
-
 
         # Parse XML
         properties_etree = ET.fromstring(response.data)

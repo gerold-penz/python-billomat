@@ -11,6 +11,8 @@ delivery notes,...
 The billomat[API] is an open data and programming interface which
 enables you to access the data in your Billomat account.
 
+*python-billomat* is ready for use in Google App Engine (GAE).
+
 - English API Description: http://www.billomat.com/en/api
 - Deutsche API Beschreibung: http://www.billomat.com/de/api
 

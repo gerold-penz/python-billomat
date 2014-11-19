@@ -11,11 +11,8 @@ Version 0.2.4
 
 2014-11-19
 
-
-ToDo: Client-Property-Values
-
-
-
+- Client-Property-Values: ClientsProperty- and ClientsProperties-Classes allow
+  to get one clients-property or search for clients-properties.
 
 
 =============
