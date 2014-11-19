@@ -6,6 +6,16 @@ by Gerold Penz 2014
 
 
 =============
+Version 0.2.5
+=============
+
+2014-11-19
+
+- The new class-method *pybillomat.ClientProperty.create()* creates one new
+  client-property-value.
+
+
+=============
 Version 0.2.4
 =============
 

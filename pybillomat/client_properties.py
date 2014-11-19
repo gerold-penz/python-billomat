@@ -95,6 +95,56 @@ class ClientProperty(Bunch):
         self.load_from_xml(response.data)
 
 
+    @classmethod
+    def create(
+        cls,
+        conn,
+        client_id,
+        client_property_id,
+        value
+    ):
+        """
+        Creates one Property
+
+        :param conn: Connection-Object
+        :param client_id: ID of the client
+        :param client_property_id: ID of the property
+        :param value: Property value
+        """
+
+        # XML
+        property_tag = ET.Element("client-property-value")
+
+        client_id_tag = ET.Element("client_id")
+        client_id_tag.text = unicode(int(client_id))
+        property_tag.append(client_id_tag)
+
+        client_property_id_tag = ET.Element("client_property_id")
+        client_property_id_tag.text = unicode(int(client_property_id))
+        property_tag.append(client_property_id_tag)
+
+        value_tag = ET.Element("value")
+        value_tag.text = unicode(value)
+        property_tag.append(value_tag)
+
+        xml = ET.tostring(property_tag)
+
+        # Path
+        path = "/api/client-property-values"
+
+        # Send POST-request
+        response = conn.post(path = path, body = xml)
+        if response.status != 201:  # Created
+            raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
+
+        # Create Property-Object
+        property = cls(conn = conn)
+        property.load_from_xml(response.data)
+
+        # Finished
+        return property
+
+
 class ClientProperties(list):
 
     def __init__(self, conn):

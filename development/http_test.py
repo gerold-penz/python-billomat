@@ -22,12 +22,14 @@ conn = pybillomat.Connection(
 )
 
 
-#
+TESTFIRMA = 422909
+MITARBEITERNAME = 819
 
-# Iterate over the last 10 invoices
-invoices_iterator = pybillomat.InvoicesIterator(conn = conn, per_page = 10)
-invoices_iterator.search(order_by = "id DESC")
-for invoice in invoices_iterator[:10]:
-    assert isinstance(invoice, pybillomat.Invoice)
-    print invoice.invoice_number, invoice.status
+client_property = pybillomat.ClientProperty.create(
+    conn = conn,
+    client_id = TESTFIRMA,
+    client_property_id = MITARBEITERNAME,
+    value = u"Gerold Penz"
+)
 
+print client_property
