@@ -23,7 +23,7 @@ Version 0.2.4
 
 - All searches: New parameter *order_by*
 
-- Better examples
+- Better examples created
 
 
 =============
