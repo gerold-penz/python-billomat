@@ -13,13 +13,13 @@ Version 0.2.4
 
 - Client-Property-Values
 
-  - ClientsProperty- and ClientsProperties-Classes allow
+  - ClientProperty- and ClientProperties-Classes allow
     to get one clients-property or search for clients-properties.
 
   - If the requested client is not accessable (Unothorized), the
     ClientNotFoundError will raised.
 
-  - ClientsPropertiesIterator-Class finished
+  - ClientPropertiesIterator-Class finished
 
 - All searches: New parameter *order_by*
 
