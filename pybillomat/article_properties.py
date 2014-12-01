@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 """
-Client-Properties
+Article-Properties
 
-- English API-Description: http://www.billomat.com/en/api/clients/properties
-- Deutsche API-Beschreibung: http://www.billomat.com/de/api/kunden/attribute
+- English API-Description: http://www.billomat.com/en/api/articles/properties
+- Deutsche API-Beschreibung: http://www.billomat.com/de/api/artikel/attribute
 """
 
 import urllib3
@@ -14,11 +14,11 @@ from bunch import Bunch
 from http import Url
 
 
-class ClientProperty(Bunch):
+class ArticleProperty(Bunch):
 
     def __init__(self, conn, id = None, property_etree = None):
         """
-        ClientPropertyValue
+        ArticleProperty
 
         :param conn: Connection-Object
         """
@@ -28,8 +28,8 @@ class ClientProperty(Bunch):
         self.conn = conn
 
         self.id = id  # Integer
-        self.client_id = None  # Integer
-        self.client_property_id = None  # Integer
+        self.article_id = None  # Integer
+        self.article_property_id = None  # Integer
         self.type = None  # TEXTFIELD, CHECKBOX, TEXTAREA, ...
         self.name = None
         self.value = None
@@ -84,7 +84,7 @@ class ClientProperty(Bunch):
             raise errors.NoIdError()
 
         # Path
-        path = "/api/client-property-values/{id}".format(id = self.id)
+        path = "/api/article-property-values/{id}".format(id = self.id)
 
         # Fetch data
         response = self.conn.get(path = path)
@@ -99,29 +99,29 @@ class ClientProperty(Bunch):
     def create(
         cls,
         conn,
-        client_id,
-        client_property_id,
+        article_id,
+        article_property_id,
         value
     ):
         """
         Creates one Property
 
         :param conn: Connection-Object
-        :param client_id: ID of the client
-        :param client_property_id: ID of the property
+        :param article_id: ID of the article
+        :param article_property_id: ID of the property
         :param value: Property value
         """
 
         # XML
-        property_tag = ET.Element("client-property-value")
+        property_tag = ET.Element("article-property-value")
 
-        client_id_tag = ET.Element("client_id")
-        client_id_tag.text = unicode(int(client_id))
-        property_tag.append(client_id_tag)
+        article_id_tag = ET.Element("article_id")
+        article_id_tag.text = unicode(int(article_id))
+        property_tag.append(article_id_tag)
 
-        client_property_id_tag = ET.Element("client_property_id")
-        client_property_id_tag.text = unicode(int(client_property_id))
-        property_tag.append(client_property_id_tag)
+        article_property_id_tag = ET.Element("article_property_id")
+        article_property_id_tag.text = unicode(int(article_property_id))
+        property_tag.append(article_property_id_tag)
 
         value_tag = ET.Element("value")
         value_tag.text = unicode(value)
@@ -130,7 +130,7 @@ class ClientProperty(Bunch):
         xml = ET.tostring(property_tag)
 
         # Path
-        path = "/api/client-property-values"
+        path = "/api/article-property-values"
 
         # Send POST-request
         response = conn.post(path = path, body = xml)
@@ -145,11 +145,11 @@ class ClientProperty(Bunch):
         return property
 
 
-class ClientProperties(list):
+class ArticleProperties(list):
 
     def __init__(self, conn):
         """
-        ClientProperty-List
+        ArticleProperty-List
 
         :param conn: Connection-Object
         """
@@ -166,8 +166,8 @@ class ClientProperties(list):
     def search(
         self,
         # Search parameters
-        client_id = None,
-        client_property_id = None,
+        article_id = None,
+        article_property_id = None,
         order_by = None,
 
         fetch_all = False,
@@ -177,12 +177,12 @@ class ClientProperties(list):
         per_page = None
     ):
         """
-        Fills the (internal) list with ClientPropertyValue-objects
+        Fills the (internal) list with ArticleProperty-objects
 
         If no search criteria given --> all properties will returned (REALLY ALL!).
 
-        :param client_id: Client ID
-        :param client_property_id: Client-Property-ID
+        :param article_id: Article ID
+        :param article_property_id: Article-Property-ID
         :param order_by: Sortings consist of the name of the field and
             sort order: ASC for ascending resp. DESC for descending order.
             If no order is specified, ascending order (ASC) is used.
@@ -190,14 +190,14 @@ class ClientProperties(list):
             comma.
 
         :param allow_empty_filter: If `True`, every filter-parameter may be empty.
-            All client-properties will returned. !!! EVERY CLIENT !!!
+            All article-properties will returned. !!! EVERY CLIENT !!!
         """
 
         # Check empty filter
         if not allow_empty_filter:
             if not any([
-                client_id,
-                client_property_id,
+                article_id,
+                article_property_id,
             ]):
                 raise errors.EmptyFilterError()
 
@@ -210,7 +210,7 @@ class ClientProperties(list):
                     break
 
         # Url and system-parameters
-        url = Url(path = "/api/client-property-values")
+        url = Url(path = "/api/article-property-values")
         url.query["page"] = page
         if per_page:
             url.query["per_page"] = per_page
@@ -218,21 +218,21 @@ class ClientProperties(list):
             url.query["order_by"] = order_by
 
         # Search parameters
-        if client_id:
-            url.query["client_id"] = client_id
-        if client_property_id:
-            url.query["client_property_id"] = client_property_id
+        if article_id:
+            url.query["article_id"] = article_id
+        if article_property_id:
+            url.query["article_property_id"] = article_property_id
 
         # Fetch data
         response = self.conn.get(path = str(url))
         if response.status != 200:
-            # Check if "Unothorized" --> raise NoClientFoundError
+            # Check if "Unothorized" --> raise NotFoundError
             errors_etree = ET.fromstring(response.data)
             for error_etree in errors_etree:
                 text = error_etree.text
                 if text.lower() == "unauthorized":
                     raise errors.NotFoundError(
-                        u"client_id: {client_id}".format(client_id = client_id)
+                        u"article_id: {article_id}".format(article_id = article_id)
                     )
             # Other Error
             raise errors.BillomatError(response.data)
@@ -255,18 +255,18 @@ class ClientProperties(list):
         self.page = int(properties_etree.attrib.get("page", "1"))
         self.pages = (self.total // self.per_page) + int(bool(self.total % self.per_page))
 
-        # Iterate over all client-properties
+        # Iterate over all article-properties
         for property_etree in properties_etree:
             self.append(
-                ClientProperty(conn = self.conn, property_etree = property_etree)
+                ArticleProperty(conn = self.conn, property_etree = property_etree)
             )
 
         # Fetch all
         if fetch_all and self.total > (self.page * self.per_page):
             self.search(
                 # Search parameters
-                client_id = client_id,
-                client_property_id = client_property_id,
+                article_id = article_id,
+                article_property_id = article_property_id,
 
                 fetch_all = fetch_all,
                 allow_empty_filter = allow_empty_filter,
@@ -276,30 +276,30 @@ class ClientProperties(list):
             )
 
 
-class ClientPropertiesIterator(object):
+class ArticlePropertiesIterator(object):
     """
     Iterates over all found properties
     """
 
     def __init__(self, conn, per_page = 100):
         """
-        ClientPropertiesIterator
+        ArticlePropertiesIterator
         """
 
         self.conn = conn
-        self.client_properties = ClientProperties(self.conn)
+        self.article_properties = ArticleProperties(self.conn)
         self.per_page = per_page
         self.search_params = Bunch(
-            client_id = None,
-            client_property_id = None,
+            article_id = None,
+            article_property_id = None,
             order_by = None,
         )
 
 
     def search(
         self,
-        client_id = None,
-        client_property_id = None,
+        article_id = None,
+        article_property_id = None,
         order_by = None
     ):
         """
@@ -307,8 +307,8 @@ class ClientPropertiesIterator(object):
         """
 
         # Params
-        self.search_params.client_id = client_id
-        self.search_params.client_property_id = client_property_id
+        self.search_params.article_id = article_id
+        self.search_params.article_property_id = article_property_id
         self.search_params.order_by = order_by
 
         # Search and prepare first page as result
@@ -317,9 +317,9 @@ class ClientPropertiesIterator(object):
 
     def load_page(self, page):
 
-        self.client_properties.search(
-            client_id = self.search_params.client_id,
-            client_property_id = self.search_params.client_property_id,
+        self.article_properties.search(
+            article_id = self.search_params.article_id,
+            article_property_id = self.search_params.article_property_id,
             order_by = self.search_params.order_by,
 
             fetch_all = False,
@@ -335,7 +335,7 @@ class ClientPropertiesIterator(object):
         Returns the count of found properties
         """
 
-        return self.client_properties.total or 0
+        return self.article_properties.total or 0
 
 
     def __iter__(self):
@@ -343,14 +343,14 @@ class ClientPropertiesIterator(object):
         Iterate over all found items
         """
 
-        if not self.client_properties.pages:
+        if not self.article_properties.pages:
             return
 
-        for page in range(1, self.client_properties.pages + 1):
-            if not self.client_properties.page == page:
+        for page in range(1, self.article_properties.pages + 1):
+            if not self.article_properties.page == page:
                 self.load_page(page = page)
-            for client in self.client_properties:
-                yield client
+            for article in self.article_properties:
+                yield article
 
 
     def __getitem__(self, key):
@@ -371,8 +371,8 @@ class ClientPropertiesIterator(object):
         for list_id in requested_list_ids:
 
             # In welcher Seite befindet sich die gewünschte ID?
-            for page_nr in range(1, self.client_properties.pages + 1):
-                max_list_id = (page_nr * self.client_properties.per_page) - 1
+            for page_nr in range(1, self.article_properties.pages + 1):
+                max_list_id = (page_nr * self.article_properties.per_page) - 1
                 if list_id <= max_list_id:
                     page = page_nr
                     break
@@ -380,12 +380,12 @@ class ClientPropertiesIterator(object):
                 raise AssertionError()
 
             # Load page if neccessary
-            if not self.client_properties.page == page:
+            if not self.article_properties.page == page:
                 self.load_page(page = page)
 
-            # Add equested client-property to result
-            list_id_in_page = list_id - ((page - 1) * self.client_properties.per_page)
-            result.append(self.client_properties[list_id_in_page])
+            # Add equested article-property to result
+            list_id_in_page = list_id - ((page - 1) * self.article_properties.per_page)
+            result.append(self.article_properties[list_id_in_page])
 
         if is_list:
             return result
