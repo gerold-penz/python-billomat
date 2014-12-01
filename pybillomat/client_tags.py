@@ -209,7 +209,7 @@ class ClientTags(list):
             comma.
 
         :param allow_empty_filter: If `True`, every filter-parameter may be empty.
-            All client-tags will returned. !!! EVERY CLIENT !!!
+            All client-tags will returned. !!! EVERY !!!
         """
 
         # Check empty filter

@@ -38,9 +38,16 @@ conn = pybillomat.Connection(
 # client_tag = pybillomat.ClientTag(conn = conn)
 # client_tag.load(id = 1)
 
-article_properties_iterator = pybillomat.ArticlePropertiesIterator(conn = conn)
-article_properties_iterator.search()
+# article_properties_iterator = pybillomat.ArticlePropertiesIterator(conn = conn)
+# article_properties_iterator.search()
+#
+# for property in article_properties_iterator:
+#     print property
+#
 
-for property in article_properties_iterator:
-    print property
+article_tags_iterator = pybillomat.ArticleTagsIterator(conn = conn)
+article_tags_iterator.search()
+
+for article_tag in article_tags_iterator:
+    print article_tag
 

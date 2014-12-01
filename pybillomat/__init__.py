@@ -25,3 +25,7 @@ from article_properties import (
     ArticleProperty,
     ArticlePropertiesIterator
 )
+from article_tags import (
+    ArticleTag,
+    ArticleTagsIterator
+)

@@ -190,7 +190,7 @@ class ArticleProperties(list):
             comma.
 
         :param allow_empty_filter: If `True`, every filter-parameter may be empty.
-            All article-properties will returned. !!! EVERY CLIENT !!!
+            All article-properties will returned. !!! EVERY !!!
         """
 
         # Check empty filter
