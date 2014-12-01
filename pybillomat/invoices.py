@@ -132,7 +132,7 @@ class Invoice(Bunch):
         # Fetch data
         response = self.conn.get(path = path)
         if not response.status == 200:
-            raise errors.InvoiceNotFoundError(unicode(self.id))
+            raise errors.NotFoundError(unicode(self.id))
 
         # Fill in data from XML
         self.load_from_xml(response.data)

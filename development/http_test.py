@@ -24,12 +24,14 @@ conn = pybillomat.Connection(
 
 TESTFIRMA = 422909
 MITARBEITERNAME = 819
+OESTERREICH = 10031
 
-client_property = pybillomat.ClientProperty.create(
-    conn = conn,
-    client_id = TESTFIRMA,
-    client_property_id = MITARBEITERNAME,
-    value = u"Gerold Penz"
-)
+# client_tags_iterator = pybillomat.ClientTagsIterator(conn = conn)
+# client_tags_iterator.search(client_id = TESTFIRMA)
+#
+# for client_tag in client_tags_iterator:
+#     print client_tag
+#
 
-print client_property
+client_tag = pybillomat.ClientTag(conn = conn)
+client_tag.load(id = 1)

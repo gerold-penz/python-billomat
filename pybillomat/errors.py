@@ -21,18 +21,3 @@ class NotFoundError(BillomatError):
     pass
 
 
-class InvoiceNotFoundError(NotFoundError):
-    pass
-
-
-class ClientNotFoundError(NotFoundError):
-    pass
-
-
-class NoClientLoaded(BillomatError):
-    pass
-
-
-class NoInvoiceLoaded(BillomatError):
-    pass
-

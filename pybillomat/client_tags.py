@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 """
-Client-Properties
+Client-Tags
 
-- English API-Description: http://www.billomat.com/en/api/clients/properties
-- Deutsche API-Beschreibung: http://www.billomat.com/de/api/kunden/attribute
+- English API-Description: http://www.billomat.com/en/api/clients/tags
+- Deutsche API-Beschreibung: http://www.billomat.com/de/api/kunden/schlagworte
 """
 
 import urllib3
@@ -14,11 +14,11 @@ from bunch import Bunch
 from http import Url
 
 
-class ClientProperty(Bunch):
+class ClientTag(Bunch):
 
-    def __init__(self, conn, id = None, property_etree = None):
+    def __init__(self, conn, id = None, tag_etree = None):
         """
-        ClientPropertyValue
+        ClientTag
 
         :param conn: Connection-Object
         """
@@ -28,14 +28,12 @@ class ClientProperty(Bunch):
         self.conn = conn
 
         self.id = id  # Integer
-        self.client_id = None  # Integer
-        self.client_property_id = None  # Integer
-        self.type = None  # TEXTFIELD, CHECKBOX, TEXTAREA, ...
+        self.client_id = None  # Not always filled
         self.name = None
-        self.value = None
+        self.count = None  # Not always filled
 
-        if not property_etree is None:
-            self.load_from_etree(property_etree)
+        if tag_etree is not None:
+            self.load_from_etree(tag_etree)
 
 
     def load_from_etree(self, etree_element):
@@ -51,7 +49,7 @@ class ClientProperty(Bunch):
             tag_type = item.attrib.get("type")
             text = item.text
 
-            if not text is None:
+            if text is not None:
                 if tag_type == "integer":
                     setattr(self, tag, int(text))
                 else:
@@ -84,12 +82,21 @@ class ClientProperty(Bunch):
             raise errors.NoIdError()
 
         # Path
-        path = "/api/client-property-values/{id}".format(id = self.id)
+        path = "/api/client-tags/{id}".format(id = self.id)
 
         # Fetch data
         response = self.conn.get(path = path)
         if response.status != 200:
-            raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
+            # Check if "Unothorized" --> raise NotFoundError
+            errors_etree = ET.fromstring(response.data)
+            for error_etree in errors_etree:
+                text = error_etree.text
+                if text.lower() == "unauthorized":
+                    raise errors.NotFoundError(
+                        u"id: {id}".format(id = id)
+                    )
+            # Other Error
+            raise errors.BillomatError(response.data)
 
         # Fill in data from XML
         self.load_from_xml(response.data)
@@ -100,37 +107,31 @@ class ClientProperty(Bunch):
         cls,
         conn,
         client_id,
-        client_property_id,
-        value
+        name
     ):
         """
-        Creates one Property
+        Creates one client-tag
 
         :param conn: Connection-Object
         :param client_id: ID of the client
-        :param client_property_id: ID of the property
-        :param value: Property value
+        :param name: Name of the tag
         """
 
         # XML
-        property_tag = ET.Element("client-property-value")
+        client_tag = ET.Element("client-tag")
 
         client_id_tag = ET.Element("client_id")
         client_id_tag.text = unicode(int(client_id))
-        property_tag.append(client_id_tag)
+        client_tag.append(client_id_tag)
 
-        client_property_id_tag = ET.Element("client_property_id")
-        client_property_id_tag.text = unicode(int(client_property_id))
-        property_tag.append(client_property_id_tag)
+        name_tag = ET.Element("name")
+        name_tag.text = unicode(name)
+        client_tag.append(name_tag)
 
-        value_tag = ET.Element("value")
-        value_tag.text = unicode(value)
-        property_tag.append(value_tag)
-
-        xml = ET.tostring(property_tag)
+        xml = ET.tostring(client_tag)
 
         # Path
-        path = "/api/client-property-values"
+        path = "/api/client-tags"
 
         # Send POST-request
         response = conn.post(path = path, body = xml)
@@ -145,11 +146,31 @@ class ClientProperty(Bunch):
         return property
 
 
-class ClientProperties(list):
+    def delete(self, id = None):
+        """
+        Deletes one client-tag
+        """
+
+        # Parameters
+        if id:
+            self.id = id
+        if not self.id:
+            raise errors.NoIdError()
+
+        # Path
+        path = "/api/client-tags/{id}".format(id = self.id)
+
+        # Fetch data
+        response = self.conn.delete(path = path)
+        if response.status != 200:
+            raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
+
+
+class ClientTags(list):
 
     def __init__(self, conn):
         """
-        ClientProperty-List
+        ClientTags-List
 
         :param conn: Connection-Object
         """
@@ -167,7 +188,6 @@ class ClientProperties(list):
         self,
         # Search parameters
         client_id = None,
-        client_property_id = None,
         order_by = None,
 
         fetch_all = False,
@@ -177,12 +197,11 @@ class ClientProperties(list):
         per_page = None
     ):
         """
-        Fills the (internal) list with ClientPropertyValue-objects
+        Fills the (internal) list with ClientTag-objects
 
-        If no search criteria given --> all properties will returned (REALLY ALL!).
+        If no search criteria given --> all tags will returned (REALLY ALL!).
 
         :param client_id: Client ID
-        :param client_property_id: Client-Property-ID
         :param order_by: Sortings consist of the name of the field and
             sort order: ASC for ascending resp. DESC for descending order.
             If no order is specified, ascending order (ASC) is used.
@@ -190,14 +209,13 @@ class ClientProperties(list):
             comma.
 
         :param allow_empty_filter: If `True`, every filter-parameter may be empty.
-            All client-properties will returned. !!! EVERY CLIENT !!!
+            All client-tags will returned. !!! EVERY CLIENT !!!
         """
 
         # Check empty filter
         if not allow_empty_filter:
             if not any([
                 client_id,
-                client_property_id,
             ]):
                 raise errors.EmptyFilterError()
 
@@ -210,7 +228,7 @@ class ClientProperties(list):
                     break
 
         # Url and system-parameters
-        url = Url(path = "/api/client-property-values")
+        url = Url(path = "/api/client-tags")
         url.query["page"] = page
         if per_page:
             url.query["per_page"] = per_page
@@ -220,13 +238,11 @@ class ClientProperties(list):
         # Search parameters
         if client_id:
             url.query["client_id"] = client_id
-        if client_property_id:
-            url.query["client_property_id"] = client_property_id
 
         # Fetch data
         response = self.conn.get(path = str(url))
         if response.status != 200:
-            # Check if "Unothorized" --> raise NoClientFoundError
+            # Check if "Unothorized" --> raise NotFoundError
             errors_etree = ET.fromstring(response.data)
             for error_etree in errors_etree:
                 text = error_etree.text
@@ -248,17 +264,17 @@ class ClientProperties(list):
                 raise
 
         # Parse XML
-        properties_etree = ET.fromstring(response.data)
+        tags_etree = ET.fromstring(response.data)
 
-        self.per_page = int(properties_etree.attrib.get("per_page", "0"))
-        self.total = int(properties_etree.attrib.get("total", "0"))
-        self.page = int(properties_etree.attrib.get("page", "1"))
+        self.per_page = int(tags_etree.attrib.get("per_page", "0"))
+        self.total = int(tags_etree.attrib.get("total", "0"))
+        self.page = int(tags_etree.attrib.get("page", "1"))
         self.pages = (self.total // self.per_page) + int(bool(self.total % self.per_page))
 
-        # Iterate over all client-properties
-        for property_etree in properties_etree:
+        # Iterate over all tags
+        for tag_etree in tags_etree:
             self.append(
-                ClientProperty(conn = self.conn, property_etree = property_etree)
+                ClientTag(conn = self.conn, tag_etree = tag_etree)
             )
 
         # Fetch all
@@ -266,7 +282,6 @@ class ClientProperties(list):
             self.search(
                 # Search parameters
                 client_id = client_id,
-                client_property_id = client_property_id,
 
                 fetch_all = fetch_all,
                 allow_empty_filter = allow_empty_filter,
@@ -276,22 +291,21 @@ class ClientProperties(list):
             )
 
 
-class ClientPropertiesIterator(object):
+class ClientTagsIterator(object):
     """
-    Iterates over all found properties
+    Iterates over all found tags
     """
 
     def __init__(self, conn, per_page = 100):
         """
-        ClientPropertiesIterator
+        ClientTagsIterator
         """
 
         self.conn = conn
-        self.client_properties = ClientProperties(self.conn)
+        self.client_tags = ClientTags(self.conn)
         self.per_page = per_page
         self.search_params = Bunch(
             client_id = None,
-            client_property_id = None,
             order_by = None,
         )
 
@@ -299,7 +313,6 @@ class ClientPropertiesIterator(object):
     def search(
         self,
         client_id = None,
-        client_property_id = None,
         order_by = None
     ):
         """
@@ -308,7 +321,6 @@ class ClientPropertiesIterator(object):
 
         # Params
         self.search_params.client_id = client_id
-        self.search_params.client_property_id = client_property_id
         self.search_params.order_by = order_by
 
         # Search and prepare first page as result
@@ -317,9 +329,8 @@ class ClientPropertiesIterator(object):
 
     def load_page(self, page):
 
-        self.client_properties.search(
+        self.client_tags.search(
             client_id = self.search_params.client_id,
-            client_property_id = self.search_params.client_property_id,
             order_by = self.search_params.order_by,
 
             fetch_all = False,
@@ -335,7 +346,7 @@ class ClientPropertiesIterator(object):
         Returns the count of found properties
         """
 
-        return self.client_properties.total or 0
+        return self.client_tags.total or 0
 
 
     def __iter__(self):
@@ -343,19 +354,19 @@ class ClientPropertiesIterator(object):
         Iterate over all found items
         """
 
-        if not self.client_properties.pages:
+        if not self.client_tags.pages:
             return
 
-        for page in range(1, self.client_properties.pages + 1):
-            if not self.client_properties.page == page:
+        for page in range(1, self.client_tags.pages + 1):
+            if not self.client_tags.page == page:
                 self.load_page(page = page)
-            for client in self.client_properties:
+            for client in self.client_tags:
                 yield client
 
 
     def __getitem__(self, key):
         """
-        Returns the requested property from the pool of found properties
+        Returns the requested tag from the pool of found tags
         """
 
         # List-Ids
@@ -371,8 +382,8 @@ class ClientPropertiesIterator(object):
         for list_id in requested_list_ids:
 
             # In welcher Seite befindet sich die gewünschte ID?
-            for page_nr in range(1, self.client_properties.pages + 1):
-                max_list_id = (page_nr * self.client_properties.per_page) - 1
+            for page_nr in range(1, self.client_tags.pages + 1):
+                max_list_id = (page_nr * self.client_tags.per_page) - 1
                 if list_id <= max_list_id:
                     page = page_nr
                     break
@@ -380,17 +391,15 @@ class ClientPropertiesIterator(object):
                 raise AssertionError()
 
             # Load page if neccessary
-            if not self.client_properties.page == page:
+            if not self.client_tags.page == page:
                 self.load_page(page = page)
 
-            # Add equested client-property to result
-            list_id_in_page = list_id - ((page - 1) * self.client_properties.per_page)
-            result.append(self.client_properties[list_id_in_page])
+            # Add requested client-tag to result
+            list_id_in_page = list_id - ((page - 1) * self.client_tags.per_page)
+            result.append(self.client_tags[list_id_in_page])
 
         if is_list:
             return result
         else:
             return result[0]
-
-
 

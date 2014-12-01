@@ -77,7 +77,7 @@ class Client(Bunch):
         self.revenue_gross = None  # Float
         self.revenue_net = None  # Float"
 
-        if not client_etree is None:
+        if client_etree is not None:
             self.load_from_etree(client_etree)
 
 

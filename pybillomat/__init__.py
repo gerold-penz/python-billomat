@@ -17,3 +17,7 @@ from client_properties import (
     ClientProperty,
     ClientPropertiesIterator
 )
+from client_tags import (
+    ClientTag,
+    ClientTagsIterator
+)
