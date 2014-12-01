@@ -519,6 +519,26 @@ class Client(Bunch):
         return client
 
 
+    def delete(self, id = None):
+        """
+        Deletes one client
+        """
+
+        # Parameters
+        if id:
+            self.id = id
+        if not self.id:
+            raise errors.NoIdError()
+
+        # Path
+        path = "/api/clients/{id}".format(id = self.id)
+
+        # Fetch data
+        response = self.conn.delete(path = path)
+        if response.status != 200:
+            raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
+
+
 class Clients(list):
 
     def __init__(self, conn):

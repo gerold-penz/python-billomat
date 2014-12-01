@@ -13,6 +13,8 @@ Version 0.2.8
 
 - Article-Tags
 
+- Client delete
+
 
 =============
 Version 0.2.7
