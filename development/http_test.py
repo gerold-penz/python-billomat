@@ -22,9 +22,9 @@ conn = pybillomat.Connection(
 )
 
 
+TESTFIRMA = 422909
 
-#
-# TESTFIRMA = 422909
+
 # MITARBEITERNAME = 819
 # OESTERREICH = 10031
 #
@@ -45,9 +45,12 @@ conn = pybillomat.Connection(
 #     print property
 #
 
-article_tags_iterator = pybillomat.ArticleTagsIterator(conn = conn)
-article_tags_iterator.search()
+client = pybillomat.Client(conn = conn)
+client.load(id = TESTFIRMA)
+print client
 
-for article_tag in article_tags_iterator:
-    print article_tag
+client.edit(bank_account_number = u'999999')
 
+client = pybillomat.Client(conn = conn)
+client.load(id = TESTFIRMA)
+print client

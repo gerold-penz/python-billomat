@@ -15,6 +15,8 @@ Version 0.2.8
 
 - Client delete
 
+- Client edit
+
 
 =============
 Version 0.2.7
