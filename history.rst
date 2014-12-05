@@ -6,6 +6,37 @@ by Gerold Penz 2014
 
 
 =============
+Version 0.2.8
+=============
+
+2014-12-01
+
+- Article-Tags
+
+- Client delete
+
+- Client edit
+
+
+=============
+Version 0.2.7
+=============
+
+2014-12-01
+
+- Article-Properties
+
+
+=============
+Version 0.2.6
+=============
+
+2014-12-01
+
+- Client-Tags
+
+
+=============
 Version 0.2.5
 =============
 
@@ -27,7 +58,7 @@ Version 0.2.4
     to get one clients-property or search for clients-properties.
 
   - If the requested client is not accessable (Unothorized), the
-    ClientNotFoundError will raised.
+    NotFoundError will raised.
 
   - ClientPropertiesIterator-Class finished
 

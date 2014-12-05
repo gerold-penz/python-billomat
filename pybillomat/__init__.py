@@ -17,3 +17,15 @@ from client_properties import (
     ClientProperty,
     ClientPropertiesIterator
 )
+from client_tags import (
+    ClientTag,
+    ClientTagsIterator
+)
+from article_properties import (
+    ArticleProperty,
+    ArticlePropertiesIterator
+)
+from article_tags import (
+    ArticleTag,
+    ArticleTagsIterator
+)
