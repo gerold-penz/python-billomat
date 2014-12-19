@@ -21,36 +21,14 @@ conn = pybillomat.Connection(
     billomat_app_secret = _personal.gerolds_billomat_app_secret
 )
 
-
-TESTFIRMA = 422909
-
-
-# MITARBEITERNAME = 819
-# OESTERREICH = 10031
+# recurring = pybillomat.Recurring(conn)
+# recurring.load(id = 47675)
 #
-# # client_tags_iterator = pybillomat.ClientTagsIterator(conn = conn)
-# # client_tags_iterator.search(client_id = TESTFIRMA)
-# #
-# # for client_tag in client_tags_iterator:
-# #     print client_tag
-# #
-#
-# client_tag = pybillomat.ClientTag(conn = conn)
-# client_tag.load(id = 1)
-
-# article_properties_iterator = pybillomat.ArticlePropertiesIterator(conn = conn)
-# article_properties_iterator.search()
-#
-# for property in article_properties_iterator:
-#     print property
+# print recurring
 #
 
-client = pybillomat.Client(conn = conn)
-client.load(id = TESTFIRMA)
-print client
-
-client.edit(bank_account_number = u'999999')
-
-client = pybillomat.Client(conn = conn)
-client.load(id = TESTFIRMA)
-print client
+# import pybillomat.recurrings
+# recurrings = pybillomat.recurrings.Recurrings(conn = conn)
+# recurrings.search(tags = "test")
+#
+# print recurrings

@@ -29,3 +29,7 @@ from article_tags import (
     ArticleTag,
     ArticleTagsIterator
 )
+from recurrings import (
+    Recurring,
+    RecurringsIterator
+)

@@ -39,9 +39,13 @@ class Invoice(Bunch):
         self.date = None  # date
         self.supply_date = None
         self.supply_date_type = None
+        #     SUPPLY_DATE (Leistungsdatum als Datum)
+        #     DELIVERY_DATE (Lieferdatum als Datum)
+        #     SUPPLY_TEXT (Leistungsdatum als Freitext)
+        #     DELIVERY_TEXT (Lieferdatum als Freitext)
         self.due_date = None  # date
         self.due_days = None  # integer
-        self.address = None
+        self.address = None  # Pass an empty value to use the current customer address.
         self.discount_rate = None  # float
         self.discount_date = None  # date
         self.discount_days = None  # integer
@@ -66,6 +70,17 @@ class Invoice(Bunch):
         self.recurring_id = None
         self.taxes = None  # array
         self.payment_types = None
+        #    INVOICE_CORRECTION (Korrekturrechnung)
+        #    CREDIT_NOTE (Gutschrift)
+        #    BANK_CARD (Bankkarte)
+        #    BANK_TRANSFER (Überweisung)
+        #    DEBIT (Lastschrift)
+        #    CASH (Bar)
+        #    CHECK (Scheck)
+        #    PAYPAL (Paypal)
+        #    CREDIT_CARD (Kreditkarte)
+        #    COUPON (Gutschein)
+        #    MISC (Sonstiges)
 
         if invoice_etree is not None:
             self.load_from_etree(invoice_etree)
@@ -84,7 +99,7 @@ class Invoice(Bunch):
             type = item.attrib.get("type")
             text = item.text
 
-            if not text is None:
+            if text is not None:
                 if type == "integer":
                     setattr(self, tag, int(text))
                 elif type == "datetime":
@@ -338,8 +353,8 @@ class Invoices(list):
         note = None,
         tags = None,
         article_id = None,
-        order_by = None,
 
+        order_by = None,
         fetch_all = False,
         allow_empty_filter = False,
         keep_old_items = False,
@@ -473,6 +488,7 @@ class Invoices(list):
                 tags = tags,
                 article_id = article_id,
 
+                order_by = order_by,
                 fetch_all = fetch_all,
                 allow_empty_filter = allow_empty_filter,
                 keep_old_items = True,

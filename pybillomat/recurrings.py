@@ -47,7 +47,7 @@ class Recurring(Bunch):
         self.next_creation_date = None  # date
         self.iterations = None  # integer
         self.counter = None  # integer
-        self.address = None
+        self.address = None  # Pass an empty value to use the current customer address.
         self.due_days = None  # integer
         self.discount_rate = None  # float
         self.discount_days = None  # integer
@@ -91,421 +91,235 @@ class Recurring(Bunch):
             self.load_from_etree(recurring_etree)
 
 
-#     def load_from_etree(self, etree_element):
-#         """
-#         Loads data from Element-Tree
-#         """
-#
-#         for item in etree_element:
-#
-#             # Get data
-#             isinstance(item, ET.Element)
-#             tag = item.tag
-#             type = item.attrib.get("type")
-#             text = item.text
-#
-#             if not text is None:
-#                 if type == "integer":
-#                     setattr(self, tag, int(text))
-#                 elif type == "datetime":
-#                     # <created type="datetime">2011-10-04T17:40:00+02:00</created>
-#                     dt = datetime.datetime.strptime(text[:19], "%Y-%m-%dT%H:%M:%S")
-#                     setattr(self, tag, dt)
-#                 elif type == "date":
-#                     # <date type="date">2009-10-14</date>
-#                     d = datetime.date(*[int(item)for item in text.strip().split("-")])
-#                     setattr(self, tag, d)
-#                 elif type == "float":
-#                     setattr(self, tag, float(text))
-#                 else:
-#                     if isinstance(text, str):
-#                         text = text.decode("utf-8")
-#                     setattr(self, tag, text)
-#
-#
-#     def load_from_xml(self, xml_string):
-#         """
-#         Loads data from XML-String
-#         """
-#
-#         # Parse XML
-#         root = ET.fromstring(xml_string)
-#
-#         # Load
-#         self.load_from_etree(root)
-#
-#
-#     def load(self, id = None):
-#         """
-#         Loads the invoice-data from server
-#         """
-#
-#         # Parameters
-#         if id:
-#             self.id = id
-#         if not self.id:
-#             raise errors.NoIdError()
-#
-#         # Path
-#         path = "/api/invoices/{id}".format(id = self.id)
-#
-#         # Fetch data
-#         response = self.conn.get(path = path)
-#         if not response.status == 200:
-#             raise errors.NotFoundError(unicode(self.id))
-#
-#         # Fill in data from XML
-#         self.load_from_xml(response.data)
-#         self.content_language = response.headers.get("content-language", None)
-#
-#
-#     def complete(self, template_id = None):
-#         """
-#         Closes a statement in the draft status (DRAFT) from.
-#         The status of open (OPEN) or overdue (Overdue) is set and
-#         a PDF is generated and stored in the file system.
-#         """
-#
-#         # Path
-#         path = "/api/invoices/{id}/complete".format(id = self.id)
-#
-#         # XML
-#         complete_tag = ET.Element("complete")
-#         if template_id:
-#             template_id_tag = ET.Element("template_id")
-#             template_id_tag.text = str(template_id)
-#             complete_tag.append(template_id_tag)
-#         xml = ET.tostring(complete_tag)
-#
-#         # Send PUT-request
-#         response = self.conn.put(path = path, body = xml)
-#
-#         if response.status != 200:
-#             # Parse response
-#             error_text_list = []
-#             for error in ET.fromstring(response.data):
-#                 error_text_list.append(error.text)
-#
-#             # Raise Error
-#             raise errors.BillomatError("\n".join(error_text_list))
-#
-#
-#     def send(
-#         self,
-#         from_address = None,
-#         to_address = None,
-#         cc_address = None,
-#         bcc_address = None,
-#         subject = None,
-#         body = None,
-#         filename = None,
-#         # attachments = None
-#     ):
-#         """
-#         Sends the invoice per e-mail to the customer
-#
-#         :param from_address: (originally: from) Sender
-#         :param to_address: (originally: recepients)
-#         :param cc_address: (originally: recepients)
-#         :param bcc_address: (originally: recepients)
-#         :param subject: Subject of the e-mail (may include placeholders)
-#         :param body: Text of the e-mail (may include placeholders)
-#         :param filename: Name of the PDF file (without .pdf)
-#         # :param attachments: List with Dictionaries::
-#         #
-#         #     [
-#         #         {
-#         #             "filename": "<Filename>",
-#         #             "mimetype": "<MimeType>",
-#         #             "base64file": "<Base64EncodedFile>"
-#         #         },
-#         #         ...
-#         #     ]
-#         """
-#
-#         # Path
-#         path = "/api/invoices/{id}/email".format(id = self.id)
-#
-#         # XML
-#         email_tag = ET.Element("email")
-#
-#         # From
-#         if from_address:
-#             from_tag = ET.Element("from")
-#             from_tag.text = from_address
-#             email_tag.append(from_tag)
-#
-#         # Recipients
-#         if to_address or cc_address or bcc_address:
-#             recipients_tag = ET.Element("recipients")
-#             email_tag.append(recipients_tag)
-#
-#             # To
-#             if to_address:
-#                 to_tag = ET.Element("to")
-#                 to_tag.text = to_address
-#                 recipients_tag.append(to_tag)
-#
-#             # Cc
-#             if cc_address:
-#                 cc_tag = ET.Element("cc")
-#                 cc_tag.text = cc_address
-#                 recipients_tag.append(cc_tag)
-#
-#             # Bcc
-#             if bcc_address:
-#                 bcc_tag = ET.Element("bcc")
-#                 bcc_tag.text = bcc_address
-#                 recipients_tag.append(bcc_tag)
-#
-#         # Subject
-#         if subject:
-#             subject_tag = ET.Element("subject")
-#             subject_tag.text = subject
-#             email_tag.append(subject_tag)
-#
-#         # Body
-#         if body:
-#             body_tag = ET.Element("body")
-#             body_tag.text = body
-#             email_tag.append(body_tag)
-#
-#         # Filename
-#         if filename:
-#             filename_tag = ET.Element("filename")
-#             filename_tag.text = filename
-#             filename_tag.append(filename_tag)
-#
-#         # ToDo: Attachments
-#
-#         xml = ET.tostring(email_tag)
-#
-#         # Send POST-request
-#         response = self.conn.post(path = path, body = xml)
-#
-#         if response.status != 200:
-#             # Parse response
-#             error_text_list = []
-#             for error in ET.fromstring(response.data):
-#                 error_text_list.append(error.text)
-#
-#             # Raise Error
-#             raise errors.BillomatError("\n".join(error_text_list))
-#
-#
-#     # def get_tags(self):
-#     #     """
-#     #     Gibt eine Liste mit Schlagworten der Rechnung zurück
-#     #     """
-#     #
-#     #     # Parameters
-#     #     if not self.id:
-#     #         raise errors.NoIdError()
-#     #
-#     #     # Path
-#     #     path = "/api/invoice-tags?invoice_id={id}".format(id = self.id)
-#     #
-#     #     # Fetch data
-#     #     response = self.conn.get(path = path)
-#     #     if not response.status == 200:
-#     #         raise errors.InvoiceNotFoundError(unicode(self.id))
-#     #
-#     #     # XML parsen
-#     #     root = ET.fromstring(response.data)
-#     #
-#     #     # Rückgabeliste befüllen
-#     #     retlist = []
-#     #     for item in root:
-#     #         isinstance(item, ET.Element)
-#     #         text = item.text
-#     #         if not text is None:
-#     #             retlist.append(text)
-#     #
-#     #     # Fertig
-#     #     return retlist
-#
-#
-# class Invoices(list):
-#
-#     def __init__(self, conn):
-#         """
-#         Invoices-List
-#
-#         :param conn: Connection-Object
-#         """
-#
-#         list.__init__(self)
-#
-#         self.conn = conn
-#         self.per_page = None
-#         self.total = None
-#         self.page = None
-#         self.pages = None
-#
-#
-#     def search(
-#         self,
-#         # Search parameters
-#         client_id = None,
-#         contact_id = None,
-#         invoice_number = None,
-#         status = None,
-#         payment_type = None,
-#         from_date = None,
-#         to_date = None,
-#         label = None,
-#         intro = None,
-#         note = None,
-#         tags = None,
-#         article_id = None,
-#         order_by = None,
-#
-#         fetch_all = False,
-#         allow_empty_filter = False,
-#         keep_old_items = False,
-#         page = 1,
-#         per_page = None
-#     ):
-#         """
-#         Fills the list with Invoice-objects
-#
-#         If no search criteria given --> all invoices will returned (REALLY ALL!).
-#
-#         :param client_id: ID of the client
-#         :param contact_id: ID of the contact
-#         :param invoice_number: invoice number
-#         :param status: Status (DRAFT, OPEN, PAID, OVERDUE, CANCELED).
-#             More than one statuses could be given as a comma separated list.
-#             Theses statuses will be logically OR-connected.
-#         :param payment_type: Payment Type (eg. CASH, BANK_TRANSFER, PAYPAL, ...).
-#             More than one payment type could be given as a comma separated list.
-#             Theses payment types will be logically OR-connected.
-#             You can find a overview of all payment types at API documentation
-#             of payments.
-#         :param from_date: (originaly: "from") Only show invoices since this
-#             date (format YYYY-MM-DD)
-#         :param to_date: (originaly: "to") Only show invoices up to this
-#             date (format YYYY-MM-DD)
-#         :param label: Free text search in label text
-#         :param intro: Free text search in introductory text
-#         :param note: Free text search in explanatory notes
-#         :param tags: Comma seperated list of tags
-#         :param article_id: ID of an article
-#         :param order_by: Sortings consist of the name of the field and
-#             sort order: ASC for ascending resp. DESC for descending order.
-#             If no order is specified, ascending order (ASC) is used.
-#             Nested sort orders are possible. Please separate the sort orders by
-#             comma.
-#
-#         :param allow_empty_filter: If `True`, every filter-parameter may be empty.
-#             So, all invoices will returned. !!! EVERY INVOICE !!!
-#         """
-#
-#         # Check empty filter
-#         if not allow_empty_filter:
-#             if not any([
-#                 client_id,
-#                 contact_id,
-#                 invoice_number,
-#                 status,
-#                 payment_type,
-#                 from_date,
-#                 to_date,
-#                 label,
-#                 intro,
-#                 note,
-#                 tags,
-#                 article_id,
-#             ]):
-#                 raise errors.EmptyFilterError()
-#
-#         # Empty the list
-#         if not keep_old_items:
-#             while True:
-#                 try:
-#                     self.pop()
-#                 except IndexError:
-#                     break
-#
-#         # Url and system-parameters
-#         url = Url(path = "/api/invoices")
-#         url.query["page"] = page
-#         if per_page:
-#             url.query["per_page"] = per_page
-#         if order_by:
-#             url.query["order_by"] = order_by
-#
-#         # Search parameters
-#         if client_id:
-#             url.query["client_id"] = client_id
-#         if contact_id:
-#             url.query["contact_id"] = contact_id
-#         if invoice_number:
-#             url.query["invoice_number"] = invoice_number
-#         if status:
-#             url.query["status"] = status
-#         if payment_type:
-#             url.query["payment_type"] = payment_type
-#         if from_date:
-#             url.query["from"] = from_date
-#         if to_date:
-#             url.query["to"] = to_date
-#         if label:
-#             url.query["label"] = label
-#         if intro:
-#             url.query["intro"] = intro
-#         if note:
-#             url.query["note"] = note
-#         if tags:
-#             url.query["tags"] = tags
-#         if article_id:
-#             url.query["article_id"] = article_id
-#
-#         # Fetch data
-#         response = self.conn.get(path = str(url))
-#
-#         # Parse XML
-#         invoices_etree = ET.fromstring(response.data)
-#
-#         self.per_page = int(invoices_etree.attrib.get("per_page", "100"))
-#         self.total = int(invoices_etree.attrib.get("total", "0"))
-#         self.page = int(invoices_etree.attrib.get("page", "1"))
-#         self.pages = (self.total // self.per_page) + int(bool(self.total % self.per_page))
-#
-#         # Iterate over all invoices
-#         for invoice_etree in invoices_etree:
-#             self.append(Invoice(conn = self.conn, invoice_etree = invoice_etree))
-#
-#         # Fetch all
-#         if fetch_all and self.total > (self.page * self.per_page):
-#             self.search(
-#                 # Search parameters
-#                 client_id = client_id,
-#                 contact_id = contact_id,
-#                 invoice_number = invoice_number,
-#                 status = status,
-#                 payment_type = payment_type,
-#                 from_date = from_date,
-#                 to_date = to_date,
-#                 label = label,
-#                 intro = intro,
-#                 note = note,
-#                 tags = tags,
-#                 article_id = article_id,
-#
-#                 fetch_all = fetch_all,
-#                 allow_empty_filter = allow_empty_filter,
-#                 keep_old_items = True,
-#                 page = page + 1,
-#                 per_page = per_page
-#             )
-#
-#
-# class InvoicesIterator(object):
-#     """
-#     Iterates over all found invoices
-#     """
-#
+    def load_from_etree(self, etree_element):
+        """
+        Loads data from Element-Tree
+        """
+
+        for item in etree_element:
+
+            # Get data
+            isinstance(item, ET.Element)
+            tag = item.tag
+            type = item.attrib.get("type")
+            text = item.text
+
+            if text is not None:
+                if type == "integer":
+                    setattr(self, tag, int(text))
+                elif type == "datetime":
+                    # <created type="datetime">2011-10-04T17:40:00+02:00</created>
+                    dt = datetime.datetime.strptime(text[:19], "%Y-%m-%dT%H:%M:%S")
+                    setattr(self, tag, dt)
+                elif type == "date":
+                    # <date type="date">2009-10-14</date>
+                    d = datetime.date(*[int(item)for item in text.strip().split("-")])
+                    setattr(self, tag, d)
+                elif type == "float":
+                    setattr(self, tag, float(text))
+                else:
+                    if isinstance(text, str):
+                        text = text.decode("utf-8")
+                    setattr(self, tag, text)
+
+
+    def load_from_xml(self, xml_string):
+        """
+        Loads data from XML-String
+        """
+
+        # Parse XML
+        root = ET.fromstring(xml_string)
+
+        # Load
+        self.load_from_etree(root)
+
+
+    def load(self, id = None):
+        """
+        Loads the recurring-data from server
+        """
+
+        # Parameters
+        if id:
+            self.id = id
+        if not self.id:
+            raise errors.NoIdError()
+
+        # Path
+        path = "/api/recurrings/{id}".format(id = self.id)
+
+        # Fetch data
+        response = self.conn.get(path = path)
+        if not response.status == 200:
+            raise errors.NotFoundError(unicode(self.id))
+
+        # Fill in data from XML
+        self.load_from_xml(response.data)
+        self.content_language = response.headers.get("content-language", None)
+
+
+class Recurrings(list):
+
+    def __init__(self, conn):
+        """
+        Recurrings-List
+
+        :param conn: Connection-Object
+        """
+
+        list.__init__(self)
+
+        self.conn = conn
+        self.per_page = None
+        self.total = None
+        self.page = None
+        self.pages = None
+
+
+    def search(
+        self,
+        # Search parameters
+        client_id = None,
+        contact_id = None,
+        name = None,
+        payment_type = None,
+        cycle = None,
+        label = None,
+        intro = None,
+        note = None,
+        tags = None,
+
+        order_by = None,
+        fetch_all = False,
+        allow_empty_filter = False,
+        keep_old_items = False,
+        page = 1,
+        per_page = None
+    ):
+        """
+        Fills the list with Recurring-objects
+
+        If no search criteria given --> all recurrings will returned (REALLY ALL!).
+
+        :param client_id: ID of the client
+        :param contact_id: ID of the contact
+        :param name: The Name of the recurring
+        :param payment_type: Payment Type (eg. CASH, BANK_TRANSFER, PAYPAL, ...).
+            More than one payment type could be given as a comma separated list.
+            Theses payment types will be logically OR-connected.
+            You can find a overview of all payment types at API documentation
+            of payments.
+        :param cycle: Interval (DAILY, WEEKLY, MONTHLY, YEARLY).
+        :param label: Free text search in label text
+        :param intro: Free text search in introductory text
+        :param note: Free text search in explanatory notes
+        :param tags: Comma seperated list of tags
+
+        :param order_by: Sortings consist of the name of the field and
+            sort order: ASC for ascending resp. DESC for descending order.
+            If no order is specified, ascending order (ASC) is used.
+            Nested sort orders are possible. Please separate the sort orders by
+            comma.
+
+        :param allow_empty_filter: If `True`, every filter-parameter may be empty.
+            So, all invoices will returned. !!! EVERY INVOICE !!!
+        """
+
+        # Check empty filter
+        if not allow_empty_filter:
+            if not any([
+                client_id,
+                contact_id,
+                name,
+                payment_type,
+                cycle,
+                label,
+                intro,
+                note,
+                tags,
+            ]):
+                raise errors.EmptyFilterError()
+
+        # Empty the list
+        if not keep_old_items:
+            while True:
+                try:
+                    self.pop()
+                except IndexError:
+                    break
+
+        # Url and system-parameters
+        url = Url(path = "/api/recurrings")
+        url.query["page"] = page
+        if per_page:
+            url.query["per_page"] = per_page
+        if order_by:
+            url.query["order_by"] = order_by
+
+        # Search parameters
+        if client_id:
+            url.query["client_id"] = client_id
+        if contact_id:
+            url.query["contact_id"] = contact_id
+        if name:
+            url.query["name"] = name
+        if payment_type:
+            url.query["payment_type"] = payment_type
+        if cycle:
+            url.query["cycle"] = cycle
+        if label:
+            url.query["label"] = label
+        if intro:
+            url.query["intro"] = intro
+        if note:
+            url.query["note"] = note
+        if tags:
+            url.query["tags"] = tags
+
+        # Fetch data
+        response = self.conn.get(path = str(url))
+
+        # Parse XML
+        recurrings_etree = ET.fromstring(response.data)
+
+        self.per_page = int(recurrings_etree.attrib.get("per_page", "100"))
+        self.total = int(recurrings_etree.attrib.get("total", "0"))
+        self.page = int(recurrings_etree.attrib.get("page", "1"))
+        self.pages = (self.total // self.per_page) + int(bool(self.total % self.per_page))
+
+        # Iterate over all recurrings
+        for recurring_etree in recurrings_etree:
+            self.append(Recurring(conn = self.conn, recurring_etree = recurring_etree))
+
+        # Fetch all
+        if fetch_all and self.total > (self.page * self.per_page):
+            self.search(
+                # Search parameters
+                client_id = client_id,
+                contact_id = contact_id,
+                name = name,
+                payment_type = payment_type,
+                cycle = cycle,
+                label = label,
+                intro = intro,
+                note = note,
+                tags = tags,
+
+                order_by = order_by,
+                fetch_all = fetch_all,
+                allow_empty_filter = allow_empty_filter,
+                keep_old_items = True,
+                page = page + 1,
+                per_page = per_page
+            )
+
+
+class RecurringsIterator(object):
+    """
+    Iterates over all found recurrings
+    """
+
 #     def __init__(self, conn, per_page = 30):
 #         """
 #         InvoicesIterator

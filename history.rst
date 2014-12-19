@@ -11,7 +11,7 @@ Version 0.2.9
 
 2014-12-19
 
-- With recurring-module begun
+- Begun, programming the recurring-module
 
 
 =============
