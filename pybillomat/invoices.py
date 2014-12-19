@@ -67,7 +67,7 @@ class Invoice(Bunch):
         self.taxes = None  # array
         self.payment_types = None
 
-        if not invoice_etree is None:
+        if invoice_etree is not None:
             self.load_from_etree(invoice_etree)
 
 
