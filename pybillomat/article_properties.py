@@ -12,6 +12,7 @@ import xml.etree.ElementTree as ET
 import errors
 from bunch import Bunch
 from http import Url
+from _itemsiterator import ItemsIterator
 
 
 class ArticleProperty(Bunch):
@@ -276,7 +277,7 @@ class ArticleProperties(list):
             )
 
 
-class ArticlePropertiesIterator(object):
+class ArticlePropertiesIterator(ItemsIterator):
     """
     Iterates over all found properties
     """
@@ -287,7 +288,7 @@ class ArticlePropertiesIterator(object):
         """
 
         self.conn = conn
-        self.article_properties = ArticleProperties(self.conn)
+        self.items = ArticleProperties(self.conn)
         self.per_page = per_page
         self.search_params = Bunch(
             article_id = None,
@@ -317,7 +318,7 @@ class ArticlePropertiesIterator(object):
 
     def load_page(self, page):
 
-        self.article_properties.search(
+        self.items.search(
             article_id = self.search_params.article_id,
             article_property_id = self.search_params.article_property_id,
             order_by = self.search_params.order_by,
@@ -328,69 +329,4 @@ class ArticlePropertiesIterator(object):
             page = page,
             per_page = self.per_page
         )
-
-
-    def __len__(self):
-        """
-        Returns the count of found properties
-        """
-
-        return self.article_properties.total or 0
-
-
-    def __iter__(self):
-        """
-        Iterate over all found items
-        """
-
-        if not self.article_properties.pages:
-            return
-
-        for page in range(1, self.article_properties.pages + 1):
-            if not self.article_properties.page == page:
-                self.load_page(page = page)
-            for article in self.article_properties:
-                yield article
-
-
-    def __getitem__(self, key):
-        """
-        Returns the requested property from the pool of found properties
-        """
-
-        # List-Ids
-        all_list_ids = range(len(self))
-        requested_list_ids = all_list_ids[key]
-        is_list = isinstance(requested_list_ids, list)
-        if not is_list:
-            requested_list_ids = [requested_list_ids]
-        assert isinstance(requested_list_ids, list)
-
-        result = []
-
-        for list_id in requested_list_ids:
-
-            # In welcher Seite befindet sich die gewünschte ID?
-            for page_nr in range(1, self.article_properties.pages + 1):
-                max_list_id = (page_nr * self.article_properties.per_page) - 1
-                if list_id <= max_list_id:
-                    page = page_nr
-                    break
-            else:
-                raise AssertionError()
-
-            # Load page if neccessary
-            if not self.article_properties.page == page:
-                self.load_page(page = page)
-
-            # Add equested article-property to result
-            list_id_in_page = list_id - ((page - 1) * self.article_properties.per_page)
-            result.append(self.article_properties[list_id_in_page])
-
-        if is_list:
-            return result
-        else:
-            return result[0]
-
-
 

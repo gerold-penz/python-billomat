@@ -12,6 +12,7 @@ import xml.etree.ElementTree as ET
 import errors
 from bunch import Bunch
 from http import Url
+# from _itemsiterator import ItemsIterator
 
 
 def _client_xml(
@@ -982,7 +983,7 @@ class Clients(list):
             )
 
 
-class ClientsIterator(object):
+class ClientsIterator(ItemsIterator):
     """
     Iterates over all found clients
     """

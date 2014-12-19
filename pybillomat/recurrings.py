@@ -10,9 +10,10 @@ Recurrings (Abo-Rechnungen)
 
 import datetime
 import xml.etree.ElementTree as ET
+import errors
 from bunch import Bunch
 from http import Url
-import errors
+from _itemsiterator import ItemsIterator
 
 
 class Recurring(Bunch):
@@ -315,161 +316,84 @@ class Recurrings(list):
             )
 
 
-class RecurringsIterator(object):
+class RecurringsIterator(ItemsIterator):
     """
     Iterates over all found recurrings
     """
 
-#     def __init__(self, conn, per_page = 30):
-#         """
-#         InvoicesIterator
-#         """
-#
-#         self.conn = conn
-#         self.invoices = Invoices(self.conn)
-#         self.per_page = per_page
-#         self.search_params = Bunch(
-#             client_id = None,
-#             contact_id = None,
-#             invoice_number = None,
-#             status = None,
-#             payment_type = None,
-#             from_date = None,
-#             to_date = None,
-#             label = None,
-#             intro = None,
-#             note = None,
-#             tags = None,
-#             article_id = None,
-#             order_by = None,
-#         )
-#
-#
-#     def search(
-#         self,
-#         client_id = None,
-#         contact_id = None,
-#         invoice_number = None,
-#         status = None,
-#         payment_type = None,
-#         from_date = None,
-#         to_date = None,
-#         label = None,
-#         intro = None,
-#         note = None,
-#         tags = None,
-#         article_id = None,
-#         order_by = None
-#     ):
-#         """
-#         Search
-#         """
-#
-#         # Params
-#         self.search_params.client_id = client_id
-#         self.search_params.contact_id = contact_id
-#         self.search_params.invoice_number = invoice_number
-#         self.search_params.status = status
-#         self.search_params.payment_type = payment_type
-#         self.search_params.from_date = from_date
-#         self.search_params.to_date = to_date
-#         self.search_params.label = label
-#         self.search_params.intro = intro
-#         self.search_params.note = note
-#         self.search_params.tags = tags
-#         self.search_params.article_id = article_id
-#         self.search_params.order_by = order_by
-#
-#         # Search and prepare first page as result
-#         self.load_page(1)
-#
-#
-#     def load_page(self, page):
-#
-#         self.invoices.search(
-#             client_id = self.search_params.client_id,
-#             contact_id = self.search_params.contact_id,
-#             invoice_number = self.search_params.invoice_number,
-#             status = self.search_params.status,
-#             payment_type = self.search_params.payment_type,
-#             from_date = self.search_params.from_date,
-#             to_date = self.search_params.to_date,
-#             label = self.search_params.label,
-#             intro = self.search_params.intro,
-#             note = self.search_params.note,
-#             tags = self.search_params.tags,
-#             article_id = self.search_params.article_id,
-#             order_by = self.search_params.order_by,
-#
-#             fetch_all = False,
-#             allow_empty_filter = True,
-#             keep_old_items = False,
-#             page = page,
-#             per_page = self.per_page
-#         )
-#
-#
-#     def __len__(self):
-#         """
-#         Returns the count of found invoices
-#         """
-#
-#         return self.invoices.total or 0
-#
-#
-#     def __iter__(self):
-#         """
-#         Iterate over all found items
-#         """
-#
-#         if not self.invoices.pages:
-#             return
-#
-#         for page in range(1, self.invoices.pages + 1):
-#             if not self.invoices.page == page:
-#                 self.load_page(page = page)
-#             for invoice in self.invoices:
-#                 yield invoice
-#
-#
-#     def __getitem__(self, key):
-#         """
-#         Returns the requested invoice from the pool of found invoices
-#         """
-#
-#         # List-Ids
-#         all_list_ids = range(len(self))
-#         requested_list_ids = all_list_ids[key]
-#         is_list = isinstance(requested_list_ids, list)
-#         if not is_list:
-#             requested_list_ids = [requested_list_ids]
-#         assert isinstance(requested_list_ids, list)
-#
-#         result = []
-#
-#         for list_id in requested_list_ids:
-#
-#             # In welcher Seite befindet sich die gewünschte ID?
-#             for page_nr in range(1, self.invoices.pages + 1):
-#                 max_list_id = (page_nr * self.invoices.per_page) - 1
-#                 if list_id <= max_list_id:
-#                     page = page_nr
-#                     break
-#             else:
-#                 raise AssertionError()
-#
-#             # Load page if neccessary
-#             if not self.invoices.page == page:
-#                 self.load_page(page = page)
-#
-#             # Add equested invoice-object to result
-#             list_id_in_page = list_id - ((page - 1) * self.invoices.per_page)
-#             result.append(self.invoices[list_id_in_page])
-#
-#         if is_list:
-#             return result
-#         else:
-#             return result[0]
-#
-#
-#
+    def __init__(self, conn, per_page = 30):
+        """
+        RecurringsIterator
+        """
+
+        self.conn = conn
+        self.items = Recurrings(self.conn)
+        self.per_page = per_page
+        self.search_params = Bunch(
+            client_id = None,
+            contact_id = None,
+            name = None,
+            payment_type = None,
+            cycle = None,
+            label = None,
+            intro = None,
+            note = None,
+            tags = None,
+            order_by = None
+        )
+
+
+    def search(
+        self,
+        client_id = None,
+        contact_id = None,
+        name = None,
+        payment_type = None,
+        cycle = None,
+        label = None,
+        intro = None,
+        note = None,
+        tags = None,
+        order_by = None
+    ):
+        """
+        Search
+        """
+
+        # Params
+        self.search_params.client_id = client_id
+        self.search_params.contact_id = contact_id
+        self.search_params.name = name
+        self.search_params.payment_type = payment_type
+        self.search_params.cycle = cycle
+        self.search_params.label = label
+        self.search_params.intro = intro
+        self.search_params.note = note
+        self.search_params.tags = tags
+        self.search_params.order_by = order_by
+
+        # Search and prepare first page as result
+        self.load_page(1)
+
+
+    def load_page(self, page):
+
+        self.items.search(
+            client_id = self.search_params.client_id,
+            contact_id = self.search_params.contact_id,
+            name = self.search_params.name,
+            payment_type = self.search_params.payment_type,
+            cycle = self.search_params.cycle,
+            label = self.search_params.label,
+            intro = self.search_params.intro,
+            note = self.search_params.note,
+            tags = self.search_params.tags,
+            order_by = self.search_params.order_by,
+
+            fetch_all = False,
+            allow_empty_filter = True,
+            keep_old_items = False,
+            page = page,
+            per_page = self.per_page
+        )
+

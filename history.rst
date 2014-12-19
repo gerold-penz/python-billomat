@@ -13,6 +13,10 @@ Version 0.2.9
 
 - Begun, programming the recurring-module
 
+- *ItemsIterator*-base class
+
+- *RecurringsIterator*-class
+
 
 =============
 Version 0.2.8
