@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 from bunch import Bunch
 from http import Url
 import errors
-from _itemsiterator import ItemsIterator
+from _tools import ItemsIterator
 
 
 class Invoice(Bunch):

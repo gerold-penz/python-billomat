@@ -13,7 +13,136 @@ import xml.etree.ElementTree as ET
 import errors
 from bunch import Bunch
 from http import Url
-from _itemsiterator import ItemsIterator
+from _tools import ItemsIterator
+
+
+def _recurring_xml(
+    client_id = None,
+    contact_id = None,
+    title = None,
+    address = None,
+    supply_date = None,
+    supply_date_type = None,
+    due_days = None,
+    discount_rate = None,
+    discount_days = None,
+    name = None,
+    label = None,
+    intro = None,
+    note = None,
+    currency_code = None,
+    reduction = None,
+    net_gross = None,
+    quote = None,
+    payment_types = None,
+    action = None,
+    cycle_number = None,
+    cycle = None,
+    hour = None,
+    start_date = None,
+    end_date = None,
+    next_creation_date = None,
+    email_sender = None,
+    email_subject = None,
+    email_message = None,
+    email_filename = None,
+    offer_id = None,
+    confirmation_id = None
+):
+    """
+    Creates the XML to add or edit a recurring
+    """
+
+    integer_field_names = [
+        "client_id",
+        "contact_id",
+        "due_days",
+        "discount_days",
+        "cycle_number",
+        "hour",
+        "offer_id",
+        "confirmation_id",
+    ]
+    date_or_string_fieldnames = [
+        "supply_date"
+    ]
+    date_fieldnames = [
+        "start_date",
+        "end_date",
+        "next_creation_date",
+    ]
+    float_fieldnames = [
+        "quote"
+    ]
+    string_fieldnames = [
+        "title",
+        "address",
+        "supply_date_type",
+        "name",
+        "label",
+        "intro",
+        "note",
+        "currency_code",
+        "reduction",
+        "net_gross",
+        "payment_types",
+        "action",
+        "cycle",
+        "email_sender",
+        "email_subject",
+        "email_message",
+        "email_filename",
+    ]
+
+    recurring_tag = ET.Element("recurring")
+
+    # Integer Fields
+    for field_name in integer_field_names:
+        value = locals()[field_name]
+        if value is not None:
+            new_tag = ET.Element(field_name)
+            new_tag.text = unicode(int(value))
+            recurring_tag.append(new_tag)
+
+    # Date or string fields
+    for field_name in date_or_string_fieldnames:
+        value = locals()[field_name]
+        if value is not None:
+            new_tag = ET.Element(field_name)
+            if isinstance(value, datetime.date):
+                new_tag.text = value.isoformat()
+            else:
+                new_tag.text = unicode(value)
+            recurring_tag.append(new_tag)
+
+    # Date fields
+    for field_name in date_fieldnames:
+        value = locals()[field_name]
+        if value is not None:
+            new_tag = ET.Element(field_name)
+            new_tag.text = value.isoformat()
+            recurring_tag.append(new_tag)
+
+    # Float Fields
+    for field_name in float_fieldnames:
+        value = locals()[field_name]
+        if value is not None:
+            new_tag = ET.Element(field_name)
+            new_tag.text = unicode(float(value))
+            recurring_tag.append(new_tag)
+
+    # String Fields
+    for field_name in string_fieldnames:
+        value = locals()[field_name]
+        if value is not None:
+            new_tag = ET.Element(field_name)
+            new_tag.text = unicode(value)
+            recurring_tag.append(new_tag)
+
+    xml = ET.tostring(recurring_tag)
+
+    # Finished
+    return xml
 
 
 class Recurring(Bunch):
@@ -158,6 +287,207 @@ class Recurring(Bunch):
         # Fill in data from XML
         self.load_from_xml(response.data)
         self.content_language = response.headers.get("content-language", None)
+
+
+
+
+    # @classmethod
+    # def create(
+    #     cls,
+    #     conn,
+    #     archived = None,
+    #     number_pre = None,
+    #     number = None,
+    #     number_length = None,
+    #     name = None,
+    #     street = None,
+    #     zip = None,
+    #     city = None,
+    #     state = None,
+    #     country_code = None,
+    #     first_name = None,
+    #     last_name = None,
+    #     salutation = None,
+    #     phone = None,
+    #     fax = None,
+    #     mobile = None,
+    #     email = None,
+    #     www = None,
+    #     tax_number = None,
+    #     vat_number = None,
+    #     bank_account_number = None,
+    #     bank_account_owner = None,
+    #     bank_number = None,
+    #     bank_name = None,
+    #     bank_swift = None,
+    #     bank_iban = None,
+    #     sepa_mandate = None,
+    #     sepa_mandate_date = None,
+    #     tax_rule = None,
+    #     net_gross = None,
+    #     default_payment_types = None,
+    #     note = None,
+    #     discount_rate_type = None,
+    #     discount_rate = None,
+    #     discount_days_type = None,
+    #     discount_days = None,
+    #     due_days_type = None,
+    #     due_days = None,
+    #     reminder_due_days_type = None,
+    #     reminder_due_days = None,
+    #     offer_validity_days_type = None,
+    #     offer_validity_days = None,
+    #     currency_code = None,
+    #     price_group = None
+    # ):
+    #     """
+    #     Creates one client
+    #
+    #     :param conn: Connection-Object
+    #     :param archived: State of archival storage.
+    #         True = archived, False = active
+    #         Default value: False
+    #     :param number_pre: Prefix
+    #         Default value: Value from settings
+    #     :param number: sequential number
+    #         Default value: next free number
+    #     :param number_length: Minimum length of the customer number
+    #         (to be filled with leading zeros)
+    #         Default value: Value from settings
+    #     :param name: Company name
+    #     :param street: Street
+    #     :param zip: Zip code
+    #     :param city: City
+    #     :param state: State, county, district, region
+    #     :param country_code: Country, Country code as ISO 3166 Alpha-2
+    #         Default value: Value from your own company
+    #     :param first_name: First name
+    #     :param last_name: Last name
+    #     :param salutation: Salutation
+    #     :param phone: Phone
+    #     :param fax: Fax
+    #     :param mobile: Mobile number
+    #     :param email: Email, valid Email address
+    #     :param www: Website, URL (w/o http)
+    #     :param tax_number: Tax number
+    #     :param vat_number: VAT number, valid VAT number
+    #     :param bank_account_number: Bank account number
+    #     :param bank_account_owner: Bank account owner
+    #     :param bank_number: Bank identifier code
+    #     :param bank_name: Bank name
+    #     :param bank_swift: SWIFT/BIC
+    #     :param bank_iban: IBAN
+    #     :param sepa_mandate: Mandate reference of a SEPA Direct Debit mandate
+    #     :param sepa_mandate_date: Date of issue of the SEPA Direct Debit mandate
+    #     :param tax_rule: Tax Rule
+    #         Possible values: TAX, NO_TAX, COUNTRY
+    #         Default value: "COUNTRY"
+    #     :param default_payment_types: Payment Type(s)
+    #         (eg. CASH, BANK_TRANSFER, PAYPAL, ...).
+    #         More than one payment type could be given as a comma separated list.
+    #         Theses payment types will be logically OR-connected.
+    #         You can find a overview of all payment types at API documentation of
+    #         payments. If no value is passed, the customer will be offered
+    #         the payment types specified at the account settings.
+    #     :param net_gross: Price basis (net, gross, according to account settings)
+    #         Possible values: NET, GROSS, SETTINGS
+    #         Default value: "SETTINGS"
+    #     :param note: Note
+    #     :param discount_rate_type: Type of the default value for discount rate
+    #         Possible values: SETTINGS, ABSOLUTE, RELATIVE
+    #         Default value: "SETTINGS"
+    #     :param discount_rate: Discount rate
+    #     :param discount_days_type: Type of the default value for discount interval
+    #         Possible values: SETTINGS, ABSOLUTE, RELATIVE
+    #         Default value: "SETTINGS"
+    #     :param discount_days: Discount period in days
+    #     :param due_days_type: Type of the default value for maturity
+    #         Possible values: SETTINGS, ABSOLUTE, RELATIVE
+    #         Default value: "SETTINGS"
+    #     :param due_days: Maturity in days from invoice date
+    #     :param reminder_due_days_type: Type of the default value for reminder
+    #         maturity
+    #         Possible values: SETTINGS, ABSOLUTE, RELATIVE
+    #         Default value: "SETTINGS"
+    #     :param reminder_due_days: Reminder maturity
+    #     :param offer_validity_days_type: Type of the default value for
+    #         validity of estimates
+    #         Possible values: SETTINGS, ABSOLUTE, RELATIVE
+    #         Default value: "SETTINGS"
+    #     :param offer_validity_days: Validity of estimates
+    #     :param currency_code: The currency for this client. ISO currency code.
+    #         If this field is empty, the account currency is used.
+    #     :param price_group: Artciles can have several prices.
+    #         The pricegroup defines which price applies to the client.
+    #     """
+    #
+    #     # XML
+    #     xml = _client_xml(
+    #         archived = archived,
+    #         number_pre = number_pre,
+    #         number = number,
+    #         number_length = number_length,
+    #         name = name,
+    #         street = street,
+    #         zip = zip,
+    #         city = city,
+    #         state = state,
+    #         country_code = country_code,
+    #         first_name = first_name,
+    #         last_name = last_name,
+    #         salutation = salutation,
+    #         phone = phone,
+    #         fax = fax,
+    #         mobile = mobile,
+    #         email = email,
+    #         www = www,
+    #         tax_number = tax_number,
+    #         vat_number = vat_number,
+    #         bank_account_number = bank_account_number,
+    #         bank_account_owner = bank_account_owner,
+    #         bank_number = bank_number,
+    #         bank_name = bank_name,
+    #         bank_swift = bank_swift,
+    #         bank_iban = bank_iban,
+    #         sepa_mandate = sepa_mandate,
+    #         sepa_mandate_date = sepa_mandate_date,
+    #         tax_rule = tax_rule,
+    #         net_gross = net_gross,
+    #         default_payment_types = default_payment_types,
+    #         note = note,
+    #         discount_rate_type = discount_rate_type,
+    #         discount_rate = discount_rate,
+    #         discount_days_type = discount_days_type,
+    #         discount_days = discount_days,
+    #         due_days_type = due_days_type,
+    #         due_days = due_days,
+    #         reminder_due_days_type = reminder_due_days_type,
+    #         reminder_due_days = reminder_due_days,
+    #         offer_validity_days_type = offer_validity_days_type,
+    #         offer_validity_days = offer_validity_days,
+    #         currency_code = currency_code,
+    #         price_group = price_group
+    #     )
+    #
+    #     # Path
+    #     path = "/api/clients"
+    #
+    #     # Send POST-request
+    #     response = conn.post(path = path, body = xml)
+    #     if response.status != 201:  # Created
+    #         raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
+    #
+    #     # Create Client-Object
+    #     client = cls(conn = conn)
+    #     client.content_language = response.headers.get("content-language", None)
+    #     client.load_from_xml(response.data)
+    #
+    #     # Finished
+    #     return client
+
+
+
+
 
 
 class Recurrings(list):
