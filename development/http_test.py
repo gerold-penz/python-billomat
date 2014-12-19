@@ -27,8 +27,8 @@ conn = pybillomat.Connection(
 # print recurring
 #
 
-# import pybillomat.recurrings
-# recurrings = pybillomat.recurrings.Recurrings(conn = conn)
-# recurrings.search(tags = "test")
-#
-# print recurrings
+import pybillomat.recurrings
+recurrings = pybillomat.recurrings.Recurrings(conn = conn)
+recurrings.search(allow_empty_filter = True)
+
+print recurrings

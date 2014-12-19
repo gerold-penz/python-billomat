@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 import errors
 from bunch import Bunch
 from http import Url
-# from _itemsiterator import ItemsIterator
+from _itemsiterator import ItemsIterator
 
 
 def _client_xml(
@@ -994,7 +994,7 @@ class ClientsIterator(ItemsIterator):
         """
 
         self.conn = conn
-        self.clients = Clients(self.conn)
+        self.items = Clients(self.conn)
         self.per_page = per_page
         self.search_params = Bunch(
             name = None,
@@ -1045,7 +1045,7 @@ class ClientsIterator(ItemsIterator):
 
     def load_page(self, page):
 
-        self.clients.search(
+        self.items.search(
             name = self.search_params.name,
             client_number = self.search_params.client_number,
             email = self.search_params.email,
@@ -1063,69 +1063,5 @@ class ClientsIterator(ItemsIterator):
             page = page,
             per_page = self.per_page
         )
-
-
-    def __len__(self):
-        """
-        Returns the count of found clients
-        """
-
-        return self.clients.total or 0
-
-
-    def __iter__(self):
-        """
-        Iterate over all found items
-        """
-
-        if not self.clients.pages:
-            return
-
-        for page in range(1, self.clients.pages + 1):
-            if not self.clients.page == page:
-                self.load_page(page = page)
-            for client in self.clients:
-                yield client
-
-
-    def __getitem__(self, key):
-        """
-        Returns the requested client from the pool of found clients
-        """
-
-        # List-Ids
-        all_list_ids = range(len(self))
-        requested_list_ids = all_list_ids[key]
-        is_list = isinstance(requested_list_ids, list)
-        if not is_list:
-            requested_list_ids = [requested_list_ids]
-        assert isinstance(requested_list_ids, list)
-
-        result = []
-
-        for list_id in requested_list_ids:
-
-            # In welcher Seite befindet sich die gewünschte ID?
-            for page_nr in range(1, self.clients.pages + 1):
-                max_list_id = (page_nr * self.clients.per_page) - 1
-                if list_id <= max_list_id:
-                    page = page_nr
-                    break
-            else:
-                raise AssertionError()
-
-            # Load page if neccessary
-            if not self.clients.page == page:
-                self.load_page(page = page)
-
-            # Add equested client-object to result
-            list_id_in_page = list_id - ((page - 1) * self.clients.per_page)
-            result.append(self.clients[list_id_in_page])
-
-        if is_list:
-            return result
-        else:
-            return result[0]
-
 
 

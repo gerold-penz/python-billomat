@@ -12,6 +12,7 @@ import xml.etree.ElementTree as ET
 import errors
 from bunch import Bunch
 from http import Url
+from _itemsiterator import ItemsIterator
 
 
 class ClientTag(Bunch):
@@ -291,7 +292,7 @@ class ClientTags(list):
             )
 
 
-class ClientTagsIterator(object):
+class ClientTagsIterator(ItemsIterator):
     """
     Iterates over all found tags
     """
@@ -302,7 +303,7 @@ class ClientTagsIterator(object):
         """
 
         self.conn = conn
-        self.client_tags = ClientTags(self.conn)
+        self.items = ClientTags(self.conn)
         self.per_page = per_page
         self.search_params = Bunch(
             client_id = None,
@@ -329,7 +330,7 @@ class ClientTagsIterator(object):
 
     def load_page(self, page):
 
-        self.client_tags.search(
+        self.items.search(
             client_id = self.search_params.client_id,
             order_by = self.search_params.order_by,
 
@@ -340,66 +341,4 @@ class ClientTagsIterator(object):
             per_page = self.per_page
         )
 
-
-    def __len__(self):
-        """
-        Returns the count of found properties
-        """
-
-        return self.client_tags.total or 0
-
-
-    def __iter__(self):
-        """
-        Iterate over all found items
-        """
-
-        if not self.client_tags.pages:
-            return
-
-        for page in range(1, self.client_tags.pages + 1):
-            if not self.client_tags.page == page:
-                self.load_page(page = page)
-            for client in self.client_tags:
-                yield client
-
-
-    def __getitem__(self, key):
-        """
-        Returns the requested tag from the pool of found tags
-        """
-
-        # List-Ids
-        all_list_ids = range(len(self))
-        requested_list_ids = all_list_ids[key]
-        is_list = isinstance(requested_list_ids, list)
-        if not is_list:
-            requested_list_ids = [requested_list_ids]
-        assert isinstance(requested_list_ids, list)
-
-        result = []
-
-        for list_id in requested_list_ids:
-
-            # In welcher Seite befindet sich die gewünschte ID?
-            for page_nr in range(1, self.client_tags.pages + 1):
-                max_list_id = (page_nr * self.client_tags.per_page) - 1
-                if list_id <= max_list_id:
-                    page = page_nr
-                    break
-            else:
-                raise AssertionError()
-
-            # Load page if neccessary
-            if not self.client_tags.page == page:
-                self.load_page(page = page)
-
-            # Add requested client-tag to result
-            list_id_in_page = list_id - ((page - 1) * self.client_tags.per_page)
-            result.append(self.client_tags[list_id_in_page])
-
-        if is_list:
-            return result
-        else:
-            return result[0]
 

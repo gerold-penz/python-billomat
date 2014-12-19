@@ -17,6 +17,8 @@ Version 0.2.9
 
 - *RecurringsIterator*-class
 
+- Global use of *ItemsIterator*-base class
+
 
 =============
 Version 0.2.8

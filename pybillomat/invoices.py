@@ -12,6 +12,7 @@ import xml.etree.ElementTree as ET
 from bunch import Bunch
 from http import Url
 import errors
+from _itemsiterator import ItemsIterator
 
 
 class Invoice(Bunch):
@@ -497,7 +498,7 @@ class Invoices(list):
             )
 
 
-class InvoicesIterator(object):
+class InvoicesIterator(ItemsIterator):
     """
     Iterates over all found invoices
     """
@@ -508,7 +509,7 @@ class InvoicesIterator(object):
         """
 
         self.conn = conn
-        self.invoices = Invoices(self.conn)
+        self.items = Invoices(self.conn)
         self.per_page = per_page
         self.search_params = Bunch(
             client_id = None,
@@ -568,7 +569,7 @@ class InvoicesIterator(object):
 
     def load_page(self, page):
 
-        self.invoices.search(
+        self.items.search(
             client_id = self.search_params.client_id,
             contact_id = self.search_params.contact_id,
             invoice_number = self.search_params.invoice_number,
@@ -589,69 +590,5 @@ class InvoicesIterator(object):
             page = page,
             per_page = self.per_page
         )
-
-
-    def __len__(self):
-        """
-        Returns the count of found invoices
-        """
-
-        return self.invoices.total or 0
-
-
-    def __iter__(self):
-        """
-        Iterate over all found items
-        """
-
-        if not self.invoices.pages:
-            return
-
-        for page in range(1, self.invoices.pages + 1):
-            if not self.invoices.page == page:
-                self.load_page(page = page)
-            for invoice in self.invoices:
-                yield invoice
-
-
-    def __getitem__(self, key):
-        """
-        Returns the requested invoice from the pool of found invoices
-        """
-
-        # List-Ids
-        all_list_ids = range(len(self))
-        requested_list_ids = all_list_ids[key]
-        is_list = isinstance(requested_list_ids, list)
-        if not is_list:
-            requested_list_ids = [requested_list_ids]
-        assert isinstance(requested_list_ids, list)
-
-        result = []
-
-        for list_id in requested_list_ids:
-
-            # In welcher Seite befindet sich die gewünschte ID?
-            for page_nr in range(1, self.invoices.pages + 1):
-                max_list_id = (page_nr * self.invoices.per_page) - 1
-                if list_id <= max_list_id:
-                    page = page_nr
-                    break
-            else:
-                raise AssertionError()
-
-            # Load page if neccessary
-            if not self.invoices.page == page:
-                self.load_page(page = page)
-
-            # Add equested invoice-object to result
-            list_id_in_page = list_id - ((page - 1) * self.invoices.per_page)
-            result.append(self.invoices[list_id_in_page])
-
-        if is_list:
-            return result
-        else:
-            return result[0]
-
 
 
