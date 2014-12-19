@@ -19,6 +19,12 @@ Version 0.2.9
 
 - Global use of *ItemsIterator*-base class
 
+- Create recurrings
+
+- Edit recurrings
+
+- Delete recurrings
+
 
 =============
 Version 0.2.8

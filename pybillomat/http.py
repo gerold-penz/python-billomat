@@ -141,7 +141,7 @@ class Connection(object):
         return self._request_with_body(method = "PUT", path = path, body = body)
 
 
-    def delete(self, path, body):
+    def delete(self, path, body = None):
         """
         DELETE-Request (no gzipped response)
 

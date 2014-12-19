@@ -47,7 +47,8 @@ def _recurring_xml(
     email_message = None,
     email_filename = None,
     offer_id = None,
-    confirmation_id = None
+    confirmation_id = None,
+    template_id = None,
 ):
     """
     Creates the XML to add or edit a recurring
@@ -57,22 +58,24 @@ def _recurring_xml(
         "client_id",
         "contact_id",
         "due_days",
+        "discount_rate",
         "discount_days",
         "cycle_number",
         "hour",
         "offer_id",
         "confirmation_id",
+        "template_id",
     ]
     date_or_string_fieldnames = [
-        "supply_date"
+        "supply_date",
+        "next_creation_date",
     ]
     date_fieldnames = [
         "start_date",
         "end_date",
-        "next_creation_date",
     ]
     float_fieldnames = [
-        "quote"
+        "quote",
     ]
     string_fieldnames = [
         "title",
@@ -289,205 +292,304 @@ class Recurring(Bunch):
         self.content_language = response.headers.get("content-language", None)
 
 
+    @classmethod
+    def create(
+        cls,
+        conn,
+        client_id = None,
+        contact_id = None,
+        title = None,
+        address = None,
+        supply_date = None,
+        supply_date_type = None,
+        due_days = None,
+        discount_rate = None,
+        discount_days = None,
+        name = None,
+        label = None,
+        intro = None,
+        note = None,
+        currency_code = None,
+        reduction = None,
+        net_gross = None,
+        quote = None,
+        payment_types = None,
+        action = None,
+        cycle_number = None,
+        cycle = None,
+        hour = None,
+        start_date = None,
+        end_date = None,
+        next_creation_date = None,
+        email_sender = None,
+        email_subject = None,
+        email_message = None,
+        email_filename = None,
+        offer_id = None,
+        confirmation_id = None,
+        template_id = None,
+        recurring_items = None
+    ):
+        """
+        Creates a recurring
+
+        :param conn: Connection-Object
+
+        :param client_id: ID of the client
+        :param contact_id: ID of the contact
+        :param title: Document title; Let it empty to use the default value
+            from settings: "Invoice [Invoice.invoice_number]"
+        :param address: the address;
+            Pass an empty value to use the current customer address.
+        :param supply_date: supply/delivery date; MIXED (DATE/ALNUM)
+        :param supply_date_type: type or supply/delivery date; ALNUM (
+            "SUPPLY_DATE", "DELIVERY_DATE", "SUPPLY_TEXT", "DELIVERY_TEXT")
+        :param due_days: Due days
+        :param discount_rate: Cash discount
+        :param discount_days: Cash discount days
+        :param name: Name of the recurring; is the title of the recurring
+        :param label: Label text to describe the project
+        :param intro: Introductory text; Default value taken from the settings
+        :param note: Explanatory notes; Default value taken from the settings
+        :param reduction: Reduction (absolute or percent: 10/10%)
+        :param currency_code: Currency; ISO currency code
+        :param net_gross: Price basis (gross or net prices)
+        :param quote: Currency quote (for conversion into standard currency)
+        :param payment_types: List (separated by comma) of all accepted payment
+            types.
+        :param action: Action to be executed (CREATE, COMPLETE, EMAIL)
+        :param cycle_number: Number of intervals. For example, 3 for
+            "every 3 months"
+        :param cycle: Interval (DAILY, WEEKLY, MONTHLY, YEARLY)
+        :param hour: Time of Day (hour)
+        :param start_date: Start date;
+        :param end_date: End date
+        :param next_creation_date: Date of the next creation;
+            Put "" (empty string) to set recurring inactive.
+        :param email_sender: Sender when sending e-mail. If you pass an empty
+            value, the sender will be used from the settings.
+        :param email_subject: Subject when sending e-mail. If you pass an
+            empty value, the subject will be used from the settings.
+        :param email_message: Message text when sending e-mail. If you pass
+            an empty value, the message will be used from the settings.
+        :param email_filename: Filename of the invoice when sending e-mail.
+            If you pass an empty value, the filename will be used from the settings.
+        :param offer_id: The ID of the estimate, if the recurring was created
+            from an estimate.
+        :param confirmation_id: The ID of the confirmation, if the recurring
+            was created from a confirmation.
+        :param template_id: Template ID
+        :param recurring_items: List with RecurringItem-Objects
+        """
+
+        # XML
+        xml = _recurring_xml(
+            client_id = client_id,
+            contact_id = contact_id,
+            title = title,
+            address = address,
+            supply_date = supply_date,
+            supply_date_type = supply_date_type,
+            due_days = due_days,
+            discount_rate = discount_rate,
+            discount_days = discount_days,
+            name = name,
+            label = label,
+            intro = intro,
+            note = note,
+            currency_code = currency_code,
+            reduction = reduction,
+            net_gross = net_gross,
+            quote = quote,
+            payment_types = payment_types,
+            action = action,
+            cycle_number = cycle_number,
+            cycle = cycle,
+            hour = hour,
+            start_date = start_date,
+            end_date = end_date,
+            next_creation_date = next_creation_date,
+            email_sender = email_sender,
+            email_subject = email_subject,
+            email_message = email_message,
+            email_filename = email_filename,
+            offer_id = offer_id,
+            confirmation_id = confirmation_id,
+            template_id = template_id
+        )
+
+        # Path
+        path = "/api/recurrings"
+
+        # Send POST-request
+        response = conn.post(path = path, body = xml)
+        if response.status != 201:  # Created
+            raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
+
+        # Create Recurring-Object
+        recurring = cls(conn = conn)
+        recurring.content_language = response.headers.get("content-language", None)
+        recurring.load_from_xml(response.data)
+
+        # Finished
+        return recurring
 
 
-    # @classmethod
-    # def create(
-    #     cls,
-    #     conn,
-    #     archived = None,
-    #     number_pre = None,
-    #     number = None,
-    #     number_length = None,
-    #     name = None,
-    #     street = None,
-    #     zip = None,
-    #     city = None,
-    #     state = None,
-    #     country_code = None,
-    #     first_name = None,
-    #     last_name = None,
-    #     salutation = None,
-    #     phone = None,
-    #     fax = None,
-    #     mobile = None,
-    #     email = None,
-    #     www = None,
-    #     tax_number = None,
-    #     vat_number = None,
-    #     bank_account_number = None,
-    #     bank_account_owner = None,
-    #     bank_number = None,
-    #     bank_name = None,
-    #     bank_swift = None,
-    #     bank_iban = None,
-    #     sepa_mandate = None,
-    #     sepa_mandate_date = None,
-    #     tax_rule = None,
-    #     net_gross = None,
-    #     default_payment_types = None,
-    #     note = None,
-    #     discount_rate_type = None,
-    #     discount_rate = None,
-    #     discount_days_type = None,
-    #     discount_days = None,
-    #     due_days_type = None,
-    #     due_days = None,
-    #     reminder_due_days_type = None,
-    #     reminder_due_days = None,
-    #     offer_validity_days_type = None,
-    #     offer_validity_days = None,
-    #     currency_code = None,
-    #     price_group = None
-    # ):
-    #     """
-    #     Creates one client
-    #
-    #     :param conn: Connection-Object
-    #     :param archived: State of archival storage.
-    #         True = archived, False = active
-    #         Default value: False
-    #     :param number_pre: Prefix
-    #         Default value: Value from settings
-    #     :param number: sequential number
-    #         Default value: next free number
-    #     :param number_length: Minimum length of the customer number
-    #         (to be filled with leading zeros)
-    #         Default value: Value from settings
-    #     :param name: Company name
-    #     :param street: Street
-    #     :param zip: Zip code
-    #     :param city: City
-    #     :param state: State, county, district, region
-    #     :param country_code: Country, Country code as ISO 3166 Alpha-2
-    #         Default value: Value from your own company
-    #     :param first_name: First name
-    #     :param last_name: Last name
-    #     :param salutation: Salutation
-    #     :param phone: Phone
-    #     :param fax: Fax
-    #     :param mobile: Mobile number
-    #     :param email: Email, valid Email address
-    #     :param www: Website, URL (w/o http)
-    #     :param tax_number: Tax number
-    #     :param vat_number: VAT number, valid VAT number
-    #     :param bank_account_number: Bank account number
-    #     :param bank_account_owner: Bank account owner
-    #     :param bank_number: Bank identifier code
-    #     :param bank_name: Bank name
-    #     :param bank_swift: SWIFT/BIC
-    #     :param bank_iban: IBAN
-    #     :param sepa_mandate: Mandate reference of a SEPA Direct Debit mandate
-    #     :param sepa_mandate_date: Date of issue of the SEPA Direct Debit mandate
-    #     :param tax_rule: Tax Rule
-    #         Possible values: TAX, NO_TAX, COUNTRY
-    #         Default value: "COUNTRY"
-    #     :param default_payment_types: Payment Type(s)
-    #         (eg. CASH, BANK_TRANSFER, PAYPAL, ...).
-    #         More than one payment type could be given as a comma separated list.
-    #         Theses payment types will be logically OR-connected.
-    #         You can find a overview of all payment types at API documentation of
-    #         payments. If no value is passed, the customer will be offered
-    #         the payment types specified at the account settings.
-    #     :param net_gross: Price basis (net, gross, according to account settings)
-    #         Possible values: NET, GROSS, SETTINGS
-    #         Default value: "SETTINGS"
-    #     :param note: Note
-    #     :param discount_rate_type: Type of the default value for discount rate
-    #         Possible values: SETTINGS, ABSOLUTE, RELATIVE
-    #         Default value: "SETTINGS"
-    #     :param discount_rate: Discount rate
-    #     :param discount_days_type: Type of the default value for discount interval
-    #         Possible values: SETTINGS, ABSOLUTE, RELATIVE
-    #         Default value: "SETTINGS"
-    #     :param discount_days: Discount period in days
-    #     :param due_days_type: Type of the default value for maturity
-    #         Possible values: SETTINGS, ABSOLUTE, RELATIVE
-    #         Default value: "SETTINGS"
-    #     :param due_days: Maturity in days from invoice date
-    #     :param reminder_due_days_type: Type of the default value for reminder
-    #         maturity
-    #         Possible values: SETTINGS, ABSOLUTE, RELATIVE
-    #         Default value: "SETTINGS"
-    #     :param reminder_due_days: Reminder maturity
-    #     :param offer_validity_days_type: Type of the default value for
-    #         validity of estimates
-    #         Possible values: SETTINGS, ABSOLUTE, RELATIVE
-    #         Default value: "SETTINGS"
-    #     :param offer_validity_days: Validity of estimates
-    #     :param currency_code: The currency for this client. ISO currency code.
-    #         If this field is empty, the account currency is used.
-    #     :param price_group: Artciles can have several prices.
-    #         The pricegroup defines which price applies to the client.
-    #     """
-    #
-    #     # XML
-    #     xml = _client_xml(
-    #         archived = archived,
-    #         number_pre = number_pre,
-    #         number = number,
-    #         number_length = number_length,
-    #         name = name,
-    #         street = street,
-    #         zip = zip,
-    #         city = city,
-    #         state = state,
-    #         country_code = country_code,
-    #         first_name = first_name,
-    #         last_name = last_name,
-    #         salutation = salutation,
-    #         phone = phone,
-    #         fax = fax,
-    #         mobile = mobile,
-    #         email = email,
-    #         www = www,
-    #         tax_number = tax_number,
-    #         vat_number = vat_number,
-    #         bank_account_number = bank_account_number,
-    #         bank_account_owner = bank_account_owner,
-    #         bank_number = bank_number,
-    #         bank_name = bank_name,
-    #         bank_swift = bank_swift,
-    #         bank_iban = bank_iban,
-    #         sepa_mandate = sepa_mandate,
-    #         sepa_mandate_date = sepa_mandate_date,
-    #         tax_rule = tax_rule,
-    #         net_gross = net_gross,
-    #         default_payment_types = default_payment_types,
-    #         note = note,
-    #         discount_rate_type = discount_rate_type,
-    #         discount_rate = discount_rate,
-    #         discount_days_type = discount_days_type,
-    #         discount_days = discount_days,
-    #         due_days_type = due_days_type,
-    #         due_days = due_days,
-    #         reminder_due_days_type = reminder_due_days_type,
-    #         reminder_due_days = reminder_due_days,
-    #         offer_validity_days_type = offer_validity_days_type,
-    #         offer_validity_days = offer_validity_days,
-    #         currency_code = currency_code,
-    #         price_group = price_group
-    #     )
-    #
-    #     # Path
-    #     path = "/api/clients"
-    #
-    #     # Send POST-request
-    #     response = conn.post(path = path, body = xml)
-    #     if response.status != 201:  # Created
-    #         raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
-    #
-    #     # Create Client-Object
-    #     client = cls(conn = conn)
-    #     client.content_language = response.headers.get("content-language", None)
-    #     client.load_from_xml(response.data)
-    #
-    #     # Finished
-    #     return client
+    def delete(self, id = None):
+        """
+        Deletes a recurring
+        """
+
+        # Parameters
+        if id:
+            self.id = id
+        if not self.id:
+            raise errors.NoIdError()
+
+        # Path
+        path = "/api/recurrings/{id}".format(id = self.id)
+
+        # Fetch data
+        response = self.conn.delete(path = path)
+        if response.status != 200:
+            raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
 
 
+    def edit(
+        self,
+        id = None,
+        client_id = None,
+        contact_id = None,
+        title = None,
+        address = None,
+        supply_date = None,
+        supply_date_type = None,
+        due_days = None,
+        discount_rate = None,
+        discount_days = None,
+        name = None,
+        label = None,
+        intro = None,
+        note = None,
+        currency_code = None,
+        reduction = None,
+        net_gross = None,
+        quote = None,
+        payment_types = None,
+        action = None,
+        cycle_number = None,
+        cycle = None,
+        hour = None,
+        start_date = None,
+        end_date = None,
+        next_creation_date = None,
+        email_sender = None,
+        email_subject = None,
+        email_message = None,
+        email_filename = None,
+        offer_id = None,
+        confirmation_id = None,
+        template_id = None
+    ):
+        """
+        Edit a recurring
 
+        :param id: ID of the recurring
+        :param client_id: ID of the client
+        :param contact_id: ID of the contact
+        :param title: Document title; Let it empty to use the default value
+            from settings: "Invoice [Invoice.invoice_number]"
+        :param address: the address;
+            Pass an empty value to use the current customer address.
+        :param supply_date: supply/delivery date; MIXED (DATE/ALNUM)
+        :param supply_date_type: type or supply/delivery date; ALNUM (
+            "SUPPLY_DATE", "DELIVERY_DATE", "SUPPLY_TEXT", "DELIVERY_TEXT")
+        :param due_days: Due days
+        :param discount_rate: Cash discount
+        :param discount_days: Cash discount days
+        :param name: Name of the recurring; is the title of the recurring
+        :param label: Label text to describe the project
+        :param intro: Introductory text; Default value taken from the settings
+        :param note: Explanatory notes; Default value taken from the settings
+        :param reduction: Reduction (absolute or percent: 10/10%)
+        :param currency_code: Currency; ISO currency code
+        :param net_gross: Price basis (gross or net prices)
+        :param quote: Currency quote (for conversion into standard currency)
+        :param payment_types: List (separated by comma) of all accepted payment
+            types.
+        :param action: Action to be executed (CREATE, COMPLETE, EMAIL)
+        :param cycle_number: Number of intervals. For example, 3 for
+            "every 3 months"
+        :param cycle: Interval (DAILY, WEEKLY, MONTHLY, YEARLY)
+        :param hour: Time of Day (hour)
+        :param start_date: Start date;
+        :param end_date: End date
+        :param next_creation_date: Date of the next creation;
+            Put "" (empty string) to set recurring inactive.
+        :param email_sender: Sender when sending e-mail. If you pass an empty
+            value, the sender will be used from the settings.
+        :param email_subject: Subject when sending e-mail. If you pass an
+            empty value, the subject will be used from the settings.
+        :param email_message: Message text when sending e-mail. If you pass
+            an empty value, the message will be used from the settings.
+        :param email_filename: Filename of the invoice when sending e-mail.
+            If you pass an empty value, the filename will be used from the settings.
+        :param offer_id: The ID of the estimate, if the recurring was created
+            from an estimate.
+        :param confirmation_id: The ID of the confirmation, if the recurring
+            was created from a confirmation.
+        :param template_id: Template ID
+        """
 
+        # Parameters
+        if id:
+            self.id = id
+        if not self.id:
+            raise errors.NoIdError()
+
+        # XML
+        xml = _recurring_xml(
+            client_id = client_id,
+            contact_id = contact_id,
+            title = title,
+            address = address,
+            supply_date = supply_date,
+            supply_date_type = supply_date_type,
+            due_days = due_days,
+            discount_rate = discount_rate,
+            discount_days = discount_days,
+            name = name,
+            label = label,
+            intro = intro,
+            note = note,
+            currency_code = currency_code,
+            reduction = reduction,
+            net_gross = net_gross,
+            quote = quote,
+            payment_types = payment_types,
+            action = action,
+            cycle_number = cycle_number,
+            cycle = cycle,
+            hour = hour,
+            start_date = start_date,
+            end_date = end_date,
+            next_creation_date = next_creation_date,
+            email_sender = email_sender,
+            email_subject = email_subject,
+            email_message = email_message,
+            email_filename = email_filename,
+            offer_id = offer_id,
+            confirmation_id = confirmation_id,
+            template_id = template_id
+        )
+
+        # Path
+        path = "/api/recurrings/{id}".format(id = self.id)
+
+        # Send PUT-request
+        response = self.conn.put(path = path, body = xml)
+        if response.status != 200:  # Edited
+            raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
 
 
 class Recurrings(list):
@@ -726,4 +828,5 @@ class RecurringsIterator(ItemsIterator):
             page = page,
             per_page = self.per_page
         )
+
 

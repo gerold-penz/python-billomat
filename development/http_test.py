@@ -12,7 +12,7 @@ import _personal_billomat_data as _personal
 
 
 import pybillomat
-
+import datetime
 
 conn = pybillomat.Connection(
     billomat_id = _personal.gerolds_billomat_id,
@@ -21,14 +21,20 @@ conn = pybillomat.Connection(
     billomat_app_secret = _personal.gerolds_billomat_app_secret
 )
 
-# recurring = pybillomat.Recurring(conn)
-# recurring.load(id = 47675)
+recurring = pybillomat.Recurring(conn)
+recurring.load(id = 47720)
+
+print recurring
+
+
+# recurring = pybillomat.Recurring.create(
+#     conn = conn,
+#     client_id = 447505,
+#     name = u"TEST NAME 7",
+#     payment_types = u"BANK_TRANSFER",
+#     next_creation_date = u"",
+#     template_id = 29207
+# )
 #
 # print recurring
-#
 
-import pybillomat.recurrings
-recurrings = pybillomat.recurrings.Recurrings(conn = conn)
-recurrings.search(allow_empty_filter = True)
-
-print recurrings

@@ -476,7 +476,7 @@ class Client(Bunch):
         price_group = None
     ):
         """
-        Creates one client
+        Creates a client
 
         :param conn: Connection-Object
         :param archived: State of archival storage.
