@@ -12,10 +12,13 @@ import xml.etree.ElementTree as ET
 import errors
 from bunch import Bunch
 from http import Url
-from _items_base import ItemsIterator
+from _items_base import Item, ItemsIterator
 
 
-class ArticleTag(Bunch):
+class ArticleTag(Item):
+
+    base_path = u"/api/article-tags"
+
 
     def __init__(self, conn, id = None, tag_etree = None):
         """
@@ -35,72 +38,6 @@ class ArticleTag(Bunch):
 
         if tag_etree is not None:
             self.load_from_etree(tag_etree)
-
-
-    def load_from_etree(self, etree_element):
-        """
-        Loads data from Element-Tree
-        """
-
-        for item in etree_element:
-
-            # Get data
-            isinstance(item, ET.Element)
-            tag = item.tag
-            tag_type = item.attrib.get("type")
-            text = item.text
-
-            if text is not None:
-                if tag_type == "integer":
-                    setattr(self, tag, int(text))
-                else:
-                    if isinstance(text, str):
-                        text = text.decode("utf-8")
-                    setattr(self, tag, text)
-
-
-    def load_from_xml(self, xml_string):
-        """
-        Loads data from XML-String
-        """
-
-        # Parse XML
-        root = ET.fromstring(xml_string)
-
-        # Load
-        self.load_from_etree(root)
-
-
-    def load(self, id = None):
-        """
-        Loads the property-data from server
-        """
-
-        # Parameters
-        if id:
-            self.id = id
-        if not self.id:
-            raise errors.NoIdError()
-
-        # Path
-        path = "/api/article-tags/{id}".format(id = self.id)
-
-        # Fetch data
-        response = self.conn.get(path = path)
-        if response.status != 200:
-            # Check if "Unothorized" --> raise NotFoundError
-            errors_etree = ET.fromstring(response.data)
-            for error_etree in errors_etree:
-                text = error_etree.text
-                if text.lower() == "unauthorized":
-                    raise errors.NotFoundError(
-                        u"id: {id}".format(id = id)
-                    )
-            # Other Error
-            raise errors.BillomatError(response.data)
-
-        # Fill in data from XML
-        self.load_from_xml(response.data)
 
 
     @classmethod
@@ -145,26 +82,6 @@ class ArticleTag(Bunch):
 
         # Finished
         return property
-
-
-    def delete(self, id = None):
-        """
-        Deletes one article-tag
-        """
-
-        # Parameters
-        if id:
-            self.id = id
-        if not self.id:
-            raise errors.NoIdError()
-
-        # Path
-        path = "/api/article-tags/{id}".format(id = self.id)
-
-        # Fetch data
-        response = self.conn.delete(path = path)
-        if response.status != 200:
-            raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
 
 
 class ArticleTags(list):

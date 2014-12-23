@@ -82,8 +82,17 @@ class Item(Bunch):
 
         # Fetch data
         response = self.conn.get(path = path)
-        if not response.status == 200:
-            raise errors.NotFoundError(unicode(self.id))
+        if response.status != 200:
+            # Check if "Unothorized" --> raise NotFoundError
+            errors_etree = ET.fromstring(response.data)
+            for error_etree in errors_etree:
+                text = error_etree.text
+                if text.lower() == "unauthorized":
+                    raise errors.NotFoundError(
+                        u"id: {id}".format(id = id)
+                    )
+            # Other Error
+            raise errors.BillomatError(response.data)
 
         # Fill in data from XML
         self.load_from_xml(response.data)

@@ -40,43 +40,6 @@ class ClientTag(Item):
             self.load_from_etree(tag_etree)
 
 
-    def load(self, id = None):
-        """
-        Loads the property-data from server
-
-        Overwrites the base-class-method!
-        """
-
-        # Parameters
-        if id:
-            self.id = id
-        if not self.id:
-            raise errors.NoIdError()
-
-        # Path
-        path = "{base_path}/{id}".format(
-            base_path = self.base_path,
-            id = self.id
-        )
-
-        # Fetch data
-        response = self.conn.get(path = path)
-        if response.status != 200:
-            # Check if "Unothorized" --> raise NotFoundError
-            errors_etree = ET.fromstring(response.data)
-            for error_etree in errors_etree:
-                text = error_etree.text
-                if text.lower() == "unauthorized":
-                    raise errors.NotFoundError(
-                        u"id: {id}".format(id = id)
-                    )
-            # Other Error
-            raise errors.BillomatError(response.data)
-
-        # Fill in data from XML
-        self.load_from_xml(response.data)
-
-
     @classmethod
     def create(
         cls,
