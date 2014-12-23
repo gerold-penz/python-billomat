@@ -13,7 +13,7 @@ import xml.etree.ElementTree as ET
 import errors
 from bunch import Bunch
 from http import Url
-from _tools import ItemsIterator
+from _tools import Item, ItemsIterator
 
 
 def _recurring_xml(
@@ -148,7 +148,7 @@ def _recurring_xml(
     return xml
 
 
-class Recurring(Bunch):
+class Recurring(Item):
 
     def __init__(self, conn, id = None, recurring_etree = None):
         """
@@ -160,7 +160,7 @@ class Recurring(Bunch):
         Bunch.__init__(self)
 
         self.conn = conn
-        self.content_language = None
+        self.base_path = u"/api/recurrings"
 
         self.id = id  # integer
         self.created = None  # datetime
@@ -222,74 +222,6 @@ class Recurring(Bunch):
 
         if recurring_etree is not None:
             self.load_from_etree(recurring_etree)
-
-
-    def load_from_etree(self, etree_element):
-        """
-        Loads data from Element-Tree
-        """
-
-        for item in etree_element:
-
-            # Get data
-            isinstance(item, ET.Element)
-            tag = item.tag
-            type = item.attrib.get("type")
-            text = item.text
-
-            if text is not None:
-                if type == "integer":
-                    setattr(self, tag, int(text))
-                elif type == "datetime":
-                    # <created type="datetime">2011-10-04T17:40:00+02:00</created>
-                    dt = datetime.datetime.strptime(text[:19], "%Y-%m-%dT%H:%M:%S")
-                    setattr(self, tag, dt)
-                elif type == "date":
-                    # <date type="date">2009-10-14</date>
-                    d = datetime.date(*[int(item)for item in text.strip().split("-")])
-                    setattr(self, tag, d)
-                elif type == "float":
-                    setattr(self, tag, float(text))
-                else:
-                    if isinstance(text, str):
-                        text = text.decode("utf-8")
-                    setattr(self, tag, text)
-
-
-    def load_from_xml(self, xml_string):
-        """
-        Loads data from XML-String
-        """
-
-        # Parse XML
-        root = ET.fromstring(xml_string)
-
-        # Load
-        self.load_from_etree(root)
-
-
-    def load(self, id = None):
-        """
-        Loads the recurring-data from server
-        """
-
-        # Parameters
-        if id:
-            self.id = id
-        if not self.id:
-            raise errors.NoIdError()
-
-        # Path
-        path = "/api/recurrings/{id}".format(id = self.id)
-
-        # Fetch data
-        response = self.conn.get(path = path)
-        if not response.status == 200:
-            raise errors.NotFoundError(unicode(self.id))
-
-        # Fill in data from XML
-        self.load_from_xml(response.data)
-        self.content_language = response.headers.get("content-language", None)
 
 
     @classmethod

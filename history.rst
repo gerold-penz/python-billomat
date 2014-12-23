@@ -5,6 +5,19 @@ Python Billomat API Client Library
 by Gerold Penz 2014
 
 
+==============
+Version 0.2.10
+==============
+
+2014-12-23
+
+- New Base-Class for "items" created.
+
+- Items-class bound to RecurringItem-class
+
+- Items-class bound to Recurring-class
+
+
 =============
 Version 0.2.9
 =============
