@@ -28,11 +28,13 @@ Features
 - Google App Engine (GAE) ready
 
 - Recurrings
+
     - Recurring-Items
 
 - Invoices
 
 - Clients
+
     - Client-Tags
     - Client-Properties
 
