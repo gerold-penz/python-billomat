@@ -6,6 +6,15 @@ by Gerold Penz 2014
 
 
 ==============
+Version 0.2.11
+==============
+
+2014-12-23
+
+- Items-class bound to Invoice-class
+
+
+==============
 Version 0.2.10
 ==============
 
