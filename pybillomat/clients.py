@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 import errors
 from bunch import Bunch
 from http import Url
-from _items_base import ItemsIterator
+from _items_base import Item, ItemsIterator
 
 
 def _client_xml(
@@ -271,7 +271,10 @@ def _client_xml(
     return xml
 
 
-class Client(Bunch):
+class Client(Item):
+
+    base_path = u"/api/clients"
+
 
     def __init__(self, conn, id = None, client_etree = None):
         """
@@ -336,94 +339,6 @@ class Client(Bunch):
 
         if client_etree is not None:
             self.load_from_etree(client_etree)
-
-
-    def load_from_etree(self, etree_element):
-        """
-        Loads data from Element-Tree
-        """
-
-        for item in etree_element:
-
-            # Get data
-            isinstance(item, ET.Element)
-            tag = item.tag
-            type = item.attrib.get("type")
-            text = item.text
-
-            if not text is None:
-                if type == "integer":
-                    setattr(self, tag, int(text))
-                elif type == "datetime":
-                    # <created type="datetime">2011-10-04T17:40:00+02:00</created>
-                    dt = datetime.datetime.strptime(text[:19], "%Y-%m-%dT%H:%M:%S")
-                    setattr(self, tag, dt)
-                elif type == "float":
-                    setattr(self, tag, float(text))
-                else:
-                    if isinstance(text, str):
-                        text = text.decode("utf-8")
-                    setattr(self, tag, text)
-
-            # <plan>L</plan>
-            # <quotas>
-                # <quota>
-                    # <entity>documents</entity>
-                    # <available>300</available>
-                    # <used>22</used>
-                # </quota>
-                # <quota>
-                    # <entity>clients</entity>
-                    # <available>1500</available>
-                    # <used>328</used>
-                # </quota>
-                # <quota>
-                    # <entity>articles</entity>
-                    # <available>5000</available>
-                    # <used>16</used>
-                # </quota>
-                # <quota>
-                    # <entity>storage</entity>
-                    # <available>-1</available>
-                    # <used>203782576</used>
-                # </quota>
-            # </quotas>
-
-
-    def load_from_xml(self, xml_string):
-        """
-        Loads data from XML-String
-        """
-
-        # Parse XML
-        root = ET.fromstring(xml_string)
-
-        # Load
-        self.load_from_etree(root)
-
-
-    def load(self, id = None):
-        """
-        Loads the client-data from server
-        """
-
-        # Parameters
-        if id:
-            self.id = id
-        if not self.id:
-            raise errors.NoIdError()
-
-        # Path
-        path = "/api/clients/{id}".format(id = self.id)
-
-        # Fetch data
-        response = self.conn.get(path = path)
-        if response.status != 200:
-            raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
-
-        # Fill in data from XML
-        self.load_from_xml(response.data)
-        self.content_language = response.headers.get("content-language", None)
 
 
     @classmethod
@@ -604,11 +519,8 @@ class Client(Bunch):
             price_group = price_group
         )
 
-        # Path
-        path = "/api/clients"
-
         # Send POST-request
-        response = conn.post(path = path, body = xml)
+        response = conn.post(path = cls.base_path, body = xml)
         if response.status != 201:  # Created
             raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
 
@@ -619,26 +531,6 @@ class Client(Bunch):
 
         # Finished
         return client
-
-
-    def delete(self, id = None):
-        """
-        Deletes one client
-        """
-
-        # Parameters
-        if id:
-            self.id = id
-        if not self.id:
-            raise errors.NoIdError()
-
-        # Path
-        path = "/api/clients/{id}".format(id = self.id)
-
-        # Fetch data
-        response = self.conn.delete(path = path)
-        if response.status != 200:
-            raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
 
 
     def edit(
@@ -824,7 +716,10 @@ class Client(Bunch):
         )
 
         # Path
-        path = "/api/clients/{id}".format(id = self.id)
+        path = "{base_path}/{id}".format(
+            base_bath = self.base_path,
+            id = self.id
+        )
 
         # Send PUT-request
         response = self.conn.put(path = path, body = xml)

@@ -11,7 +11,11 @@ Version 0.2.11
 
 2014-12-23
 
-- Items-class bound to Invoice-class
+- Item-class bound to Invoice-class
+
+- Item-class bound to Client-class
+
+- Item-class bound to ClientTag-class
 
 
 ==============
@@ -22,9 +26,9 @@ Version 0.2.10
 
 - New Base-Class for "items" created.
 
-- Items-class bound to RecurringItem-class
+- Item-class bound to RecurringItem-class
 
-- Items-class bound to Recurring-class
+- Item-class bound to Recurring-class
 
 - *_tools.py*-module renamed to *_items_base.py*
 

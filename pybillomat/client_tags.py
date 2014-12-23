@@ -12,10 +12,13 @@ import xml.etree.ElementTree as ET
 import errors
 from bunch import Bunch
 from http import Url
-from _items_base import ItemsIterator
+from _items_base import Item, ItemsIterator
 
 
-class ClientTag(Bunch):
+class ClientTag(Item):
+
+    base_path = u"/api/client-tags"
+
 
     def __init__(self, conn, id = None, tag_etree = None):
         """
@@ -37,43 +40,11 @@ class ClientTag(Bunch):
             self.load_from_etree(tag_etree)
 
 
-    def load_from_etree(self, etree_element):
-        """
-        Loads data from Element-Tree
-        """
-
-        for item in etree_element:
-
-            # Get data
-            isinstance(item, ET.Element)
-            tag = item.tag
-            tag_type = item.attrib.get("type")
-            text = item.text
-
-            if text is not None:
-                if tag_type == "integer":
-                    setattr(self, tag, int(text))
-                else:
-                    if isinstance(text, str):
-                        text = text.decode("utf-8")
-                    setattr(self, tag, text)
-
-
-    def load_from_xml(self, xml_string):
-        """
-        Loads data from XML-String
-        """
-
-        # Parse XML
-        root = ET.fromstring(xml_string)
-
-        # Load
-        self.load_from_etree(root)
-
-
     def load(self, id = None):
         """
         Loads the property-data from server
+
+        Overwrites the base-class-method!
         """
 
         # Parameters
@@ -83,7 +54,10 @@ class ClientTag(Bunch):
             raise errors.NoIdError()
 
         # Path
-        path = "/api/client-tags/{id}".format(id = self.id)
+        path = "{base_path}/{id}".format(
+            base_path = self.base_path,
+            id = self.id
+        )
 
         # Fetch data
         response = self.conn.get(path = path)
@@ -131,11 +105,8 @@ class ClientTag(Bunch):
 
         xml = ET.tostring(client_tag)
 
-        # Path
-        path = "/api/client-tags"
-
         # Send POST-request
-        response = conn.post(path = path, body = xml)
+        response = conn.post(path = cls.base_path, body = xml)
         if response.status != 201:  # Created
             raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
 
@@ -145,26 +116,6 @@ class ClientTag(Bunch):
 
         # Finished
         return property
-
-
-    def delete(self, id = None):
-        """
-        Deletes one client-tag
-        """
-
-        # Parameters
-        if id:
-            self.id = id
-        if not self.id:
-            raise errors.NoIdError()
-
-        # Path
-        path = "/api/client-tags/{id}".format(id = self.id)
-
-        # Fetch data
-        response = self.conn.delete(path = path)
-        if response.status != 200:
-            raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
 
 
 class ClientTags(list):
