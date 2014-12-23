@@ -68,11 +68,8 @@ class ArticleTag(Item):
 
         xml = ET.tostring(article_tag)
 
-        # Path
-        path = "/api/article-tags"
-
         # Send POST-request
-        response = conn.post(path = path, body = xml)
+        response = conn.post(path = cls.base_path, body = xml)
         if response.status != 201:  # Created
             raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
 
