@@ -13,7 +13,7 @@ import xml.etree.ElementTree as ET
 import errors
 from bunch import Bunch
 from http import Url
-from _tools import Item, ItemsIterator
+from _items_base import Item, ItemsIterator
 
 
 def _recurring_xml(
@@ -150,6 +150,9 @@ def _recurring_xml(
 
 class Recurring(Item):
 
+    base_path = u"/api/recurrings"
+
+
     def __init__(self, conn, id = None, recurring_etree = None):
         """
         Recurring
@@ -160,7 +163,6 @@ class Recurring(Item):
         Bunch.__init__(self)
 
         self.conn = conn
-        self.base_path = u"/api/recurrings"
 
         self.id = id  # integer
         self.created = None  # datetime
@@ -350,11 +352,8 @@ class Recurring(Item):
             template_id = template_id
         )
 
-        # Path
-        path = "/api/recurrings"
-
         # Send POST-request
-        response = conn.post(path = path, body = xml)
+        response = conn.post(path = cls.base_path, body = xml)
         if response.status != 201:  # Created
             raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
 
@@ -365,26 +364,6 @@ class Recurring(Item):
 
         # Finished
         return recurring
-
-
-    def delete(self, id = None):
-        """
-        Deletes a recurring
-        """
-
-        # Parameters
-        if id:
-            self.id = id
-        if not self.id:
-            raise errors.NoIdError()
-
-        # Path
-        path = "/api/recurrings/{id}".format(id = self.id)
-
-        # Fetch data
-        response = self.conn.delete(path = path)
-        if response.status != 200:
-            raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
 
 
     def edit(

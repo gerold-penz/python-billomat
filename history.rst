@@ -17,6 +17,8 @@ Version 0.2.10
 
 - Items-class bound to Recurring-class
 
+- *_tools.py*-module renamed to *_items_base.py*
+
 
 =============
 Version 0.2.9

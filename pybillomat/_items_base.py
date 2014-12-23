@@ -90,6 +90,29 @@ class Item(Bunch):
         self.content_language = response.headers.get("content-language", None)
 
 
+    def delete(self, id = None):
+        """
+        Deletes an item
+        """
+
+        # Parameters
+        if id:
+            self.id = id
+        if not self.id:
+            raise errors.NoIdError()
+
+        # Path
+        path = "{base_path}/{id}".format(
+            base_path = self.base_path,
+            id = self.id
+        )
+
+        # Fetch data
+        response = self.conn.delete(path = path)
+        if response.status != 200:
+            raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
+
+
 class ItemsIterator(object):
     """
     ItemsIterator

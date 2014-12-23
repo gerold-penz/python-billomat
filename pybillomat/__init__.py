@@ -33,3 +33,6 @@ from recurrings import (
     Recurring,
     RecurringsIterator
 )
+from recurring_items import (
+    RecurringItem
+)

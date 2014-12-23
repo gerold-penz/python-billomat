@@ -38,3 +38,4 @@ print recurring
 #
 # print recurring
 
+recurring_item = pybillomat.RecurringItem(conn = conn)

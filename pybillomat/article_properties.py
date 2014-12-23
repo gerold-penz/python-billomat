@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 import errors
 from bunch import Bunch
 from http import Url
-from _tools import ItemsIterator
+from _items_base import ItemsIterator
 
 
 class ArticleProperty(Bunch):
