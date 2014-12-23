@@ -89,7 +89,7 @@ class Item(Bunch):
                 text = error_etree.text
                 if text.lower() == "unauthorized":
                     raise errors.NotFoundError(
-                        u"id: {id}".format(id = id)
+                        u"id: {id}".format(id = self.id)
                     )
             # Other Error
             raise errors.BillomatError(response.data)
@@ -165,7 +165,7 @@ class ItemsIterator(object):
 
     def __getitem__(self, key):
         """
-        Returns the requested recurring from the pool of found recurrings
+        Returns the requested item from the pool of found items
         """
 
         # List-Ids

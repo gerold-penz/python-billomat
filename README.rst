@@ -21,6 +21,26 @@ enables you to access the data in your Billomat account.
 - Deutsche API Beschreibung: http://www.billomat.com/de/api
 
 
+========
+Features
+========
+
+- Google App Engine (GAE) ready
+
+- Recurrings
+    - Recurring-Items
+
+- Invoices
+
+- Clients
+    - Client-Tags
+    - Client-Properties
+
+- Article-Tags
+
+- Article-Properties
+
+
 ============
 Installation
 ============

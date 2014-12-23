@@ -21,6 +21,8 @@ Version 0.2.11
 
 - Item-class bound to ArticleTag-class
 
+- *RecurringItems* finished
+
 
 ==============
 Version 0.2.10

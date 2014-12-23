@@ -34,5 +34,6 @@ from recurrings import (
     RecurringsIterator
 )
 from recurring_items import (
-    RecurringItem
+    RecurringItem,
+    RecurringItemsIterator
 )
