@@ -29,14 +29,14 @@ Features
 
 - Recurrings
 
-    - Recurring-Items
+  - Recurring-Items
 
 - Invoices
 
 - Clients
 
-    - Client-Tags
-    - Client-Properties
+  - Client-Tags
+  - Client-Properties
 
 - Article-Tags
 
