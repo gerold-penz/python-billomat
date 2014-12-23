@@ -17,6 +17,8 @@ Version 0.2.11
 
 - Item-class bound to ClientTag-class
 
+- Item-class bound to ClientProperty-class
+
 
 ==============
 Version 0.2.10
