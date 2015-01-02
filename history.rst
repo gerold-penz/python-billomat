@@ -6,6 +6,15 @@ by Gerold Penz 2014
 
 
 ==============
+Version 0.2.13
+==============
+
+2015-01-02
+
+- Unused parameter *recurring_items*, for creation of one recurring, removed.
+
+
+==============
 Version 0.2.12
 ==============
 

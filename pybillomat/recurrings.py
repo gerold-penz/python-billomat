@@ -261,8 +261,8 @@ class Recurring(Item):
         email_filename = None,
         offer_id = None,
         confirmation_id = None,
-        template_id = None,
-        recurring_items = None
+        template_id = None
+        # recurring_items = None
     ):
         """
         Creates a recurring
@@ -313,7 +313,7 @@ class Recurring(Item):
         :param confirmation_id: The ID of the confirmation, if the recurring
             was created from a confirmation.
         :param template_id: Template ID
-        :param recurring_items: List with RecurringItem-Objects
+        # :param recurring_items: List with RecurringItem-Objects
         """
 
         # XML
