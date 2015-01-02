@@ -30,13 +30,14 @@ Features
 - Recurrings
 
   - Recurring-Items
+  - Recurring-Tags
 
 - Invoices
 
 - Clients
 
-  - Client-Tags
   - Client-Properties
+  - Client-Tags
 
 - Article-Tags
 
