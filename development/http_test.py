@@ -12,7 +12,6 @@ import _personal_billomat_data as _personal
 
 
 import pybillomat
-import datetime
 
 conn = pybillomat.Connection(
     billomat_id = _personal.gerolds_billomat_id,
