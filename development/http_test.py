@@ -20,3 +20,4 @@ conn = pybillomat.Connection(
     billomat_app_id = _personal.gerolds_billomat_app_id,
     billomat_app_secret = _personal.gerolds_billomat_app_secret
 )
+

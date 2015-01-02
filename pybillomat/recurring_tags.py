@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 """
-Article-Tags
+Recurring-Tags
 
-- English API-Description: http://www.billomat.com/en/api/articles/tags
-- Deutsche API-Beschreibung: http://www.billomat.com/de/api/artikel/schlagworte
+- English API-Description: http://www.billomat.com/en/api/recurrings/tags
+- Deutsche API-Beschreibung: http://www.billomat.com/de/api/abo-rechnungen/schlagworte
 """
 
 import urllib3
@@ -15,14 +15,14 @@ from http import Url
 from _items_base import Item, ItemsIterator
 
 
-class ArticleTag(Item):
+class RecurringTag(Item):
 
-    base_path = u"/api/article-tags"
+    base_path = u"/api/recurring-tags"
 
 
     def __init__(self, conn, id = None, tag_etree = None):
         """
-        ArticleTag
+        RecurringTag
 
         :param conn: Connection-Object
         """
@@ -32,7 +32,7 @@ class ArticleTag(Item):
         self.conn = conn
 
         self.id = id  # Integer
-        self.article_id = None  # Not always filled
+        self.recurring_id = None  # Not always filled
         self.name = None
         self.count = None  # Not always filled
 
@@ -44,29 +44,29 @@ class ArticleTag(Item):
     def create(
         cls,
         conn,
-        article_id,
+        recurring_id,
         name
     ):
         """
-        Creates one article-tag
+        Creates one recurring-tag
 
         :param conn: Connection-Object
-        :param article_id: ID of the article
+        :param recurring_id: ID of the recurring
         :param name: Name of the tag
         """
 
         # XML
-        article_tag = ET.Element("article-tag")
+        recurring_tag = ET.Element("recurring-tag")
 
-        article_id_tag = ET.Element("article_id")
-        article_id_tag.text = unicode(int(article_id))
-        article_tag.append(article_id_tag)
+        recurring_id_tag = ET.Element("recurring_id")
+        recurring_id_tag.text = unicode(int(recurring_id))
+        recurring_tag.append(recurring_id_tag)
 
         name_tag = ET.Element("name")
         name_tag.text = unicode(name)
-        article_tag.append(name_tag)
+        recurring_tag.append(name_tag)
 
-        xml = ET.tostring(article_tag)
+        xml = ET.tostring(recurring_tag)
 
         # Send POST-request
         response = conn.post(path = cls.base_path, body = xml)
@@ -81,11 +81,11 @@ class ArticleTag(Item):
         return item_object
 
 
-class ArticleTags(list):
+class RecurringTags(list):
 
     def __init__(self, conn):
         """
-        ArticleTags-List
+        RecurringTags-List
 
         :param conn: Connection-Object
         """
@@ -102,7 +102,7 @@ class ArticleTags(list):
     def search(
         self,
         # Search parameters
-        article_id = None,
+        recurring_id = None,
         order_by = None,
 
         fetch_all = False,
@@ -112,11 +112,11 @@ class ArticleTags(list):
         per_page = None
     ):
         """
-        Fills the (internal) list with ArticleTag-objects
+        Fills the (internal) list with RecurringTag-objects
 
         If no search criteria given --> all tags will returned (REALLY ALL!).
 
-        :param article_id: Article ID
+        :param recurring_id: Recurring ID
         :param order_by: Sortings consist of the name of the field and
             sort order: ASC for ascending resp. DESC for descending order.
             If no order is specified, ascending order (ASC) is used.
@@ -124,13 +124,13 @@ class ArticleTags(list):
             comma.
 
         :param allow_empty_filter: If `True`, every filter-parameter may be empty.
-            All article-tags will returned. !!! EVERY !!!
+            All recurring-tags will returned. !!! EVERY !!!
         """
 
         # Check empty filter
         if not allow_empty_filter:
             if not any([
-                article_id,
+                recurring_id,
             ]):
                 raise errors.EmptyFilterError()
 
@@ -143,7 +143,7 @@ class ArticleTags(list):
                     break
 
         # Url and system-parameters
-        url = Url(path = "/api/article-tags")
+        url = Url(path = "/api/recurring-tags")
         url.query["page"] = page
         if per_page:
             url.query["per_page"] = per_page
@@ -151,8 +151,8 @@ class ArticleTags(list):
             url.query["order_by"] = order_by
 
         # Search parameters
-        if article_id:
-            url.query["article_id"] = article_id
+        if recurring_id:
+            url.query["recurring_id"] = recurring_id
 
         # Fetch data
         response = self.conn.get(path = str(url))
@@ -163,7 +163,7 @@ class ArticleTags(list):
                 text = error_etree.text
                 if text.lower() == "unauthorized":
                     raise errors.NotFoundError(
-                        u"article_id: {article_id}".format(article_id = article_id)
+                        u"recurring_id: {recurring_id}".format(recurring_id = recurring_id)
                     )
             # Other Error
             raise errors.BillomatError(response.data)
@@ -189,14 +189,14 @@ class ArticleTags(list):
         # Iterate over all tags
         for tag_etree in tags_etree:
             self.append(
-                ArticleTag(conn = self.conn, tag_etree = tag_etree)
+                RecurringTag(conn = self.conn, tag_etree = tag_etree)
             )
 
         # Fetch all
         if fetch_all and self.total > (self.page * self.per_page):
             self.search(
                 # Search parameters
-                article_id = article_id,
+                recurring_id = recurring_id,
 
                 fetch_all = fetch_all,
                 allow_empty_filter = allow_empty_filter,
@@ -206,28 +206,28 @@ class ArticleTags(list):
             )
 
 
-class ArticleTagsIterator(ItemsIterator):
+class RecurringTagsIterator(ItemsIterator):
     """
     Iterates over all found tags
     """
 
     def __init__(self, conn, per_page = 100):
         """
-        ArticleTagsIterator
+        RecurringTagsIterator
         """
 
         self.conn = conn
-        self.items = ArticleTags(self.conn)
+        self.items = RecurringTags(self.conn)
         self.per_page = per_page
         self.search_params = Bunch(
-            article_id = None,
+            recurring_id = None,
             order_by = None,
         )
 
 
     def search(
         self,
-        article_id = None,
+        recurring_id = None,
         order_by = None
     ):
         """
@@ -235,7 +235,7 @@ class ArticleTagsIterator(ItemsIterator):
         """
 
         # Params
-        self.search_params.article_id = article_id
+        self.search_params.recurring_id = recurring_id
         self.search_params.order_by = order_by
 
         # Search and prepare first page as result
@@ -245,7 +245,7 @@ class ArticleTagsIterator(ItemsIterator):
     def load_page(self, page):
 
         self.items.search(
-            article_id = self.search_params.article_id,
+            recurring_id = self.search_params.recurring_id,
             order_by = self.search_params.order_by,
 
             fetch_all = False,

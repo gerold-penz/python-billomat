@@ -73,12 +73,12 @@ class ClientTag(Item):
         if response.status != 201:  # Created
             raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
 
-        # Create Property-Object
-        property = cls(conn = conn)
-        property.load_from_xml(response.data)
+        # Create Item-Object from XML
+        item_object = cls(conn = conn)
+        item_object.load_from_xml(response.data)
 
         # Finished
-        return property
+        return item_object
 
 
 class ClientTags(list):

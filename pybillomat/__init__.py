@@ -37,3 +37,7 @@ from recurring_items import (
     RecurringItem,
     RecurringItemsIterator
 )
+from recurring_tags import (
+    RecurringTag,
+    RecurringTagsIterator
+)

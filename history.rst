@@ -6,6 +6,19 @@ by Gerold Penz 2014
 
 
 ==============
+Version 0.2.12
+==============
+
+2015-01-02
+
+- "Row not found"-Error raises *pybillomat.errors.NotFoundError*
+
+- Recurring-Tags
+
+- Internal renamings
+
+
+==============
 Version 0.2.11
 ==============
 

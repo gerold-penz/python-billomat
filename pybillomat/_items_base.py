@@ -87,7 +87,10 @@ class Item(Bunch):
             errors_etree = ET.fromstring(response.data)
             for error_etree in errors_etree:
                 text = error_etree.text
-                if text.lower() == "unauthorized":
+                if (
+                    text.lower() == "unauthorized" or
+                    text.lower() == "row not found"
+                ):
                     raise errors.NotFoundError(
                         u"id: {id}".format(id = self.id)
                     )
