@@ -34,6 +34,9 @@ Features
 
 - Invoices
 
+  - Invoice-Items
+  - Invoice-Tags
+
 - Clients
 
   - Client-Properties
