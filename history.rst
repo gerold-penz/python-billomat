@@ -15,6 +15,10 @@ Version 0.2.14
 
 - Invoice-Items
 
+- Create invoice
+
+- Edit invoice
+
 
 ==============
 Version 0.2.13

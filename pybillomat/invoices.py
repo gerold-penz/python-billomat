@@ -15,6 +15,125 @@ import errors
 from _items_base import Item, ItemsIterator
 
 
+def _invoice_xml(
+    client_id = None,
+    contact_id = None,
+    address = None,
+    number_pre = None,
+    number = None,
+    number_length = None,
+    date = None,
+    supply_date = None,
+    supply_date_type = None,
+    due_date = None,
+    discount_rate = None,
+    discount_days = None,
+    title = None,
+    label = None,
+    intro = None,
+    note = None,
+    reduction = None,
+    currency_code = None,
+    net_gross = None,
+    quote = None,
+    payment_types = None,
+    invoice_id = None,
+    offer_id = None,
+    confirmation_id = None,
+    recurring_id = None,
+):
+    """
+    Creates the XML to add or edit a invoice
+    """
+
+    integer_field_names = [
+        "client_id",
+        "contact_id",
+        "discount_rate",
+        "discount_days",
+        "offer_id",
+        "confirmation_id",
+        "number",
+        "number_length",
+        "invoice_id",
+        "recurring_id",
+    ]
+    date_or_string_fieldnames = [
+        "supply_date",
+    ]
+    date_fieldnames = [
+        "date",
+        "due_date"
+    ]
+    float_fieldnames = [
+        "quote",
+    ]
+    string_fieldnames = [
+        "title",
+        "address",
+        "number_pre",
+        "supply_date_type",
+        "label",
+        "intro",
+        "note",
+        "currency_code",
+        "reduction",
+        "net_gross",
+        "payment_types",
+    ]
+
+    invoice_tag = ET.Element("invoice")
+
+    # Integer Fields
+    for field_name in integer_field_names:
+        value = locals()[field_name]
+        if value is not None:
+            new_tag = ET.Element(field_name)
+            new_tag.text = unicode(int(value))
+            invoice_tag.append(new_tag)
+
+    # Date or string fields
+    for field_name in date_or_string_fieldnames:
+        value = locals()[field_name]
+        if value is not None:
+            new_tag = ET.Element(field_name)
+            if isinstance(value, datetime.date):
+                new_tag.text = value.isoformat()
+            else:
+                new_tag.text = unicode(value)
+            invoice_tag.append(new_tag)
+
+    # Date fields
+    for field_name in date_fieldnames:
+        value = locals()[field_name]
+        if value is not None:
+            new_tag = ET.Element(field_name)
+            new_tag.text = value.isoformat()
+            invoice_tag.append(new_tag)
+
+    # Float Fields
+    for field_name in float_fieldnames:
+        value = locals()[field_name]
+        if value is not None:
+            new_tag = ET.Element(field_name)
+            new_tag.text = unicode(float(value))
+            invoice_tag.append(new_tag)
+
+    # String Fields
+    for field_name in string_fieldnames:
+        value = locals()[field_name]
+        if value is not None:
+            new_tag = ET.Element(field_name)
+            new_tag.text = unicode(value)
+            invoice_tag.append(new_tag)
+
+    xml = ET.tostring(invoice_tag)
+
+    # Finished
+    return xml
+
+
+
 class Invoice(Item):
 
     base_path = u"/api/invoices"
@@ -227,6 +346,232 @@ class Invoice(Item):
             raise errors.BillomatError("\n".join(error_text_list))
 
 
+    @classmethod
+    def create(
+        cls,
+        conn,
+        client_id = None,
+        contact_id = None,
+        address = None,
+        number_pre = None,
+        number = None,
+        number_length = None,
+        date = None,
+        supply_date = None,
+        supply_date_type = None,
+        due_date = None,
+        discount_rate = None,
+        discount_days = None,
+        title = None,
+        label = None,
+        intro = None,
+        note = None,
+        reduction = None,
+        currency_code = None,
+        net_gross = None,
+        quote = None,
+        payment_types = None,
+        invoice_id = None,
+        offer_id = None,
+        confirmation_id = None,
+        recurring_id = None,
+        # invoice_items = None
+    ):
+        """
+        Creates a recurring
+
+        :param conn: Connection-Object
+        :param client_id: ID of the client
+        :param contact_id: ID of the contact
+        :param address: the address
+        :param number_pre: invoice number prefix
+        :param number: serial number
+        :param number_length: Minimum length of the invoice number
+            (to be filled with leading zeros)
+        :param date: Invoice date
+        :param supply_date: supply/delivery date; MIXED (DATE/ALNUM)
+        :param supply_date_type: type or supply/delivery date; ALNUM (
+            "SUPPLY_DATE", "DELIVERY_DATE", "SUPPLY_TEXT", "DELIVERY_TEXT")
+        :param due_date: due date
+        :param discount_rate: Cash discount
+        :param discount_days: Cash discount date
+        :param title: Document title; Let it empty to use the default value
+            from settings: "Invoice [Invoice.invoice_number]"
+        :param label: Label text to describe the project
+        :param intro: Introductory text
+        :param note: Explanatory notes
+        :param reduction: Reduction (absolute or percent: 10/10%)
+        :param currency_code: Currency; ISO currency code
+        :param net_gross: Price basis (gross or net prices)
+        :param quote: Currency quote (for conversion into standard currency)
+        :param payment_types: List (separated by comma) of all accepted
+            payment types.
+        :param invoice_id: The ID of the corrected invoice, if it is an
+            invoice correction.
+        :param offer_id: The ID of the estimate, if the invoice was created
+            from an estimate.
+        :param confirmation_id: The ID of the confirmation, if the invoice was
+            created from a confirmation.
+        :param recurring_id: The ID of the recurring, if the invoice was
+            created from a recurring.
+        # :param invoice_items: List with InvoiceItem-Objects
+        """
+
+        # XML
+        xml = _invoice_xml(
+            client_id = client_id,
+            contact_id = contact_id,
+            address = address,
+            number_pre = number_pre,
+            number = number,
+            number_length = number_length,
+            date = date,
+            supply_date = supply_date,
+            supply_date_type = supply_date_type,
+            due_date = due_date,
+            discount_rate = discount_rate,
+            discount_days = discount_days,
+            title = title,
+            label = label,
+            intro = intro,
+            note = note,
+            reduction = reduction,
+            currency_code = currency_code,
+            net_gross = net_gross,
+            quote = quote,
+            payment_types = payment_types,
+            invoice_id = invoice_id,
+            offer_id = offer_id,
+            confirmation_id = confirmation_id,
+            recurring_id = recurring_id
+        )
+
+        # Send POST-request
+        response = conn.post(path = cls.base_path, body = xml)
+        if response.status != 201:  # Created
+            raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
+    
+        # Create Invoice-Object
+        invoice = cls(conn = conn)
+        invoice.content_language = response.headers.get("content-language", None)
+        invoice.load_from_xml(response.data)
+    
+        # Finished
+        return invoice
+    
+    
+    def edit(
+        self,
+        id = None,
+        client_id = None,
+        contact_id = None,
+        address = None,
+        number_pre = None,
+        number = None,
+        number_length = None,
+        date = None,
+        supply_date = None,
+        supply_date_type = None,
+        due_date = None,
+        discount_rate = None,
+        discount_days = None,
+        title = None,
+        label = None,
+        intro = None,
+        note = None,
+        reduction = None,
+        currency_code = None,
+        net_gross = None,
+        quote = None,
+        payment_types = None,
+        invoice_id = None,
+        offer_id = None,
+        confirmation_id = None,
+        recurring_id = None,
+    ):
+        """
+        Edit an invoice
+
+        :param id: ID of the invoice
+        :param client_id: ID of the client
+        :param contact_id: ID of the contact
+        :param address: the address
+        :param number_pre: invoice number prefix
+        :param number: serial number
+        :param number_length: Minimum length of the invoice number
+            (to be filled with leading zeros)
+        :param date: Invoice date
+        :param supply_date: supply/delivery date; MIXED (DATE/ALNUM)
+        :param supply_date_type: type or supply/delivery date; ALNUM (
+            "SUPPLY_DATE", "DELIVERY_DATE", "SUPPLY_TEXT", "DELIVERY_TEXT")
+        :param due_date: due date
+        :param discount_rate: Cash discount
+        :param discount_days: Cash discount date
+        :param title: Document title; Let it empty to use the default value
+            from settings: "Invoice [Invoice.invoice_number]"
+        :param label: Label text to describe the project
+        :param intro: Introductory text
+        :param note: Explanatory notes
+        :param reduction: Reduction (absolute or percent: 10/10%)
+        :param currency_code: Currency; ISO currency code
+        :param net_gross: Price basis (gross or net prices)
+        :param quote: Currency quote (for conversion into standard currency)
+        :param payment_types: List (separated by comma) of all accepted
+            payment types.
+        :param invoice_id: The ID of the corrected invoice, if it is an
+            invoice correction.
+        :param offer_id: The ID of the estimate, if the invoice was created
+            from an estimate.
+        :param confirmation_id: The ID of the confirmation, if the invoice was
+            created from a confirmation.
+        :param recurring_id: The ID of the recurring, if the invoice was
+            created from a recurring.
+        """
+
+        # Parameters
+        if id:
+            self.id = id
+        if not self.id:
+            raise errors.NoIdError()
+
+        # XML
+        xml = _invoice_xml(
+            client_id = client_id,
+            contact_id = contact_id,
+            address = address,
+            number_pre = number_pre,
+            number = number,
+            number_length = number_length,
+            date = date,
+            supply_date = supply_date,
+            supply_date_type = supply_date_type,
+            due_date = due_date,
+            discount_rate = discount_rate,
+            discount_days = discount_days,
+            title = title,
+            label = label,
+            intro = intro,
+            note = note,
+            reduction = reduction,
+            currency_code = currency_code,
+            net_gross = net_gross,
+            quote = quote,
+            payment_types = payment_types,
+            invoice_id = invoice_id,
+            offer_id = offer_id,
+            confirmation_id = confirmation_id,
+            recurring_id = recurring_id
+        )
+
+        # Path
+        path = "/api/invoices/{id}".format(id = self.id)
+
+        # Send PUT-request
+        response = self.conn.put(path = path, body = xml)
+        if response.status != 200:  # Edited
+            raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
+
+
     # def get_tags(self):
     #     """
     #     Gibt eine Liste mit Schlagworten der Rechnung zurück
@@ -235,28 +580,7 @@ class Invoice(Item):
     #     # Parameters
     #     if not self.id:
     #         raise errors.NoIdError()
-    #
-    #     # Path
-    #     path = "/api/invoice-tags?invoice_id={id}".format(id = self.id)
-    #
-    #     # Fetch data
-    #     response = self.conn.get(path = path)
-    #     if not response.status == 200:
-    #         raise errors.InvoiceNotFoundError(unicode(self.id))
-    #
-    #     # XML parsen
-    #     root = ET.fromstring(response.data)
-    #
-    #     # Rückgabeliste befüllen
-    #     retlist = []
-    #     for item in root:
-    #         isinstance(item, ET.Element)
-    #         text = item.text
-    #         if not text is None:
-    #             retlist.append(text)
-    #
-    #     # Fertig
-    #     return retlist
+    #     ...
 
 
 class Invoices(list):
