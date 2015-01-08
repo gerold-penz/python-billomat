@@ -20,6 +20,8 @@ conn = pybillomat.Connection(
     billomat_app_secret = _personal.gerolds_billomat_app_secret
 )
 
-invoice_tags_iterator = pybillomat.InvoiceTagsIterator(conn = conn)
-invoice_tags_iterator.search()
+# invoice_items_iterator = pybillomat.InvoiceItemsIterator(conn = conn)
+# invoice_items_iterator.search(invoice_id = 1078526)
+# for invoice_item in invoice_items_iterator:
+#     print invoice_item
 

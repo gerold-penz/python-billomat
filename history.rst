@@ -13,6 +13,8 @@ Version 0.2.14
 
 - Invoice-Tags
 
+- Invoice-Items
+
 
 ==============
 Version 0.2.13

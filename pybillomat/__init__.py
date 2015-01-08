@@ -13,6 +13,10 @@ from invoices import (
     Invoice,
     InvoicesIterator
 )
+from invoice_items import (
+    InvoiceItem,
+    InvoiceItemsIterator
+)
 from invoice_tags import (
     InvoiceTag,
     InvoiceTagsIterator
