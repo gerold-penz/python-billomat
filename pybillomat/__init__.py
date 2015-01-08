@@ -13,6 +13,10 @@ from invoices import (
     Invoice,
     InvoicesIterator
 )
+from invoice_tags import (
+    InvoiceTag,
+    InvoiceTagsIterator
+)
 from client_properties import (
     ClientProperty,
     ClientPropertiesIterator
