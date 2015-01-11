@@ -76,8 +76,7 @@ Clients
 
 
     # Load one client
-    client = pybillomat.Client(conn = conn)
-    client.load(id = 422909)
+    client = pybillomat.Client(conn = conn, id = 422909)
     print client
     # --> Client(id=422909, name=u'TESTFIRMA', ...)
 
@@ -167,8 +166,7 @@ Invoices
 
 
     # Load one invoice
-    invoice = pybillomat.Invoice(conn = conn)
-    invoice.load(id = 884447)
+    invoice = pybillomat.Invoice(conn = conn, id = 884447)
     print invoice
     # --> Invoice(address=u'TESTADRESSE', status=u'PAID', ...)
 
