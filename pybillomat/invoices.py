@@ -207,6 +207,8 @@ class Invoice(Item):
 
         if invoice_etree is not None:
             self.load_from_etree(invoice_etree)
+        elif id is not None:
+            self.load()
 
 
     def complete(self, template_id = None):

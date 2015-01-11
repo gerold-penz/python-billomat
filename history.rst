@@ -5,6 +5,16 @@ Python Billomat API Client Library
 by Gerold Penz 2014
 
 
+=============
+Version 0.3.1
+=============
+
+2015-01-11
+
+- Now, items will load automatically if the ID is given on initializing
+  the item-object. No more ``<item>.load()`` is necessary.
+
+
 ==============
 Version 0.2.14
 ==============

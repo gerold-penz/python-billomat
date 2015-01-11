@@ -40,6 +40,8 @@ class ArticleProperty(Item):
 
         if property_etree is not None:
             self.load_from_etree(property_etree)
+        elif id is not None:
+            self.load()
 
 
     @classmethod

@@ -56,7 +56,6 @@ conn = pybillomat.Connection(
 # Rechnung aus Abo-Rechnung erstellen
 #
 recurring = pybillomat.Recurring(conn = conn, id = 48594)
-recurring.load()
 print "Abo-Rechnung geladen"
 
 recurring_items_iterator = pybillomat.RecurringItemsIterator(conn = conn)

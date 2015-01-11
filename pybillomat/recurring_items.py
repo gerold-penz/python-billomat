@@ -116,6 +116,8 @@ class RecurringItem(Item):
 
         if recurring_item_etree is not None:
             self.load_from_etree(recurring_item_etree)
+        elif id is not None:
+            self.load()
 
 
     @classmethod

@@ -12,8 +12,7 @@ conn = pybillomat.Connection(
 
 
 # Load one invoice
-invoice = pybillomat.Invoice(conn = conn)
-invoice.load(id = 884447)
+invoice = pybillomat.Invoice(conn = conn, id = 884447)
 print invoice
 # --> Invoice(address=u'TESTADRESSE', status=u'PAID', ...)
 

@@ -38,6 +38,8 @@ class ClientTag(Item):
 
         if tag_etree is not None:
             self.load_from_etree(tag_etree)
+        elif id is not None:
+            self.load()
 
 
     @classmethod

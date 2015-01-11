@@ -12,8 +12,7 @@ conn = pybillomat.Connection(
 
 
 # Load one clients-property
-clients_property = pybillomat.ClientProperty(conn = conn)
-clients_property.load(id = 123)
+clients_property = pybillomat.ClientProperty(conn = conn, id = 123)
 print clients_property
 # --> ClientsProperty(id=123, ..., name=u'Test', type=u'TEXTFIELD', value=u'Test')
 

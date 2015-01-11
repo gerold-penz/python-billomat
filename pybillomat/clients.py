@@ -339,6 +339,8 @@ class Client(Item):
 
         if client_etree is not None:
             self.load_from_etree(client_etree)
+        elif id is not None:
+            self.load()
 
 
     @classmethod

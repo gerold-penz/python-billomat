@@ -12,8 +12,7 @@ conn = pybillomat.Connection(
 
 
 # Load one client
-client = pybillomat.Client(conn = conn)
-client.load(id = 422909)
+client = pybillomat.Client(conn = conn, id = 422909)
 print client
 # --> Client(id=422909, name=u'TESTFIRMA', ...)
 
