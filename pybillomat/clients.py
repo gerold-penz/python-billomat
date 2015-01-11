@@ -719,7 +719,7 @@ class Client(Item):
 
         # Path
         path = "{base_path}/{id}".format(
-            base_bath = self.base_path,
+            base_path = self.base_path,
             id = self.id
         )
 

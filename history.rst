@@ -14,6 +14,8 @@ Version 0.3.1
 - Now, items will load automatically if the ID is given on initializing
   the item-object. No more ``<item>.load()`` is necessary.
 
+- Typo
+
 
 ==============
 Version 0.2.14
