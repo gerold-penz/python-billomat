@@ -24,12 +24,16 @@ conn = pybillomat.Connection(
 
 
 
-invoices_iterator = pybillomat.InvoicesIterator(conn = conn)
-invoices_iterator.search(status = "DRAFT")
-for invoice in invoices_iterator:
-    print invoice
+# invoices_iterator = pybillomat.InvoicesIterator(conn = conn)
+# invoices_iterator.search(status = "DRAFT")
+# for invoice in invoices_iterator:
+#     print invoice
+#
+#     # invoice.edit(date = datetime.date(2015, 1, 9))
+#
+#
+#
 
-    # invoice.edit(date = datetime.date(2015, 1, 9))
 
-
-
+recurring = pybillomat.Recurring(conn = conn, id = 48595)
+print recurring
