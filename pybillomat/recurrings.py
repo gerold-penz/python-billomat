@@ -46,9 +46,10 @@ def _recurring_xml(
     email_subject = None,
     email_message = None,
     email_filename = None,
+    email_template_id = None,
     offer_id = None,
     confirmation_id = None,
-    template_id = None,
+    template_id = None
 ):
     """
     Creates the XML to add or edit a recurring
@@ -65,6 +66,7 @@ def _recurring_xml(
         "offer_id",
         "confirmation_id",
         "template_id",
+        "email_template_id",
     ]
     date_or_string_fieldnames = [
         "supply_date",
@@ -207,6 +209,7 @@ class Recurring(Item):
         self.email_subject = None
         self.email_message = None
         self.email_filename = None
+        self.email_template_id = None
         self.payment_types = None
         #    INVOICE_CORRECTION (Korrekturrechnung)
         #    CREDIT_NOTE (Gutschrift)
@@ -261,6 +264,7 @@ class Recurring(Item):
         email_subject = None,
         email_message = None,
         email_filename = None,
+        email_template_id = None,
         offer_id = None,
         confirmation_id = None,
         template_id = None
@@ -310,6 +314,7 @@ class Recurring(Item):
             an empty value, the message will be used from the settings.
         :param email_filename: Filename of the invoice when sending e-mail.
             If you pass an empty value, the filename will be used from the settings.
+        :param email_template_id: Email template ID
         :param offer_id: The ID of the estimate, if the recurring was created
             from an estimate.
         :param confirmation_id: The ID of the confirmation, if the recurring
@@ -349,6 +354,7 @@ class Recurring(Item):
             email_subject = email_subject,
             email_message = email_message,
             email_filename = email_filename,
+            email_template_id = email_template_id,
             offer_id = offer_id,
             confirmation_id = confirmation_id,
             template_id = template_id
@@ -400,6 +406,7 @@ class Recurring(Item):
         email_subject = None,
         email_message = None,
         email_filename = None,
+        email_template_id = None,
         offer_id = None,
         confirmation_id = None,
         template_id = None
@@ -447,6 +454,7 @@ class Recurring(Item):
             an empty value, the message will be used from the settings.
         :param email_filename: Filename of the invoice when sending e-mail.
             If you pass an empty value, the filename will be used from the settings.
+        :param email_template_id: Email template ID
         :param offer_id: The ID of the estimate, if the recurring was created
             from an estimate.
         :param confirmation_id: The ID of the confirmation, if the recurring
@@ -491,6 +499,7 @@ class Recurring(Item):
             email_subject = email_subject,
             email_message = email_message,
             email_filename = email_filename,
+            email_template_id = email_template_id,
             offer_id = offer_id,
             confirmation_id = confirmation_id,
             template_id = template_id

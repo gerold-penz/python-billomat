@@ -6,6 +6,15 @@ by Gerold Penz 2014
 
 
 =============
+Version 0.3.2
+=============
+
+2015-01-19
+
+- Recurrings: New field *email_template_id* added
+
+
+=============
 Version 0.3.1
 =============
 
