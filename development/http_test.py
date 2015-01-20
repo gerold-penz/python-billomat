@@ -35,10 +35,9 @@ conn = pybillomat.Connection(
 #
 
 
+recurrings_iterator = pybillomat.RecurringsIterator(conn = conn)
+recurrings_iterator.search()
+for recurring in recurrings_iterator:
+    print recurring
 
-email_template = pybillomat.EmailTemplate(conn = conn, id = 248227)
-print email_template
-# email_template.edit(
-#     name = u"TEST TEST",
-#     type = u"INVOICES"
-# )
+
