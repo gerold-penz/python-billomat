@@ -132,8 +132,9 @@ class RecurringEmailReceiver(Item):
         Edit a recurring-email_receiver
 
         :param id: ID of the recurring-email_receiver
-        :param type: Receiver type (to, cc, bcc)
-        :param address: Email address
+        :param type: Receiver type (to, cc, bcc); mandatory
+        :param address: Email address; mandatory; Empty address resets to the
+            default address.
         """
 
         # Parameters

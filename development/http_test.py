@@ -35,5 +35,3 @@ conn = pybillomat.Connection(
 #
 
 
-recurring = pybillomat.Recurring(conn = conn, id = 48595)
-print recurring
