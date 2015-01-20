@@ -2,7 +2,17 @@
 Python Billomat API Client Library
 ##################################
 
-by Gerold Penz 2014
+by Gerold Penz 2014, 2015
+
+
+=============
+Version 0.3.3
+=============
+
+2015-01-20
+
+
+- Recurring-Email-Receivers
 
 
 =============

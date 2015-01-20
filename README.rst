@@ -31,6 +31,7 @@ Features
 
   - Recurring-Items
   - Recurring-Tags
+  - Recurring-Email-Receivers
 
 - Invoices
 

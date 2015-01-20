@@ -49,3 +49,7 @@ from recurring_tags import (
     RecurringTag,
     RecurringTagsIterator
 )
+from recurring_email_receivers import (
+    RecurringEmailReceiver,
+    RecurringEmailReceiversIterator
+)
