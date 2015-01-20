@@ -871,6 +871,7 @@ class Clients(list):
                 note = note,
                 invoice_id = invoice_id,
                 tags = tags,
+                order_by = order_by,
 
                 fetch_all = fetch_all,
                 allow_empty_filter = allow_empty_filter,

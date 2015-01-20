@@ -53,3 +53,7 @@ from recurring_email_receivers import (
     RecurringEmailReceiver,
     RecurringEmailReceiversIterator
 )
+from email_templates import (
+    EmailTemplate,
+    EmailTemplatesIterator
+)

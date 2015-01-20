@@ -35,3 +35,10 @@ conn = pybillomat.Connection(
 #
 
 
+
+email_template = pybillomat.EmailTemplate(conn = conn, id = 248227)
+print email_template
+# email_template.edit(
+#     name = u"TEST TEST",
+#     type = u"INVOICES"
+# )

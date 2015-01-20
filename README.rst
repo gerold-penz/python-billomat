@@ -47,6 +47,8 @@ Features
 
 - Article-Properties
 
+- Email-Templates
+
 
 ============
 Installation

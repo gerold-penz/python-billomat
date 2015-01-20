@@ -14,6 +14,10 @@ Version 0.3.3
 
 - Recurring-Email-Receivers
 
+- Bug repaired: OrderBy-Field error in *Clients.search*
+
+- Email-Templates
+
 
 =============
 Version 0.3.2
