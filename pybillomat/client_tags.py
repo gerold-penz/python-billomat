@@ -186,7 +186,10 @@ class ClientTags(list):
         self.per_page = int(tags_etree.attrib.get("per_page", "0"))
         self.total = int(tags_etree.attrib.get("total", "0"))
         self.page = int(tags_etree.attrib.get("page", "1"))
-        self.pages = (self.total // self.per_page) + int(bool(self.total % self.per_page))
+        try:
+            self.pages = (self.total // self.per_page) + int(bool(self.total % self.per_page))
+        except ZeroDivisionError:
+            self.pages = 0
 
         # Iterate over all tags
         for tag_etree in tags_etree:

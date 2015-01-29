@@ -199,7 +199,10 @@ class ClientProperties(list):
         self.per_page = int(properties_etree.attrib.get("per_page", "0"))
         self.total = int(properties_etree.attrib.get("total", "0"))
         self.page = int(properties_etree.attrib.get("page", "1"))
-        self.pages = (self.total // self.per_page) + int(bool(self.total % self.per_page))
+        try:
+            self.pages = (self.total // self.per_page) + int(bool(self.total % self.per_page))
+        except ZeroDivisionError:
+            self.pages = 0
 
         # Iterate over all client-properties
         for property_etree in properties_etree:

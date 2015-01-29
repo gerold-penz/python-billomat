@@ -315,7 +315,10 @@ class InvoiceItems(list):
         self.per_page = int(invoice_items_etree.attrib.get("per_page", "100"))
         self.total = int(invoice_items_etree.attrib.get("total", "0"))
         self.page = int(invoice_items_etree.attrib.get("page", "1"))
-        self.pages = (self.total // self.per_page) + int(bool(self.total % self.per_page))
+        try:
+            self.pages = (self.total // self.per_page) + int(bool(self.total % self.per_page))
+        except ZeroDivisionError:
+            self.pages = 0
 
         # Iterate over all items
         for invoice_item_etree in invoice_items_etree:

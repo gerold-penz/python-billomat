@@ -6,6 +6,15 @@ by Gerold Penz 2014, 2015
 
 
 =============
+Version 0.3.4
+=============
+
+2015-01-29
+
+- Catch ZeroDivisionError on calculating *self.pages*.
+
+
+=============
 Version 0.3.3
 =============
 

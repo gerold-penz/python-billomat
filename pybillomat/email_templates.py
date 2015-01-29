@@ -256,7 +256,10 @@ class EmailTemplates(list):
         self.per_page = int(email_templates_etree.attrib.get("per_page", "0"))
         self.total = int(email_templates_etree.attrib.get("total", "0"))
         self.page = int(email_templates_etree.attrib.get("page", "1"))
-        self.pages = (self.total // self.per_page) + int(bool(self.total % self.per_page))
+        try:
+            self.pages = (self.total // self.per_page) + int(bool(self.total % self.per_page))
+        except ZeroDivisionError:
+            self.pages = 0
 
         # Iterate over all email templates
         for email_template_etree in email_templates_etree:
