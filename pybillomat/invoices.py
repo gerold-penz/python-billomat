@@ -380,7 +380,7 @@ class Invoice(Item):
         # invoice_items = None
     ):
         """
-        Creates a recurring
+        Creates an invoice
 
         :param conn: Connection-Object
         :param client_id: ID of the client

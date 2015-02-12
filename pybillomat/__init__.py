@@ -29,6 +29,10 @@ from client_tags import (
     ClientTag,
     ClientTagsIterator
 )
+from articles import (
+    Article,
+    ArticlesIterator
+)
 from article_properties import (
     ArticleProperty,
     ArticlePropertiesIterator
