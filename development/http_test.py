@@ -12,7 +12,6 @@ import _personal_billomat_data as _personal
 
 
 import pybillomat
-import datetime
 
 
 conn = pybillomat.Connection(
@@ -23,21 +22,8 @@ conn = pybillomat.Connection(
 )
 
 
+articles_iterator = pybillomat.ArticlesIterator(conn = conn)
+articles_iterator.search(supplier_id = "")
 
-# invoices_iterator = pybillomat.InvoicesIterator(conn = conn)
-# invoices_iterator.search(status = "DRAFT")
-# for invoice in invoices_iterator:
-#     print invoice
-#
-#     # invoice.edit(date = datetime.date(2015, 1, 9))
-#
-#
-#
-
-
-recurrings_iterator = pybillomat.RecurringsIterator(conn = conn)
-recurrings_iterator.search()
-for recurring in recurrings_iterator:
-    print recurring
-
-
+for article in articles_iterator:
+    print repr(article)
