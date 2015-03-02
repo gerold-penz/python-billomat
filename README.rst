@@ -3,7 +3,7 @@ Python Billomat API Client Library
 ##################################
 
 
-**Pre-Alpha**
+**Alpha**
 
 
 Billomat (http://www.billomat.com/): Online service
