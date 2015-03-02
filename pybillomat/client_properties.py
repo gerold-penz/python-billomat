@@ -114,6 +114,7 @@ class ClientProperties(list):
         # Search parameters
         client_id = None,
         client_property_id = None,
+        value = None,
         order_by = None,
 
         fetch_all = False,
@@ -129,6 +130,7 @@ class ClientProperties(list):
 
         :param client_id: Client ID
         :param client_property_id: Client-Property-ID
+        :param value: Value of the Client-Property
         :param order_by: Sortings consist of the name of the field and
             sort order: ASC for ascending resp. DESC for descending order.
             If no order is specified, ascending order (ASC) is used.
@@ -144,6 +146,7 @@ class ClientProperties(list):
             if not any([
                 client_id,
                 client_property_id,
+                value
             ]):
                 raise errors.EmptyFilterError()
 
@@ -168,6 +171,8 @@ class ClientProperties(list):
             url.query["client_id"] = client_id
         if client_property_id:
             url.query["client_property_id"] = client_property_id
+        if value is not None:
+            url.query["value"] = value
 
         # Fetch data
         response = self.conn.get(path = str(url))
@@ -216,6 +221,7 @@ class ClientProperties(list):
                 # Search parameters
                 client_id = client_id,
                 client_property_id = client_property_id,
+                value = value,
 
                 fetch_all = fetch_all,
                 allow_empty_filter = allow_empty_filter,
@@ -241,6 +247,7 @@ class ClientPropertiesIterator(ItemsIterator):
         self.search_params = Bunch(
             client_id = None,
             client_property_id = None,
+            value = None,
             order_by = None,
         )
 
@@ -249,6 +256,7 @@ class ClientPropertiesIterator(ItemsIterator):
         self,
         client_id = None,
         client_property_id = None,
+        value = None,
         order_by = None
     ):
         """
@@ -258,6 +266,7 @@ class ClientPropertiesIterator(ItemsIterator):
         # Params
         self.search_params.client_id = client_id
         self.search_params.client_property_id = client_property_id
+        self.search_params.value = value
         self.search_params.order_by = order_by
 
         # Search and prepare first page as result
@@ -269,6 +278,7 @@ class ClientPropertiesIterator(ItemsIterator):
         self.items.search(
             client_id = self.search_params.client_id,
             client_property_id = self.search_params.client_property_id,
+            value = self.search_params.value,
             order_by = self.search_params.order_by,
 
             fetch_all = False,

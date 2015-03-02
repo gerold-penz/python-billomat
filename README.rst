@@ -43,9 +43,10 @@ Features
   - Client-Properties
   - Client-Tags
 
-- Article-Tags
+- Articles
 
-- Article-Properties
+  - Article-Properties
+  - Article-Tags
 
 - Email-Templates
 

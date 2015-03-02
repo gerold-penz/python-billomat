@@ -6,6 +6,15 @@ by Gerold Penz 2014, 2015
 
 
 =============
+Version 0.3.6
+=============
+
+2015-03-02
+
+- *ClientPropertiesIterator*: New "value"-parameter added for searching.
+
+
+=============
 Version 0.3.5
 =============
 
