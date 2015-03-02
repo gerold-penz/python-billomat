@@ -22,8 +22,14 @@ conn = pybillomat.Connection(
 )
 
 
-articles_iterator = pybillomat.ArticlesIterator(conn = conn)
-articles_iterator.search(supplier_id = "")
+client_properties_iterator = pybillomat.ClientPropertiesIterator(conn = conn)
+client_properties_iterator.per_page = 3
+client_properties_iterator.search(
+    client_property_id = 3408,  # Immoads Kundennummer
+    value = u"238701"
+)
 
-for article in articles_iterator:
-    print repr(article)
+for index, client_property in enumerate(client_properties_iterator):
+    print repr(client_property)
+    if index == 2:
+        break

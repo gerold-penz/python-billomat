@@ -11,7 +11,7 @@ Version 0.3.6
 
 2015-03-02
 
-- *ClientPropertiesIterator*: New "value"-parameter added for searching.
+- Client-Properties: New "value"-parameter added for searching.
 
 
 =============
