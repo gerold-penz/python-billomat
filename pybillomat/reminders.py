@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 """
-Articles
+Mahnungen
 
-- English API-Description: http://www.billomat.com/en/api/articles
-- Deutsche API-Beschreibung: http://www.billomat.com/de/api/artikel
+- English API-Description: http://www.billomat.com/en/api/reminders
+- Deutsche API-Beschreibung: http://www.billomat.com/de/api/mahnungen
 """
 
 import datetime
@@ -15,52 +15,38 @@ import errors
 from _items_base import Item, ItemsIterator
 
 
-def _article_xml(
-    number_pre = None,
-    number = None,
-    number_length = None,
-    title = None,
-    description = None,
-    sales_price = None,
-    sales_price2 = None,
-    sales_price3 = None,
-    sales_price4 = None,
-    sales_price5 = None,
-    currency_code = None,
-    unit_id = None,
-    tax_id = None,
-    purchase_price = None,
-    purchase_price_net_gross = None,
-    supplier_id = None,
+def _reminder_xml(
+    invoice_id = None,
+    contact_id = None,
+    address = None,
+    date = None,
+    due_date = None,
+    subject = None,
+    label = None,
+    intro = None,
+    note = None,
 ):
     """
-    Creates the XML to add or edit a article
+    Creates the XML to add or edit a reminder
     """
 
     integer_field_names = [
-        "number",
-        "number_length",
-        "unit_id",
-        "tax_id",
-        "supplier_id",
+        "invoice_id",
+        "contact_id",
+        "",
     ]
     float_fieldnames = [
-        "sales_price",
-        "sales_price2",
-        "sales_price3",
-        "sales_price4",
-        "sales_price5",
-        "purchase_price",
+        "",
+        "",
+        "",
     ]
     string_fieldnames = [
-        "number_pre",
-        "title",
-        "description",
-        "currency_code",
-        "purchase_price_net_gross",
+        "",
+        "",
+        "",
     ]
 
-    article_tag = ET.Element("article")
+    reminder_tag = ET.Element("reminder")
 
     # Integer Fields
     for field_name in integer_field_names:
@@ -68,7 +54,7 @@ def _article_xml(
         if value is not None:
             new_tag = ET.Element(field_name)
             new_tag.text = unicode(int(value))
-            article_tag.append(new_tag)
+            reminder_tag.append(new_tag)
 
     # Float Fields
     for field_name in float_fieldnames:
@@ -76,7 +62,7 @@ def _article_xml(
         if value is not None:
             new_tag = ET.Element(field_name)
             new_tag.text = unicode(float(value))
-            article_tag.append(new_tag)
+            reminder_tag.append(new_tag)
 
     # String Fields
     for field_name in string_fieldnames:
@@ -84,23 +70,23 @@ def _article_xml(
         if value is not None:
             new_tag = ET.Element(field_name)
             new_tag.text = unicode(value)
-            article_tag.append(new_tag)
+            reminder_tag.append(new_tag)
 
-    xml = ET.tostring(article_tag)
+    xml = ET.tostring(reminder_tag)
 
     # Finished
     return xml
 
 
 
-class Article(Item):
+class Reminder(Item):
 
-    base_path = u"/api/articles"
+    base_path = u"/api/reminders"
 
 
-    def __init__(self, conn, id = None, article_etree = None):
+    def __init__(self, conn, id = None, reminder_etree = None):
         """
-        Article
+        Reminder
 
         :param conn: Connection-Object
         """
@@ -112,7 +98,7 @@ class Article(Item):
 
         self.id = id  # integer
         self.created = None  # datetime
-        self.article_number = None
+        self.reminder_number = None
         self.number = None  # integer
         self.number_pre = None
         self.title = None
@@ -129,8 +115,8 @@ class Article(Item):
         self.purchase_price_net_gross = None
         self.supplier_id = None  # integer
 
-        if article_etree is not None:
-            self.load_from_etree(article_etree)
+        if reminder_etree is not None:
+            self.load_from_etree(reminder_etree)
         elif id is not None:
             self.load()
 
@@ -157,7 +143,7 @@ class Article(Item):
         supplier_id = None
     ):
         """
-        Creates an article
+        Creates a reminder
 
         :param conn: Connection-Object
 
@@ -186,7 +172,7 @@ class Article(Item):
         """
 
         # XML
-        xml = _article_xml(
+        xml = _reminder_xml(
             number_pre = number_pre,
             number = number,
             number_length = number_length,
@@ -210,13 +196,13 @@ class Article(Item):
         if response.status != 201:  # Created
             raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
     
-        # Create Article-Object
-        article = cls(conn = conn)
-        article.content_language = response.headers.get("content-language", None)
-        article.load_from_xml(response.data)
+        # Create Reminder-Object
+        reminder = cls(conn = conn)
+        reminder.content_language = response.headers.get("content-language", None)
+        reminder.load_from_xml(response.data)
     
         # Finished
-        return article
+        return reminder
     
     
     def edit(
@@ -240,9 +226,9 @@ class Article(Item):
         supplier_id = None
     ):
         """
-        Edit an article
+        Edit a reminder
 
-        :param id: ID of the article
+        :param id: ID of the reminder
 
         :param number_pre: Prefix
         :param number: Sequential number
@@ -275,7 +261,7 @@ class Article(Item):
             raise errors.NoIdError()
 
         # XML
-        xml = _article_xml(
+        xml = _reminder_xml(
             number_pre = number_pre,
             number = number,
             number_length = number_length,
@@ -295,7 +281,7 @@ class Article(Item):
         )
 
         # Path
-        path = "/api/articles/{id}".format(id = self.id)
+        path = "/api/reminders/{id}".format(id = self.id)
 
         # Send PUT-request
         response = self.conn.put(path = path, body = xml)
@@ -305,7 +291,7 @@ class Article(Item):
 
     # def get_tags(self):
     #     """
-    #     Gibt eine Liste mit Schlagworten des Artikels zurück
+    #     Gibt eine Liste mit Schlagworten der Mahnung zurück
     #     """
     #
     #     # Parameters
@@ -314,11 +300,11 @@ class Article(Item):
     #     ...
 
 
-class Articles(list):
+class Reminders(list):
 
     def __init__(self, conn):
         """
-        Articles-List
+        Reminders-List
 
         :param conn: Connection-Object
         """
@@ -351,11 +337,11 @@ class Articles(list):
         per_page = None
     ):
         """
-        Fills the list with Article-objects
+        Fills the list with Reminder-objects
 
-        If no search criteria given --> all articles will returned (REALLY ALL!).
+        If no search criteria given --> all reminders will returned (REALLY ALL!).
 
-        :param article_number: Article number
+        :param article_number: Reminder number
         :param title: Title
         :param description: Description
         :param currency_code: ISO code of the currency
@@ -370,7 +356,7 @@ class Articles(list):
             comma.
 
         :param allow_empty_filter: If `True`, every filter-parameter may be empty.
-            So, all articles will returned. !!! EVERY INVOICE !!!
+            So, all reminders will returned. !!! EVERY INVOICE !!!
         """
         
         # Check empty filter
@@ -395,7 +381,7 @@ class Articles(list):
                     break
 
         # Url and system-parameters
-        url = Url(path = "/api/articles")
+        url = Url(path = "/api/reminders")
         url.query["page"] = page
         if per_page:
             url.query["per_page"] = per_page
@@ -407,6 +393,8 @@ class Articles(list):
             url.query["article_number"] = article_number
         if title:
             url.query["title"] = title
+        if article_number:
+            url.query["article_number"] = article_number
         if description:
             url.query["description"] = description
         if currency_code:
@@ -422,19 +410,19 @@ class Articles(list):
         response = self.conn.get(path = str(url))
 
         # Parse XML
-        articles_etree = ET.fromstring(response.data)
+        reminders_etree = ET.fromstring(response.data)
 
-        self.per_page = int(articles_etree.attrib.get("per_page", "100"))
-        self.total = int(articles_etree.attrib.get("total", "0"))
-        self.page = int(articles_etree.attrib.get("page", "1"))
+        self.per_page = int(reminders_etree.attrib.get("per_page", "100"))
+        self.total = int(reminders_etree.attrib.get("total", "0"))
+        self.page = int(reminders_etree.attrib.get("page", "1"))
         try:
             self.pages = (self.total // self.per_page) + int(bool(self.total % self.per_page))
         except ZeroDivisionError:
             self.pages = 0
 
-        # Iterate over all articles
-        for article_etree in articles_etree:
-            self.append(Article(conn = self.conn, article_etree = article_etree))
+        # Iterate over all reminders
+        for reminder_etree in reminders_etree:
+            self.append(Reminder(conn = self.conn, reminder_etree = reminder_etree))
 
         # Fetch all
         if fetch_all and self.total > (self.page * self.per_page):
@@ -457,18 +445,18 @@ class Articles(list):
             )
 
 
-class ArticlesIterator(ItemsIterator):
+class RemindersIterator(ItemsIterator):
     """
-    Iterates over all found articles
+    Iterates over all found reminders
     """
 
     def __init__(self, conn, per_page = 30):
         """
-        ArticlesIterator
+        RemindersIterator
         """
 
         self.conn = conn
-        self.items = Articles(self.conn)
+        self.items = Reminders(self.conn)
         self.per_page = per_page
         self.search_params = Bunch(
             article_number = None,

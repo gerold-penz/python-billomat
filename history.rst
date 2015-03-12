@@ -6,6 +6,17 @@ by Gerold Penz 2014, 2015
 
 
 =============
+Version 0.3.7
+=============
+
+2015-03-12
+
+- Small bug fixed: Double "article_number" in *articles.Articles.search*.
+
+- Mit Mahnungen (reminders) begonnen.
+
+
+=============
 Version 0.3.6
 =============
 
