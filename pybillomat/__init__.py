@@ -61,3 +61,7 @@ from email_templates import (
     EmailTemplate,
     EmailTemplatesIterator
 )
+from reminders import (
+    Reminder,
+    RemindersIterator
+)

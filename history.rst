@@ -6,6 +6,27 @@ by Gerold Penz 2014, 2015
 
 
 =============
+Version 0.3.8
+=============
+
+2015-03-25
+
+- Reminders:
+
+  - Get a single reminder
+
+  - Create reminder
+
+  - Edit reminder
+
+  - Delete reminder
+
+  - Complete reminder
+
+  - Send reminder by e-mail
+
+
+=============
 Version 0.3.7
 =============
 
