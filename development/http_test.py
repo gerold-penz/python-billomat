@@ -21,15 +21,8 @@ conn = pybillomat.Connection(
     billomat_app_secret = _personal.gerolds_billomat_app_secret
 )
 
-
-client_properties_iterator = pybillomat.ClientPropertiesIterator(conn = conn)
-client_properties_iterator.per_page = 3
-client_properties_iterator.search(
-    client_property_id = 3408,  # Immoads Kundennummer
-    value = u"238701"
+reminders_iterator = pybillomat.RemindersIterator(conn = conn)
+reminders_iterator.search(
+    invoice_number = u"TEST-R-001"
 )
-
-for index, client_property in enumerate(client_properties_iterator):
-    print repr(client_property)
-    if index == 2:
-        break
+print len(reminders_iterator)

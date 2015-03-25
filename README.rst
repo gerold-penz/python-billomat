@@ -25,7 +25,7 @@ enables you to access the data in your Billomat account.
 Features
 ========
 
-- Google App Engine (GAE) ready
+- Ready for Google App Engine (GAE)
 
 - Recurrings
 
@@ -49,6 +49,8 @@ Features
   - Article-Tags
 
 - Email-Templates
+
+- Reminders
 
 
 ============
