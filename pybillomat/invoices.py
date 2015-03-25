@@ -187,7 +187,7 @@ class Invoice(Item):
         self.open_amount = None  # float
         self.currency_code = None
         self.quote = None  # float
-        self.invoice_id = None
+        self.invoice_id = None  # ID der korrigierten Rechnung
         self.offer_id = None
         self.confirmation_id = None
         self.recurring_id = None
