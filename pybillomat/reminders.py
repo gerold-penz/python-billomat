@@ -109,7 +109,7 @@ class Reminder(Item):
         self.note = None
         self.due_date = None  # date
         self.total_gross = None  # float
-        self.is_old = None
+        self.is_old = None  # Steht dieses Flag auf 1, dann gibt es eine aktuellere Mahnung.
 
         if reminder_etree is not None:
             self.load_from_etree(reminder_etree)
