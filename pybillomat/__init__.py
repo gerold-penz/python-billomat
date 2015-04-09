@@ -65,3 +65,7 @@ from reminders import (
     Reminder,
     RemindersIterator
 )
+from reminder_tags import (
+    ReminderTag,
+    ReminderTagsIterator
+)

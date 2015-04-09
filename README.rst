@@ -52,6 +52,8 @@ Features
 
 - Reminders
 
+  - Reminder-Tags
+
 
 ============
 Installation
