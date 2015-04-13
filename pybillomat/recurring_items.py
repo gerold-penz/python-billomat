@@ -31,7 +31,7 @@ def _recurring_item_xml(
     Creates the XML to add or edit a recurring-item
     """
 
-    integer_field_names = [
+    integer_fieldnames = [
         "recurring_id",
         "article_id",
     ]
@@ -51,7 +51,7 @@ def _recurring_item_xml(
     recurring_item_tag = ET.Element("recurring-item")
 
     # Integer Fields
-    for field_name in integer_field_names:
+    for field_name in integer_fieldnames:
         value = locals()[field_name]
         if value is not None:
             new_tag = ET.Element(field_name)

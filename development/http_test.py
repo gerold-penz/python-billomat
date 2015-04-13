@@ -20,9 +20,3 @@ conn = pybillomat.Connection(
     billomat_app_id = _personal.gerolds_billomat_app_id,
     billomat_app_secret = _personal.gerolds_billomat_app_secret
 )
-
-reminders_iterator = pybillomat.RemindersIterator(conn = conn)
-reminders_iterator.search(
-    invoice_number = u"TEST-R-001"
-)
-print len(reminders_iterator)

@@ -48,11 +48,15 @@ Features
   - Article-Properties
   - Article-Tags
 
-- Email-Templates
-
 - Reminders
 
+  - Reminder-Items
   - Reminder-Tags
+
+
+- Email-Templates
+
+- Reminder-Texts
 
 
 ============

@@ -13,6 +13,8 @@ Version 0.3.10
 
 - Reminder-Items
 
+- Reminder-Texts
+
 
 =============
 Version 0.3.9
