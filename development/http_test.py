@@ -20,3 +20,12 @@ conn = pybillomat.Connection(
     billomat_app_id = _personal.gerolds_billomat_app_id,
     billomat_app_secret = _personal.gerolds_billomat_app_secret
 )
+
+reminder_texts_iterator = pybillomat.ReminderTextsIterator(conn = conn)
+reminder_texts_iterator.search()
+
+for reminder_text in reminder_texts_iterator:
+    assert isinstance(reminder_text, pybillomat.ReminderText)
+
+    print reminder_text
+
