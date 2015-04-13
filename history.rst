@@ -5,6 +5,15 @@ Python Billomat API Client Library
 by Gerold Penz 2014, 2015
 
 
+==============
+Version 0.3.10
+==============
+
+2015-04-13
+
+- Reminder-Items
+
+
 =============
 Version 0.3.9
 =============
