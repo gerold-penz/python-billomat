@@ -14,7 +14,7 @@ class Item(Bunch):
     Base class for Client, Recurring, ...
     """
 
-    id = None
+    _id = None
     content_language = None
     base_path = u"/api/<object>"
 
@@ -123,6 +123,16 @@ class Item(Bunch):
         response = self.conn.delete(path = path)
         if response.status != 200:
             raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
+
+
+    @property
+    def id(self):
+        return self._id
+
+
+    @id.setter
+    def id(self, value):
+        self._id = value
 
 
 class ItemsIterator(object):

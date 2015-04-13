@@ -6,6 +6,15 @@ by Gerold Penz 2014, 2015
 
 
 ==============
+Version 0.3.11
+==============
+
+2015-04-13
+
+- *_items_base.Item* um Properties für "id" erweitert.
+
+
+==============
 Version 0.3.10
 ==============
 
