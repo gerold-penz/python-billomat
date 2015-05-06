@@ -37,6 +37,7 @@ Features
 
   - Invoice-Items
   - Invoice-Tags
+  - Invoice-Payments
 
 - Clients
 

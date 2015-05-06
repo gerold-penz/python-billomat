@@ -384,10 +384,10 @@ class InvoicePaymentsIterator(ItemsIterator):
 
         # Params
         self.search_params.invoice_id = invoice_id
-        self.search_params.from_date = from_date,
-        self.search_params.to_date = to_date,
-        self.search_params.type = type,
-        self.search_params.user_id = user_id,
+        self.search_params.from_date = from_date
+        self.search_params.to_date = to_date
+        self.search_params.type = type
+        self.search_params.user_id = user_id
         self.search_params.order_by = order_by
 
         # Search and prepare first page as result

@@ -21,11 +21,14 @@ conn = pybillomat.Connection(
     billomat_app_secret = _personal.gerolds_billomat_app_secret
 )
 
-reminder_texts_iterator = pybillomat.ReminderTextsIterator(conn = conn)
-reminder_texts_iterator.search()
+invoice_payments_iterator = pybillomat.InvoicePaymentsIterator(
+    conn = conn, per_page = 10
+)
+invoice_payments_iterator.search(order_by = u"date")
 
-for reminder_text in reminder_texts_iterator:
-    assert isinstance(reminder_text, pybillomat.ReminderText)
+for invoice_payment in invoice_payments_iterator[:10]:
+    assert isinstance(invoice_payment, pybillomat.InvoicePayment)
 
-    print reminder_text
+    print repr(invoice_payment)
+    print
 
