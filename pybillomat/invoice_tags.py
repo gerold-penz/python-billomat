@@ -202,6 +202,7 @@ class InvoiceTags(list):
             self.search(
                 # Search parameters
                 invoice_id = invoice_id,
+                order_by = order_by,
 
                 fetch_all = fetch_all,
                 allow_empty_filter = allow_empty_filter,

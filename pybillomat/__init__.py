@@ -17,6 +17,10 @@ from invoice_items import (
     InvoiceItem,
     InvoiceItemsIterator
 )
+from invoice_payments import (
+    InvoicePayment,
+    InvoicePaymentsIterator
+)
 from invoice_tags import (
     InvoiceTag,
     InvoiceTagsIterator

@@ -6,6 +6,17 @@ by Gerold Penz 2014, 2015
 
 
 ==============
+Version 0.3.12
+==============
+
+2015-05-06
+
+- *invoice_tags*: Bug repaired: Next page search with *order_by* parameter.
+
+- *invoice_payments*
+
+
+==============
 Version 0.3.11
 ==============
 
