@@ -41,6 +41,7 @@ def _invoice_payment_xml(
     ]
     string_fieldnames = [
         "type",
+        "comment"
     ]
 
     invoice_payment_tag = ET.Element("recurring-item")
@@ -160,7 +161,7 @@ class InvoicePayment(Item):
         """
 
         assert invoice_id
-        assert amount
+        assert amount is not None
 
         # XML
         xml = _invoice_payment_xml(
