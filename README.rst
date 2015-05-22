@@ -2,10 +2,6 @@
 Python Billomat API Client Library
 ##################################
 
-
-**Alpha**
-
-
 Billomat (http://www.billomat.com/): Online service
 for quoting, billing and more.
 
@@ -15,7 +11,7 @@ delivery notes,...
 The billomat[API] is an open data and programming interface which
 enables you to access the data in your Billomat account.
 
-*python-billomat* is ready to use in Google App Engine (GAE).
+*python-billomat* can be used in Google App Engine (GAE).
 
 - English API Description: http://www.billomat.com/en/api
 - Deutsche API Beschreibung: http://www.billomat.com/de/api
@@ -25,7 +21,7 @@ enables you to access the data in your Billomat account.
 Features
 ========
 
-- Ready for Google App Engine (GAE)
+- Can be used in Google App Engine (GAE)
 
 - Recurrings
 
@@ -53,7 +49,6 @@ Features
 
   - Reminder-Items
   - Reminder-Tags
-
 
 - Email-Templates
 
