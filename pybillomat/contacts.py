@@ -223,7 +223,7 @@ class Contact(Item):
         www = None
     ):
         """
-        Edit a recurring-item
+        Edit a contact-item
 
         :param id: ID of the contact-item
 

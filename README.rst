@@ -40,6 +40,8 @@ Features
   - Client-Properties
   - Client-Tags
 
+- Contacts
+
 - Articles
 
   - Article-Properties

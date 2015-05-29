@@ -6,6 +6,15 @@ by Gerold Penz 2014, 2015
 
 
 =============
+Version 0.4.1
+=============
+
+2015-05-29
+
+- *Contacts*: merged pull request #2 from *flow90*. Thank you! :-)
+
+
+=============
 Version 0.4.0
 =============
 
