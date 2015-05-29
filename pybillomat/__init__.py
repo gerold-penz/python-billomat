@@ -9,6 +9,10 @@ from clients import (
     Client,
     ClientsIterator
 )
+from contacts import (
+    Contact,
+    ContactsIterator
+)
 from invoices import (
     Invoice,
     InvoicesIterator
