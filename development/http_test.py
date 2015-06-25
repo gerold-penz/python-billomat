@@ -21,22 +21,9 @@ conn = pybillomat.Connection(
     billomat_app_secret = _personal.gerolds_billomat_app_secret
 )
 
-# invoice_payments_iterator = pybillomat.InvoicePaymentsIterator(
-#     conn = conn, per_page = 10
-# )
-# invoice_payments_iterator.search(order_by = u"date")
-#
-# for invoice_payment in invoice_payments_iterator[:10]:
-#     assert isinstance(invoice_payment, pybillomat.InvoicePayment)
-#
-#     print repr(invoice_payment)
-#     print
+suppliers_iterator = pybillomat.SuppliersIterator(conn = conn)
+suppliers_iterator.search()
 
+for supplier in suppliers_iterator:
+    print repr(supplier)
 
-invoice_payment = pybillomat.InvoicePayment.create(
-    conn = conn,
-    invoice_id = 1271007,
-    amount = 23.52,
-    comment = u"Zahlung dankend erhalten.",
-    mark_invoice_as_paid = True
-)

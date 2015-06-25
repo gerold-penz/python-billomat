@@ -403,6 +403,7 @@ class Suppliers(list):
 
         order_by = None,
         fetch_all = False,
+        allow_empty_filter = False,
         keep_old_items = False,
         page = 1,
         per_page = None
@@ -428,22 +429,25 @@ class Suppliers(list):
             Nested sort orders are possible. Please separate the sort orders by
             comma.
 
+        :param allow_empty_filter: If `True`, every filter-parameter may be empty.
+            So, all invoices will returned. !!! EVERY INVOICE !!!
         """
 
-        # Check empty param
-        if not any([
-            name, 
-            email, 
-            first_name, 
-            last_name, 
-            country_code, 
-            creditor_identifier, 
-            note, 
-            client_number, 
-            incoming_id, 
-            tags
-        ]):
-            raise errors.EmptyFilterError()
+        # Check empty filter
+        if not allow_empty_filter:
+            if not any([
+                name,
+                email,
+                first_name,
+                last_name,
+                country_code,
+                creditor_identifier,
+                note,
+                client_number,
+                incoming_id,
+                tags
+            ]):
+                raise errors.EmptyFilterError()
 
         # Empty the list
         if not keep_old_items:
@@ -520,6 +524,7 @@ class Suppliers(list):
 
                 order_by = order_by,
                 fetch_all = fetch_all,
+                allow_empty_filter = allow_empty_filter,
                 keep_old_items = True,
                 page = page + 1,
                 per_page = per_page
@@ -609,6 +614,7 @@ class SuppliersIterator(ItemsIterator):
 
             order_by = self.search_params.order_by,
             fetch_all = False,
+            allow_empty_filter = True,
             keep_old_items = False,
             page = page,
             per_page = self.per_page
