@@ -85,3 +85,7 @@ from reminder_texts import (
     ReminderText,
     ReminderTextsIterator
 )
+from suppliers import (
+    Supplier,
+    SuppliersIterator
+)
