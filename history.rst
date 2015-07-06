@@ -6,6 +6,15 @@ by Gerold Penz 2014, 2015
 
 
 =============
+Version 0.4.3
+=============
+
+2015-07-06
+
+- Own meta data (customfield) for every Billomat-object
+
+
+=============
 Version 0.4.2
 =============
 

@@ -56,6 +56,8 @@ Features
 
 - Reminder-Texts
 
+- Own meta data (customfield) for every Billomat-object
+
 
 ============
 Installation

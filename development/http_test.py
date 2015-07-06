@@ -21,9 +21,9 @@ conn = pybillomat.Connection(
     billomat_app_secret = _personal.gerolds_billomat_app_secret
 )
 
-suppliers_iterator = pybillomat.SuppliersIterator(conn = conn)
-suppliers_iterator.search()
+client = pybillomat.Client(conn = conn, id = 469621)
 
-for supplier in suppliers_iterator:
-    print repr(supplier)
+client.customfield = u"Servus öäü"
 
+
+print client.customfield
