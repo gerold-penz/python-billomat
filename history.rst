@@ -6,6 +6,15 @@ by Gerold Penz 2014, 2015
 
 
 =============
+Version 0.4.4
+=============
+
+2015-08-20
+
+- Added a timeout for HTTP requests. Default timeout is 10 minutes.
+
+
+=============
 Version 0.4.3
 =============
 

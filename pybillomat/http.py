@@ -27,7 +27,10 @@ class Connection(object):
         billomat_api_key,
         billomat_app_id = None,
         billomat_app_secret = None,
+        timeout_seconds = 600  # 10 Minutes
     ):
+
+        self.timeout_seconds = timeout_seconds
 
         # Base URL
         self.url = "https://{billomat_id}.billomat.net/".format(
@@ -51,12 +54,14 @@ class Connection(object):
         if urllib3:
             scheme, host, port = urllib3.get_host(self.url)
 
+
             # ToDo: certifi einbauen und testen
             # https://urllib3.readthedocs.org/en/latest/security.html#using-certifi-with-urllib3
             # https://github.com/gerold-penz/python-billomat/issues/1
 
+
             self.conn = urllib3.HTTPSConnectionPool(
-                host = host, port = port
+                host = host, port = port, timeout = self.timeout_seconds
             )
 
         else:
@@ -82,7 +87,7 @@ class Connection(object):
             response = self.urlfetch.fetch(
                 url = urllib.basejoin(self.url, path),
                 method = "GET", headers = headers,
-                deadline = 60
+                deadline = self.timeout_seconds
             )
             response.status = response.status_code
             response.data = response.content
@@ -120,7 +125,7 @@ class Connection(object):
                 payload = body,
                 method = method,
                 headers = headers,
-                deadline = 60
+                deadline = self.timeout_seconds
             )
             response.status = response.status_code
             response.data = response.content
