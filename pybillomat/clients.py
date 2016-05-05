@@ -59,7 +59,8 @@ def _client_xml(
     offer_validity_days_type = None,
     offer_validity_days = None,
     currency_code = None,
-    price_group = None
+    price_group = None,
+    locale = None
 ):
     """
     Creates the XML to add or edit a client
@@ -264,6 +265,10 @@ def _client_xml(
         price_group_tag = ET.Element("price_group")
         price_group_tag.text = unicode(int(price_group))
         client_tag.append(price_group_tag)
+    if locale is not None:
+        locale_tag = ET.Element("locale")
+        locale_tag.text = unicode(locale)
+        client_tag.append(locale_tag)
 
     xml = ET.tostring(client_tag)
 
@@ -336,6 +341,7 @@ class Client(Item):
         self.note = None
         self.revenue_gross = None  # Float
         self.revenue_net = None  # Float"
+        self.locale = None
 
         if client_etree is not None:
             self.load_from_etree(client_etree)
@@ -390,7 +396,8 @@ class Client(Item):
         offer_validity_days_type = None,
         offer_validity_days = None,
         currency_code = None,
-        price_group = None
+        price_group = None,
+        locale = None
     ):
         """
         Creates a client
@@ -471,6 +478,8 @@ class Client(Item):
             If this field is empty, the account currency is used.
         :param price_group: Artciles can have several prices.
             The pricegroup defines which price applies to the client.
+        :param locale: Locale of the client. If no value is passed, 
+            the locale of the account will be applied to the client.
         """
 
         # XML
@@ -518,7 +527,8 @@ class Client(Item):
             offer_validity_days_type = offer_validity_days_type,
             offer_validity_days = offer_validity_days,
             currency_code = currency_code,
-            price_group = price_group
+            price_group = price_group,
+            locale = locale
         )
 
         # Send POST-request
@@ -581,7 +591,8 @@ class Client(Item):
         offer_validity_days_type = None,
         offer_validity_days = None,
         currency_code = None,
-        price_group = None
+        price_group = None,
+        locale = None
     ):
         """
         Edit one client
@@ -661,6 +672,8 @@ class Client(Item):
             If this field is empty, the account currency is used.
         :param price_group: Artciles can have several prices.
             The pricegroup defines which price applies to the client.
+        :param locale: Locale of the client. If no value is passed, 
+            the locale of the account will be applied to the client.
         """
 
         # Parameters
@@ -714,7 +727,8 @@ class Client(Item):
             offer_validity_days_type = offer_validity_days_type,
             offer_validity_days = offer_validity_days,
             currency_code = currency_code,
-            price_group = price_group
+            price_group = price_group,
+            locale = locale
         )
 
         # Path
