@@ -2,7 +2,18 @@
 Python Billomat API Client Library
 ##################################
 
-by Gerold Penz 2014, 2015
+by Gerold Penz 2014-2016
+
+
+=============
+Version 0.4.5
+=============
+
+2016-05-05
+
+- Merged pull request #3 from Femaref/feature/add_locale_to_clients
+
+  Thank you Femaref! Handling for the locale api argument.
 
 
 =============
