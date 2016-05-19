@@ -6,7 +6,7 @@ by Gerold Penz 2014-2016
 
 
 =============
-Version 0.4.6
+Version 0.5.0
 =============
 
 2016-05-19
@@ -19,6 +19,15 @@ Version 0.4.6
   many invoices. Be careful: To many invoice IDs can produce to
   large responses or to large SQL statements.
   My recommendation: 10-50 invoice IDs at one time.
+
+- Recurring-Items: Now it is possible to fetch the recurring items for more then
+  one recurring with one request.
+
+  The parameter *recurring_id* for the search can now contain a list of recurring ids.
+  If list with IDs given: The result contains the recurring-items of
+  many recurrings. Be careful: To many recurring IDs can produce to
+  large responses or to large SQL statements.
+  My recommendation: 10-50 recurring IDs at one time.
 
 
 =============

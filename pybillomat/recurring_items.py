@@ -274,14 +274,17 @@ class RecurringItems(list):
         """
         Fills the list with RecurringItem-objects
 
-        :param recurring_id: ID of the recurring (mandatory)
+        :param recurring_id: ID of the recurring (mandatory) or a list of IDs.
+            If list with IDs given: The result contains the recurring-items of
+            many recurrings. Be careful: To many recurring IDs can produce to
+            large responses or to large SQL statements.
+            My recommendation: 10-50 recurring IDs at one time.
 
         :param order_by: Sortings consist of the name of the field and
             sort order: ASC for ascending resp. DESC for descending order.
             If no order is specified, ascending order (ASC) is used.
             Nested sort orders are possible. Please separate the sort orders by
             comma.
-
         """
 
         # Check empty param
@@ -305,6 +308,9 @@ class RecurringItems(list):
             url.query["order_by"] = order_by
 
         # Search parameter
+        if isinstance(recurring_id, (list, tuple)):
+            recurring_id = ",".join(str(id) for id in set(recurring_id))
+
         url.query["recurring_id"] = recurring_id
 
         # Fetch data
@@ -367,6 +373,12 @@ class RecurringItemsIterator(ItemsIterator):
     ):
         """
         Search
+
+        :param recurring_id: ID of the recurring (mandatory) or a list of IDs.
+            If list with IDs given: The result contains the recurring-items of
+            many recurrings. Be careful: To many recurring IDs can produce to
+            large responses or to large SQL statements.
+            My recommendation: 10-50 recurring IDs at one time.
         """
 
         # Params

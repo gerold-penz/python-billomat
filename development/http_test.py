@@ -21,8 +21,15 @@ conn = pybillomat.Connection(
     billomat_app_secret = _personal.gerolds_billomat_app_secret
 )
 
-invoice_items_iterator = pybillomat.InvoiceItemsIterator(conn = conn)
-invoice_items_iterator.search(invoice_id = [1652337, 1650466])
-for invoice_item in invoice_items_iterator:
-    print invoice_item
+# invoice_items_iterator = pybillomat.InvoiceItemsIterator(conn = conn)
+# invoice_items_iterator.search(invoice_id = [1652337, 1650466])
+# for invoice_item in invoice_items_iterator:
+#     print invoice_item
+#     print
+
+
+recurring_items_iterator = pybillomat.RecurringItemsIterator(conn = conn)
+recurring_items_iterator.search(recurring_id = [52582, 52581])
+for recurring_item in recurring_items_iterator:
+    print recurring_item
     print

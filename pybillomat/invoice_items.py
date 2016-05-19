@@ -268,7 +268,9 @@ class InvoiceItems(list):
         fetch_all = False,
         keep_old_items = False,
         page = 1,
-        per_page = None
+        per_page = None,
+
+        invoice_ids = None
     ):
         """
         Fills the list with InvoiceItem-objects
@@ -372,6 +374,12 @@ class InvoiceItemsIterator(ItemsIterator):
     ):
         """
         Search
+
+        :param invoice_id: ID of the invoice (mandatory) or a list of IDs.
+            If list with IDs given: The result contains the invoice-items of
+            many invoices. Be careful: To many invoice IDs can produce to
+            large responses or to large SQL statements.
+            My recommendation: 10-50 invoice IDs at one time.
         """
 
         # Params
