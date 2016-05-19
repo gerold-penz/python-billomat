@@ -273,14 +273,17 @@ class InvoiceItems(list):
         """
         Fills the list with InvoiceItem-objects
 
-        :param invoice_id: ID of the invoice (mandatory)
+        :param invoice_id: ID of the invoice (mandatory) or a list of IDs.
+            If list with IDs given: The result contains the invoice-items of
+            many invoices. Be careful: To many invoice IDs can produce to
+            large responses or to large SQL statements.
+            My recommendation: 10-50 invoice IDs at one time.
 
         :param order_by: Sortings consist of the name of the field and
             sort order: ASC for ascending resp. DESC for descending order.
             If no order is specified, ascending order (ASC) is used.
             Nested sort orders are possible. Please separate the sort orders by
             comma.
-
         """
 
         # Check empty param
@@ -304,6 +307,9 @@ class InvoiceItems(list):
             url.query["order_by"] = order_by
 
         # Search parameter
+        if isinstance(invoice_id, (list, tuple)):
+            invoice_id = ",".join(str(id) for id in set(invoice_id))
+
         url.query["invoice_id"] = invoice_id
 
         # Fetch data

@@ -21,9 +21,8 @@ conn = pybillomat.Connection(
     billomat_app_secret = _personal.gerolds_billomat_app_secret
 )
 
-client = pybillomat.Client(conn = conn, id = 469621)
-
-client.customfield = u"Servus öäü"
-
-
-print client.customfield
+invoice_items_iterator = pybillomat.InvoiceItemsIterator(conn = conn)
+invoice_items_iterator.search(invoice_id = [1652337, 1650466])
+for invoice_item in invoice_items_iterator:
+    print invoice_item
+    print

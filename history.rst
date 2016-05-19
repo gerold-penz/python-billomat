@@ -6,6 +6,22 @@ by Gerold Penz 2014-2016
 
 
 =============
+Version 0.4.6
+=============
+
+2016-05-19
+
+- Invoice-Items: Now it is possible to fetch the invoice items for more then
+  one invoice with one request.
+
+  The parameter *invoice_id* for the search can now contain a list of invoice ids.
+  If list with IDs given: The result contains the invoice-items of
+  many invoices. Be careful: To many invoice IDs can produce to
+  large responses or to large SQL statements.
+  My recommendation: 10-50 invoice IDs at one time.
+
+
+=============
 Version 0.4.5
 =============
 
