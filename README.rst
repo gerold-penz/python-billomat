@@ -14,7 +14,7 @@ enables you to access the data in your Billomat account.
 *python-billomat* can be used in Google App Engine (GAE).
 
 - English API Description: http://www.billomat.com/en/api
-- Deutsche API Beschreibung: http://www.billomat.com/de/api
+- Deutsche API Beschreibung: http://www.billomat.com/api
 
 
 ========
@@ -56,9 +56,11 @@ Features
 
 - Reminder-Texts
 
-- Own meta data (customfield) for every Billomat-object
+- Own meta data (customfield) for every Billomat object
 
 - Credit-Notes
+
+  - Credit-Note-Items
 
 
 ============
