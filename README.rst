@@ -58,6 +58,8 @@ Features
 
 - Own meta data (customfield) for every Billomat-object
 
+- Credit-Notes
+
 
 ============
 Installation
