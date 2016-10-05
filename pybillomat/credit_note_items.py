@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 """
-Invoice-Items
+Credit Note Items
 
-- English API-Description: http://www.billomat.com/en/api/invoices/items
-- Deutsche API-Beschreibung: http://www.billomat.com/de/api/rechnungen/positionen
+- English API-Description: http://www.billomat.com/en/api/credit-notes/items/
+- Deutsche API-Beschreibung: http://www.billomat.com/api/gutschriften/positionen/
 """
 
 
@@ -15,24 +15,24 @@ from http import Url
 from _items_base import Item, ItemsIterator
 
 
-def _invoice_item_xml(
-    invoice_id = None,
-    article_id = None,
+def _credit_note_item_xml(
+    credit_note_id = None,  # int
+    article_id = None,  # int
     unit = None,
-    quantity = None,
-    unit_price = None,
+    quantity = None,  # float
+    unit_price = None,  # float
     tax_name = None,
-    tax_rate = None,
+    tax_rate = None,  # float
     title = None,
     description = None,
     reduction = None
 ):
     """
-    Creates the XML to add or edit an invoice-item
+    Creates the XML to add or edit an credit note item
     """
 
     integer_field_names = [
-        "invoice_id",
+        "credit_note_id",
         "article_id",
     ]
     float_fieldnames = [
@@ -48,7 +48,7 @@ def _invoice_item_xml(
         "reduction",
     ]
 
-    invoice_item_tag = ET.Element("invoice-item")
+    credit_note_item_tag = ET.Element("credit-note-item")
 
     # Integer Fields
     for field_name in integer_field_names:
@@ -56,7 +56,7 @@ def _invoice_item_xml(
         if value is not None:
             new_tag = ET.Element(field_name)
             new_tag.text = unicode(int(value))
-            invoice_item_tag.append(new_tag)
+            credit_note_item_tag.append(new_tag)
 
     # Float Fields
     for field_name in float_fieldnames:
@@ -64,7 +64,7 @@ def _invoice_item_xml(
         if value is not None:
             new_tag = ET.Element(field_name)
             new_tag.text = unicode(float(value))
-            invoice_item_tag.append(new_tag)
+            credit_note_item_tag.append(new_tag)
 
     # String Fields
     for field_name in string_fieldnames:
@@ -72,22 +72,22 @@ def _invoice_item_xml(
         if value is not None:
             new_tag = ET.Element(field_name)
             new_tag.text = unicode(value)
-            invoice_item_tag.append(new_tag)
+            credit_note_item_tag.append(new_tag)
 
-    xml = ET.tostring(invoice_item_tag)
+    xml = ET.tostring(credit_note_item_tag)
 
     # Finished
     return xml
 
 
-class InvoiceItem(Item):
+class CreditNoteItem(Item):
 
-    base_path = u"/api/invoice-items"
+    base_path = u"/api/credit-note-items"
 
 
-    def __init__(self, conn, id = None, invoice_item_etree = None):
+    def __init__(self, conn, id = None, credit_note_item_etree = None):
         """
-        Invoice-Item
+        Credit Note Item
 
         :param conn: Connection-Object
         """
@@ -98,7 +98,7 @@ class InvoiceItem(Item):
 
         self.id = id  # integer
         self.article_id = None
-        self.invoice_id = None  # integer
+        self.credit_note_id = None  # integer
         self.position = None  # integer
         self.unit = None
         self.quantity = None  # float
@@ -113,8 +113,8 @@ class InvoiceItem(Item):
         self.total_gross_unreduced = None  # float
         self.total_net_unreduced = None  # float
 
-        if invoice_item_etree is not None:
-            self.load_from_etree(invoice_item_etree)
+        if credit_note_item_etree is not None:
+            self.load_from_etree(credit_note_item_etree)
         elif id is not None:
             self.load()
 
@@ -123,7 +123,7 @@ class InvoiceItem(Item):
     def create(
         cls,
         conn,
-        invoice_id = None,
+        credit_note_id = None,
         article_id = None,
         unit = None,
         quantity = None,
@@ -135,11 +135,11 @@ class InvoiceItem(Item):
         reduction = None
     ):
         """
-        Creates an invoice item
+        Creates a credit note item
 
         :param conn: Connection-Object
 
-        :param invoice_id: ID of the invoice
+        :param credit_note_id: ID of the credit note
         :param article_id: ID of the article, sets additionally the values
             from the article on creation
         :param unit: Unit
@@ -153,8 +153,8 @@ class InvoiceItem(Item):
         """
 
         # XML
-        xml = _invoice_item_xml(
-            invoice_id = invoice_id,
+        xml = _credit_note_item_xml(
+            credit_note_id = credit_note_id,
             article_id = article_id,
             unit = unit,
             quantity = quantity,
@@ -171,13 +171,13 @@ class InvoiceItem(Item):
         if response.status != 201:  # Created
             raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
 
-        # Create Invoice-Object
-        invoice = cls(conn = conn)
-        invoice.content_language = response.headers.get("content-language", None)
-        invoice.load_from_xml(response.data)
+        # Create CreditNote-Object
+        credit_note = cls(conn = conn)
+        credit_note.content_language = response.headers.get("content-language", None)
+        credit_note.load_from_xml(response.data)
 
         # Finished
-        return invoice
+        return credit_note
 
 
     def edit(
@@ -194,9 +194,9 @@ class InvoiceItem(Item):
         reduction = None
     ):
         """
-        Edit an invoice item
+        Edit a credit note item
 
-        :param id: ID of the invoice-item
+        :param id: ID of the credit note item
 
         :param article_id: ID of the article, sets additionally the values
             from the article on creation
@@ -204,7 +204,7 @@ class InvoiceItem(Item):
         :param quantity: Quantity
         :param unit_price: Price per unit
         :param tax_name: Name of the tax
-        :param tax_rate: rate of taxation
+        :param tax_rate: Rate of taxation
         :param title: Title
         :param description: Description
         :param reduction: Reduction (absolute or percent: 10/10%)
@@ -217,7 +217,7 @@ class InvoiceItem(Item):
             raise errors.NoIdError()
 
         # XML
-        xml = _invoice_item_xml(
+        xml = _credit_note_item_xml(
             article_id = article_id,
             unit = unit,
             quantity = quantity,
@@ -241,11 +241,11 @@ class InvoiceItem(Item):
             raise errors.BillomatError(unicode(response.data, encoding = "utf-8"))
 
 
-class InvoiceItems(list):
+class CreditNoteItems(list):
 
     def __init__(self, conn):
         """
-        InvoiceItems-List
+        CreditNoteItems-List
 
         :param conn: Connection-Object
         """
@@ -262,7 +262,7 @@ class InvoiceItems(list):
     def search(
         self,
         # Search parameters
-        invoice_id = None,
+        credit_note_id = None,
 
         order_by = None,
         fetch_all = False,
@@ -270,16 +270,16 @@ class InvoiceItems(list):
         page = 1,
         per_page = None,
 
-        invoice_ids = None
+        credit_note_ids = None
     ):
         """
-        Fills the list with InvoiceItem-objects
+        Fills the list with CreditNoteItem-objects
 
-        :param invoice_id: ID of the invoice (mandatory) or a list of IDs.
-            If list with IDs given: The result contains the invoice-items of
-            many invoices. Be careful: Too many invoice IDs can produce to
+        :param credit_note_id: ID of the credit note (mandatory) or a list of IDs.
+            If list with IDs given: The result contains the credit note items of
+            many credit notes. Be careful: Too many credit note IDs can produce to
             large responses or to large SQL statements.
-            My recommendation: 10-50 invoice IDs at one time.
+            My recommendation: 10-50 credit note IDs at one time.
 
         :param order_by: Sortings consist of the name of the field and
             sort order: ASC for ascending resp. DESC for descending order.
@@ -289,7 +289,7 @@ class InvoiceItems(list):
         """
 
         # Check empty param
-        if not invoice_id:
+        if not credit_note_id:
             raise errors.EmptyFilterError()
 
         # Empty the list
@@ -301,7 +301,7 @@ class InvoiceItems(list):
                     break
 
         # Url and system-parameters
-        url = Url(path = "/api/invoice-items")
+        url = Url(path = CreditNoteItem.base_path)
         url.query["page"] = page
         if per_page:
             url.query["per_page"] = per_page
@@ -309,36 +309,36 @@ class InvoiceItems(list):
             url.query["order_by"] = order_by
 
         # Search parameter
-        if isinstance(invoice_id, (list, tuple)):
-            invoice_id = ",".join(str(id) for id in set(invoice_id))
+        if isinstance(credit_note_id, (list, tuple)):
+            credit_note_id = ",".join(str(id) for id in set(credit_note_id))
 
-        url.query["invoice_id"] = invoice_id
+        url.query["credit_note_id"] = credit_note_id
 
         # Fetch data
         response = self.conn.get(path = str(url))
 
         # Parse XML
-        invoice_items_etree = ET.fromstring(response.data)
+        credit_note_items_etree = ET.fromstring(response.data)
 
-        self.per_page = int(invoice_items_etree.attrib.get("per_page", "100"))
-        self.total = int(invoice_items_etree.attrib.get("total", "0"))
-        self.page = int(invoice_items_etree.attrib.get("page", "1"))
+        self.per_page = int(credit_note_items_etree.attrib.get("per_page", "100"))
+        self.total = int(credit_note_items_etree.attrib.get("total", "0"))
+        self.page = int(credit_note_items_etree.attrib.get("page", "1"))
         try:
             self.pages = (self.total // self.per_page) + int(bool(self.total % self.per_page))
         except ZeroDivisionError:
             self.pages = 0
 
         # Iterate over all items
-        for invoice_item_etree in invoice_items_etree:
+        for credit_note_item_etree in credit_note_items_etree:
             self.append(
-                InvoiceItem(conn = self.conn, invoice_item_etree = invoice_item_etree)
+                CreditNoteItem(conn = self.conn, credit_note_item_etree = credit_note_item_etree)
             )
 
         # Fetch all
         if fetch_all and self.total > (self.page * self.per_page):
             self.search(
                 # Search parameters
-                invoice_id = invoice_id,
+                credit_note_id = credit_note_id,
 
                 order_by = order_by,
                 fetch_all = fetch_all,
@@ -348,42 +348,42 @@ class InvoiceItems(list):
             )
 
 
-class InvoiceItemsIterator(ItemsIterator):
+class CreditNoteItemsIterator(ItemsIterator):
     """
-    Iterates over all found invoices
+    Iterates over all found credit notes
     """
 
     def __init__(self, conn, per_page = 30):
         """
-        InvoiceItemsIterator
+        CreditNoteItemsIterator
         """
 
         self.conn = conn
-        self.items = InvoiceItems(self.conn)
+        self.items = CreditNoteItems(self.conn)
         self.per_page = per_page
         self.search_params = Bunch(
-            invoice_id = None,
+            credit_note_id = None,
             order_by = None
         )
 
 
     def search(
         self,
-        invoice_id = None,
+        credit_note_id = None,
         order_by = None
     ):
         """
         Search
 
-        :param invoice_id: ID of the invoice (mandatory) or a list of IDs.
-            If list with IDs given: The result contains the invoice-items of
-            many invoices. Be careful: To many invoice IDs can produce to
+        :param credit_note_id: ID of the credit note (mandatory) or a list of IDs.
+            If list with IDs given: The result contains the credit note items of
+            many credit notes. Be careful: To many credit note IDs can produce to
             large responses or to large SQL statements.
-            My recommendation: 10-50 invoice IDs at one time.
+            My recommendation: 10-50 credit note IDs at one time.
         """
 
         # Params
-        self.search_params.invoice_id = invoice_id
+        self.search_params.credit_note_id = credit_note_id
         self.search_params.order_by = order_by
 
         # Search and prepare first page as result
@@ -393,7 +393,7 @@ class InvoiceItemsIterator(ItemsIterator):
     def load_page(self, page):
 
         self.items.search(
-            invoice_id = self.search_params.invoice_id,
+            credit_note_id = self.search_params.credit_note_id,
             order_by = self.search_params.order_by,
 
             fetch_all = False,

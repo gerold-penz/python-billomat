@@ -276,7 +276,7 @@ class RecurringItems(list):
 
         :param recurring_id: ID of the recurring (mandatory) or a list of IDs.
             If list with IDs given: The result contains the recurring-items of
-            many recurrings. Be careful: To many recurring IDs can produce to
+            many recurrings. Be careful: Too many recurring IDs can produce to
             large responses or to large SQL statements.
             My recommendation: 10-50 recurring IDs at one time.
 

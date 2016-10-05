@@ -93,3 +93,7 @@ from credit_notes import (
     CreditNote,
     CreditNotesIterator
 )
+from credit_note_items import (
+    CreditNoteItem,
+    CreditNoteItemsIterator
+)

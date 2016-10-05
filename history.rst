@@ -13,6 +13,8 @@ Version 0.5.1
 
 - Credit-Notes added
 
+- Credit-Note-Items added
+
 
 =============
 Version 0.5.0
@@ -25,7 +27,7 @@ Version 0.5.0
 
   The parameter *invoice_id* for the search can now contain a list of invoice ids.
   If list with IDs given: The result contains the invoice-items of
-  many invoices. Be careful: To many invoice IDs can produce to
+  many invoices. Be careful: Too many invoice IDs can produce to
   large responses or to large SQL statements.
   My recommendation: 10-50 invoice IDs at one time.
 
