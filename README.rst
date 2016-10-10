@@ -56,11 +56,12 @@ Features
 
 - Reminder-Texts
 
-- Own meta data (customfield) for every Billomat object
+- Customfield for metadata for every Billomat object
 
 - Credit-Notes
 
   - Credit-Note-Items
+  - Credit-Note-Tags
 
 
 ============
