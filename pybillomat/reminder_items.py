@@ -9,7 +9,7 @@ Reminder-Items
 
 import errors
 import xml.etree.ElementTree as ET
-from bunch import Bunch
+from munch import Munch as Bunch
 from http import Url
 from _items_base import Item, ItemsIterator
 

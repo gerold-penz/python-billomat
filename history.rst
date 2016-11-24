@@ -6,6 +6,15 @@ by Gerold Penz 2014-2016
 
 
 =============
+Version 0.5.3
+=============
+
+2016-11-24
+
+- Changed from Bunch to Munch
+
+
+=============
 Version 0.5.2
 =============
 

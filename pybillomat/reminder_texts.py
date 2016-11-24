@@ -9,7 +9,7 @@ Settings: Reminder-Texts
 
 import xml.etree.ElementTree as ET
 import errors
-from bunch import Bunch
+from munch import Munch as Bunch
 from http import Url
 from _items_base import Item, ItemsIterator
 

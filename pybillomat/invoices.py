@@ -9,7 +9,7 @@ Invoices
 
 import datetime
 import xml.etree.ElementTree as ET
-from bunch import Bunch
+from munch import Munch as Bunch
 from http import Url
 import errors
 from _items_base import Item, ItemsIterator

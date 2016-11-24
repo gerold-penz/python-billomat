@@ -4,7 +4,7 @@
 import datetime
 import errors
 import xml.etree.ElementTree as ET
-from bunch import Bunch
+from munch import Munch as Bunch
 
 
 class Item(Bunch):
